@@ -75,12 +75,12 @@ exports.actualizar = async (req, res, next) => { //Raul
       evento.slug = null;
     }
 
-    // Actualizar los campos
+    //Comprobar
     for (let key in data) {
       evento[key] = data[key];
     }
 
-    // Actualizar el slug si se proporciona
+    // Si se proporciona un nuevo slug, actualiza
     if (newSlug) {
       evento.slug = newSlug;
     }

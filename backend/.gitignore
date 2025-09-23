@@ -12,3 +12,6 @@ logs
 
 # MongoDB
 /data/
+
+#db
+.db
