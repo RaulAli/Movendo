@@ -1,0 +1,57 @@
+:host {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+nav {
+    display: flex;
+    gap: 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #222;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: opacity 0.2s, border-bottom-color 0.2s;
+}
+
+nav a:hover {
+    opacity: 1;
+}
+
+nav a.active {
+    opacity: 1;
+    border-bottom: 2px solid #222;
+}
+
+@media (max-width: 640px) {
+    nav {
+        gap: 0.75rem;
+    }
+}
