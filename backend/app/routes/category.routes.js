@@ -3,11 +3,14 @@ const router = express.Router();
 
 const controller = require('../controllers/category.controller');
 
+router.get('/categories', controller.listar);
 
-router.get('/category', controller.listar);
+router.post('/categories', controller.crear);
 
-router.get('/category/', controller.obtener);
+router.get('/categories/:slug', controller.obtener);
 
-router.post('/category', controller.crear);
+router.put('/categories/:slug', controller.actualizar);
+
+router.delete('/categories/:slug', controller.borrar);
 
 module.exports = router;
