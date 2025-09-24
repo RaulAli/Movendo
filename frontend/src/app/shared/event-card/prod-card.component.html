@@ -1,0 +1,14 @@
+<!-- prod-card.component.html -->
+
+<div class="prod-card">
+  <h3>{{ prod.nombre }}</h3>
+
+  <p><strong>Ciudad:</strong> {{ prod.ciudad }}</p>
+  <p><strong>Fecha:</strong> {{ prod.fecha | date:'mediumDate' }}</p>
+  <p *ngIf="prod.genero"><strong>Género:</strong> {{ prod.genero }}</p>
+
+  <div class="actions">
+    <button class="btn btn-secondary btn-sm" (click)="onEdit()">Editar</button>
+    <button class="btn btn-danger btn-sm" (click)="onDelete()">Eliminar</button>
+  </div>
+</div>
