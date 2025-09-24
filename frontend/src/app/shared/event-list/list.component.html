@@ -19,9 +19,7 @@
 <div *ngIf="!loading && prods?.length; else empty" class="prod-list">
     <prod-card
     *ngFor="let p of prods; trackBy: trackByProd"
-    [prod]="p"
-    (edit)="onEdit($event)"
-    (delete)="onRemove($event)">
+    [prod]="p">
   </prod-card>
 </div>
 
