@@ -1,0 +1,8 @@
+<div class="prod-card">
+  <h3>{{ prod.nombre }}</h3>
+
+  <p><strong>Ciudad:</strong> {{ prod.ciudad }}</p>
+  <p><strong>Fecha:</strong> {{ prod.fecha | date:'mediumDate' }}</p>
+  <p *ngIf="prod.genero"><strong>Género:</strong> {{ prod.genero }}</p>
+
+</div>
