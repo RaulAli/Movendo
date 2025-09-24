@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Prod } from '../../models/prod.model';
 
@@ -11,14 +11,4 @@ import { Prod } from '../../models/prod.model';
 })
 export class CardComponent {
   @Input() prod!: Prod;
-  @Output() edit = new EventEmitter<Prod>();
-  @Output() delete = new EventEmitter<string>();
-
-  onEdit() {
-    this.edit.emit(this.prod);
-  }
-
-  async onDelete() {
-    this.delete.emit(this.prod.slug!);
-  }
 }
