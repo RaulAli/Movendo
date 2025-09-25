@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CategoriesService } from '../../core/services/category.service';
-import { Categories } from '../../models/category.model';
+import { Categories } from '../../core/models/category.model';
 import { CardCategories } from '../category-card/cat-card.component';
 
 @Component({
