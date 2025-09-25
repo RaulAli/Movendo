@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Categories } from '../../models/category.model';
+import { Categories } from '../../core/models/category.model';
 
 @Component({
   selector: 'categories-card',
