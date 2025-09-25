@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProdService } from '../../core/services/prod.service';
-import { Prod } from '../../models/prod.model';
+import { Prod } from '../../core/models/prod.model';
 import { CardComponent } from '../event-card/prod-card.component';
 
 @Component({
