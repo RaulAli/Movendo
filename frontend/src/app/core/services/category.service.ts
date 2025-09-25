@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { Categories } from '../models/category.model';
+import { Category } from '../models/category.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CategoriesService {
-  private baseUrl = 'http://localhost:3000/api/movendo/categories';
+export class CategoryService {
+  private baseUrl = 'http://localhost:3000/api/movendo/category';
 
   constructor(private http: HttpClient) { }
 
-  list(): Observable<Categories[]> {
+  list(): Observable<Category[]> {
     return this.http.get<any>(this.baseUrl).pipe(
       map(res => {
         const data = res.data ?? res;
@@ -27,16 +27,16 @@ export class CategoriesService {
     );
   }
 
-  get(slug: string): Observable<Categories> {
-    return this.http.get<Categories>(`${this.baseUrl}/${slug}`);
+  get(slug: string): Observable<Category> {
+    return this.http.get<Category>(`${this.baseUrl}/${slug}`);
   }
 
-  create(categories: Categories): Observable<Categories> {
-    return this.http.post<Categories>(this.baseUrl, categories);
+  create(category: Category): Observable<Category> {
+    return this.http.post<Category>(this.baseUrl, category);
   }
 
-  update(slug: string, categories: Categories): Observable<Categories> {
-    return this.http.put<Categories>(`${this.baseUrl}/${slug}`, categories);
+  update(slug: string, category: Category): Observable<Category> {
+    return this.http.put<Category>(`${this.baseUrl}/${slug}`, category);
   }
 
   delete(slug: string): Observable<any> {

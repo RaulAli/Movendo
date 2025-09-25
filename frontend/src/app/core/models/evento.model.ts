@@ -1,4 +1,4 @@
-export interface Prod {
+export interface Evento {
   _id?: string;     // MongoDB id
   nombre: string;
   fecha: string;

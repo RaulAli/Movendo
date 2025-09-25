@@ -1,5 +1,5 @@
 <div *ngIf="loading" class="loading">
-  Cargando productos...
+  Cargando eventos...
 </div>
 
 
@@ -7,9 +7,9 @@
   {{ error }}
 </div>
 
-<div *ngIf="!loading && categories?.length; else empty" class="cat-list">
-  <categories-card *ngFor="let c of categories;" [categories]="c">
-  </categories-card>
+<div *ngIf="!loading && category?.length; else empty" class="category">
+  <card-category *ngFor="let c of category;" [category]="c">
+  </card-category>
 </div>
 
 <ng-template #empty>
