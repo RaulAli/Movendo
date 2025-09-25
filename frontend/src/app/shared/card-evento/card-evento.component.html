@@ -1,0 +1,8 @@
+<div class="card-evento">
+  <h3>{{ evento.nombre }}</h3>
+
+  <p><strong>Ciudad:</strong> {{ evento.ciudad }}</p>
+  <p><strong>Fecha:</strong> {{ evento.fecha | date:'mediumDate' }}</p>
+  <p *ngIf="evento.genero"><strong>Género:</strong> {{ evento.genero }}</p>
+
+</div>

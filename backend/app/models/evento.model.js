@@ -60,7 +60,7 @@ EventoSchema.pre('validate', async function (next) {
   }
 });
 
-EventoSchema.methods.toProductCarouselResponse = function () {
+EventoSchema.methods.toEventouctCarouselResponse = function () {
   return {
     image: this.image,
     slug: this.slug

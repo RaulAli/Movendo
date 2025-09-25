@@ -3,8 +3,8 @@ const router = express.Router();
 
 const controller = require('../controllers/carousel.controller');
 
-router.get('/carousel/categories', controller.get_carousel_categories);
+router.get('/carousel/category', controller.get_carousel_category);
 
-router.get('/carousel/product/:slug', controller.get_carousel_product);
+router.get('/carousel/evento/:slug', controller.get_carousel_evento);
 
 module.exports = router;
