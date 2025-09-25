@@ -1,15 +1,15 @@
-.prod-card {
+.card-evento {
   background-color: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
   border-top: 5px solid #ff3e3e; // barra superior tipo ticket
   min-height: 220px; // altura uniforme de la card
-  width: 100%;       // ocupa todo el ancho del contenedor
+  width: 100%; // ocupa todo el ancho del contenedor
 
   h3 {
     margin: 0;
@@ -39,6 +39,6 @@
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   }
 }

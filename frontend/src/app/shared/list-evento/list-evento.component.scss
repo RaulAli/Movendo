@@ -1,5 +1,5 @@
 /* Contenedor de listado */
-.prod-list {
+.list-evento {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); // varias columnas
   gap: 16px;
@@ -7,7 +7,8 @@
 }
 
 /* Spinner y mensajes de error */
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   font-size: 1rem;
   padding: 16px;
@@ -18,17 +19,17 @@
   color: #dc3545;
 }
 
-/* prod-card individual */
-prod-card {
+/* card-evento individual */
+card-evento {
   display: block; // asegura que se comporte como un bloque en el grid
 }
 
-/* prod-card.component.scss */
-.prod-card {
+/* card-evento.component.scss */
+.card-evento {
   background-color: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
@@ -102,15 +103,16 @@ prod-card {
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   }
 }
 
-/* Botón de nuevo producto */
+/* Botón de nuevo evento */
 .actions {
   display: flex;
   justify-content: flex-end;
   margin: 16px;
+
   button {
     background-color: #007bff;
     color: #fff;

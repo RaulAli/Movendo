@@ -1,4 +1,4 @@
-const Evento = require('../models/prod.model');
+const Evento = require('../models/evento.model');
 
 function buildFilter(query) {
   const filter = {};

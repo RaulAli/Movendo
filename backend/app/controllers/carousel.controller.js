@@ -1,38 +1,38 @@
 const Category = require('../models/category.model');
-const Product = require('../models/prod.model');
+const Evento = require('../models/evento.model');
 
-const get_carousel_categories = async (req, res, next) => {
+const get_carousel_category = async (req, res, next) => {
     try {
-        const categories = await Category.find();
+        const category = await Category.find();
 
-        if (!categories || categories.length === 0) {
-            return res.status(404).json({ message: 'Categories not found' });
+        if (!category || category.length === 0) {
+            return res.status(404).json({ message: 'Category not found' });
         }
 
         res.status(200).json({
-            categories: categories.map((cat) => cat.toCategoryCarouselResponse()),
+            category: category.map((cat) => cat.toCategoryCarouselResponse()),
         });
     } catch (err) {
         next(err);
     }
 };
 
-const get_carousel_product = async (req, res, next) => {
+const get_carousel_evento = async (req, res, next) => {
     try {
         const { slug } = req.params;
 
         if (!slug || typeof slug !== 'string' || !slug.trim()) {
-            return res.status(400).json({ message: 'Missing or invalid product slug' });
+            return res.status(400).json({ message: 'Missing or invalid evento slug' });
         }
 
-        const product = await Product.findOne({ slug: slug.trim().toLowerCase() });
+        const evento = await Evento.findOne({ slug: slug.trim().toLowerCase() });
 
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
+        if (!evento) {
+            return res.status(404).json({ message: 'Evento not found' });
         }
 
         res.status(200).json({
-            product: product.toProductCarouselResponse(),
+            evento: evento.toEventouctCarouselResponse(),
         });
     } catch (err) {
         next(err);
@@ -40,6 +40,6 @@ const get_carousel_product = async (req, res, next) => {
 };
 
 module.exports = {
-    get_carousel_categories,
-    get_carousel_product,
+    get_carousel_category,
+    get_carousel_evento,
 };

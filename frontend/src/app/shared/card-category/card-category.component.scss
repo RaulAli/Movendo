@@ -1,0 +1,49 @@
+.categories-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    border-top: 5px solid #ff3e3e;
+    min-height: 240px;
+    width: 100%;
+    margin: 5px;
+    /* Espaciado interno adicional */
+
+    .card-header {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding: 16px 20px;
+        /* Aumentado el padding interno */
+        background: linear-gradient(to right, #ff7e5f, #feb47b);
+        color: #fff;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .card-body {
+        padding: 16px 20px;
+        /* Aumentado el padding interno */
+        flex: 1;
+
+        p {
+            margin: 8px 0;
+            /* Aumentado el margen entre párrafos */
+            font-size: 0.95rem;
+            color: #333;
+
+            strong {
+                font-weight: 600;
+                color: #555;
+            }
+        }
+    }
+
+    &:hover {
+        transform: translateY(-5px);
+        /* Efecto más pronunciado */
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+}

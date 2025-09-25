@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
-const prodsRoutes = require('./app/routes/prods.routes');
+const eventoRoutes = require('./app/routes/evento.routes');
 const categoryRoutes = require('./app/routes/category.routes');
 const carouselRoutes = require('./app/routes/carousel.routes');
 const errorHandler = require('./app/middlewares/errorHandler');
@@ -37,7 +37,7 @@ app.use(
 );
 
 // Ruta de la API
-app.use('/api/movendo', prodsRoutes);
+app.use('/api/movendo', eventoRoutes);
 app.use('/api/movendo', categoryRoutes);
 app.use('/api/movendo', carouselRoutes);
 

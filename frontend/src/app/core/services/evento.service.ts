@@ -1,24 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { Category } from '../models/category.model';
+import { Evento } from '../models/evento.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CategoryService {
-  private baseUrl = 'http://localhost:3000/api/movendo/category';
+export class EventoService {
+  private baseUrl = 'http://localhost:3000/api/movendo/evento';
 
   constructor(private http: HttpClient) { }
 
-  list(): Observable<Category[]> {
+  list(): Observable<Evento[]> {
     return this.http.get<any>(this.baseUrl).pipe(
       map(res => {
         const data = res.data ?? res;
         return data.map((item: any) => ({
           _id: item._id,
           nombre: item.nombre,
-          descripcion: item.descripcion,
+          fecha: item.fecha,
+          ciudad: item.ciudad,
+          genero: item.genero,
           slug: item.slug,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt
@@ -27,16 +29,16 @@ export class CategoryService {
     );
   }
 
-  get(slug: string): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/${slug}`);
+  get(slug: string): Observable<Evento> {
+    return this.http.get<Evento>(`${this.baseUrl}/${slug}`);
   }
 
-  create(category: Category): Observable<Category> {
-    return this.http.post<Category>(this.baseUrl, category);
+  create(evento: Evento): Observable<Evento> {
+    return this.http.post<Evento>(this.baseUrl, evento);
   }
 
-  update(slug: string, category: Category): Observable<Category> {
-    return this.http.put<Category>(`${this.baseUrl}/${slug}`, category);
+  update(slug: string, evento: Evento): Observable<Evento> {
+    return this.http.put<Evento>(`${this.baseUrl}/${slug}`, evento);
   }
 
   delete(slug: string): Observable<any> {

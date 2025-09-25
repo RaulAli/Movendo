@@ -1,0 +1,27 @@
+<!-- Botón Nuevo Eventoucto
+<div class="actions">
+  <button (click)="onNew()" class="btn btn-primary">
+    Nuevo Eventoucto
+  </button>
+</div> -->
+
+<!-- Spinner de carga -->
+<div *ngIf="loading" class="loading">
+  Cargando eventos...
+</div>
+
+
+<div *ngIf="error" class="error">
+  {{ error }}
+</div>
+
+
+<div *ngIf="!loading && evento?.length; else empty" class="list-evento">
+  <card-evento *ngFor="let p of evento; trackBy: trackByEvento" [evento]="p">
+  </card-evento>
+</div>
+
+
+<ng-template #empty>
+  <p>No hay eventos aún.</p>
+</ng-template>
