@@ -2,16 +2,26 @@
   Cargando productos...
 </div>
 
-
 <div *ngIf="error" class="error">
   {{ error }}
 </div>
 
-<div *ngIf="!loading && categories?.length; else empty" class="cat-list">
-  <categories-card *ngFor="let c of categories;" [categories]="c">
-  </categories-card>
+<div *ngIf="!loading && categories?.length; else empty" class="carousel-container">
+  <button class="carousel-btn prev" (click)="scrollCarousel(-1)">❮</button>
+  <button class="carousel-btn next" (click)="scrollCarousel(1)">❯</button>
+
+  <div class="carousel" #categoriesCarousel>
+    <div class="carousel-item" *ngFor="let c of categories">
+      <categories-card [categories]="c"></categories-card>
+    </div>
+  </div>
+
+  <div class="carousel-indicators">
+    <div *ngFor="let indicator of indicators; let i = index" class="indicator" [class.active]="i === currentSlide"
+      (click)="goToSlide(i)"></div>
+  </div>
 </div>
 
 <ng-template #empty>
-  <p>No hay categorías disponibles.</p>
+  <p class="empty-message">No hay categorías disponibles.</p>
 </ng-template>
