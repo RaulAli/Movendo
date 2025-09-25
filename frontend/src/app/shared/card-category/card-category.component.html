@@ -1,0 +1,11 @@
+<div class="card-category">
+    <div class="card-header">
+        <h3>{{ category.nombre }}</h3>
+    </div>
+
+    <div class="card-body">
+        <p *ngIf="category.descripcion">
+            <strong>Descripción:</strong> {{ category.descripcion }}
+        </p>
+    </div>
+</div>
