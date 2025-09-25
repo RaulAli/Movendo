@@ -19,6 +19,10 @@ const CategorySchema = new mongoose.Schema({
     unique: true,
     index: true,
     trim: true
+  },
+  image: {
+    type: String,
+    required: true
   }
 }, { timestamps: true });
 
@@ -46,5 +50,14 @@ CategorySchema.pre('validate', async function (next) {
     next(err);
   }
 });
+
+CategorySchema.methods.toCategoryCarouselResponse = function () {
+  return {
+    nombre: this.nombre,
+    image: this.image,
+    slug: this.slug
+  };
+};
+
 
 module.exports = mongoose.model('Category', CategorySchema);
