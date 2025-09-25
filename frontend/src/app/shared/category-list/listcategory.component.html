@@ -1,0 +1,17 @@
+<div *ngIf="loading" class="loading">
+  Cargando productos...
+</div>
+
+
+<div *ngIf="error" class="error">
+  {{ error }}
+</div>
+
+<div *ngIf="!loading && categories?.length; else empty" class="cat-list">
+  <categories-card *ngFor="let c of categories;" [categories]="c">
+  </categories-card>
+</div>
+
+<ng-template #empty>
+  <p>No hay categorías disponibles.</p>
+</ng-template>

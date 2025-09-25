@@ -1,0 +1,39 @@
+.categories-card {
+    background: linear-gradient(145deg, #0d0d0d, #1a1a1a);
+    border: 1px solid rgba(138, 43, 226, 0.3); // púrpura semitransparente
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin: 1rem 0;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6),
+        0 0 12px rgba(0, 122, 255, 0.25); // brillo azul
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7),
+            0 0 18px rgba(138, 43, 226, 0.45),
+            0 0 25px rgba(0, 122, 255, 0.35);
+    }
+
+    .card-header {
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #a78bfa; // púrpura suave
+            margin: 0 0 0.6rem;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(167, 139, 250, 0.4);
+        }
+    }
+
+    .card-body {
+        color: #d1d5db; // gris claro
+        font-size: 0.95rem;
+        line-height: 1.5;
+
+        strong {
+            color: #60a5fa; // azul acento
+            font-weight: 600;
+        }
+    }
+}
