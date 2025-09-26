@@ -11,7 +11,7 @@
   <button class="carousel-btn next" (click)="scrollCarousel(1)">❯</button>
 
   <div class="carousel" #categoryCarousel>
-    <div class="carousel-item" *ngFor="let c of category">
+    <div class="carousel-item" *ngFor="let c of category; trackBy: trackByCategory">
       <card-category [category]="c"></card-category>
     </div>
   </div>

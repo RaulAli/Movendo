@@ -25,8 +25,8 @@ export class ListCategoryComponent implements OnInit, AfterViewInit, OnDestroy {
     indicators: number[] = [];
     private cardsPerView = 4;
     private resizeObserver: ResizeObserver | null = null;
-    private cardWidth = 280; // Ancho base de cada card
-    private cardGap = 30; // Espaciado entre cards
+    private cardWidth = 280;
+    private cardGap = 30;
 
     constructor(
         private categoryService: CategoryService,
@@ -34,7 +34,17 @@ export class ListCategoryComponent implements OnInit, AfterViewInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
-        this.loadCategory();
+        this.loadCategory(); // Cambiado el nombre del método para coincidir
+    }
+
+    ngAfterViewInit(): void {
+        this.setupCarouselResponsive();
+    }
+
+    ngOnDestroy(): void {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
     }
 
     ngAfterViewInit(): void {
@@ -57,7 +67,6 @@ export class ListCategoryComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.updateIndicators();
                 this.loading = false;
 
-                // Pequeño delay para asegurar que el DOM se haya renderizado
                 setTimeout(() => {
                     this.updateCardsPerView();
                 }, 100);
@@ -69,7 +78,6 @@ export class ListCategoryComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    // Configurar responsividad del carrusel
     private setupCarouselResponsive(): void {
         this.updateCardsPerView();
 
@@ -116,7 +124,6 @@ export class ListCategoryComponent implements OnInit, AfterViewInit, OnDestroy {
         this.currentSlide = slideIndex;
         const carousel = this.carouselRef.nativeElement;
 
-        // Calcular la posición de scroll considerando el espaciado
         const scrollPosition = this.currentSlide * this.cardsPerView * (this.cardWidth + this.cardGap);
 
         carousel.scrollTo({
