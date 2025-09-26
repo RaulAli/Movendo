@@ -1,39 +1,43 @@
-.card-category {
-    background: linear-gradient(145deg, #0d0d0d, #1a1a1a);
-    border: 1px solid rgba(138, 43, 226, 0.3); // púrpura semitransparente
-    border-radius: 16px;
-    padding: 1.2rem;
-    margin: 1rem 0;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6),
-        0 0 12px rgba(0, 122, 255, 0.25); // brillo azul
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-
-    &:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7),
-            0 0 18px rgba(138, 43, 226, 0.45),
-            0 0 25px rgba(0, 122, 255, 0.35);
-    }
+.categories-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    border-top: 5px solid #ff3e3e;
+    min-height: 240px;
+    width: 100%;
 
     .card-header {
-        h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #a78bfa; // púrpura suave
-            margin: 0 0 0.6rem;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 8px rgba(167, 139, 250, 0.4);
-        }
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding: 12px 16px;
+        background: linear-gradient(to right, #ff7e5f, #feb47b);
+        color: #fff;
+        border-bottom: 1px solid #ddd;
     }
 
     .card-body {
-        color: #d1d5db; // gris claro
-        font-size: 0.95rem;
-        line-height: 1.5;
+        padding: 12px 16px;
+        flex: 1;
 
-        strong {
-            color: #60a5fa; // azul acento
-            font-weight: 600;
+        p {
+            margin: 6px 0;
+            font-size: 0.95rem;
+            color: #333;
+
+            strong {
+                font-weight: 600;
+                color: #555;
+            }
         }
+    }
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
     }
 }
