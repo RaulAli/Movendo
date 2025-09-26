@@ -6,19 +6,11 @@
   {{ error }}
 </div>
 
-<div *ngIf="!loading && category?.length; else empty" class="carousel-container">
-  <button class="carousel-btn prev" (click)="scrollCarousel(-1)">❮</button>
-  <button class="carousel-btn next" (click)="scrollCarousel(1)">❯</button>
-
-  <div class="carousel" #categoryCarousel>
-    <div class="carousel-item" *ngFor="let c of category; trackBy: trackByCategory">
+<div *ngIf="!loading && category?.length; else empty" class="list-container">
+  <div class="list">
+    <div class="list-item" *ngFor="let c of category; trackBy: trackByCategory">
       <card-category [category]="c"></card-category>
     </div>
-  </div>
-
-  <div class="carousel-indicators">
-    <div *ngFor="let indicator of indicators; let i = index" class="indicator" [class.active]="i === currentSlide"
-      (click)="goToSlide(i)"></div>
   </div>
 </div>
 
