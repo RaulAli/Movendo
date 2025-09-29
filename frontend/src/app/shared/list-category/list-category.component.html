@@ -6,7 +6,8 @@
   {{ error }}
 </div>
 
-<card-category></card-category>
+<card-category *ngFor="let p of category; trackBy: trackByCategory" [category]="p">
+</card-category>
 
 <ng-template #empty>
   <p class="empty-message">No hay categorías disponibles.</p>

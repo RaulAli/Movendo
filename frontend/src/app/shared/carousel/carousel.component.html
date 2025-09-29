@@ -1,4 +1,4 @@
-<div class="carousel-wrapper">
+<div class="carousel-wrapper" *ngIf="page === 'category'">
   <button class="carousel-arrow prev" (click)="scrollPrev()">&#8249;</button>
 
   <div class="carousel-container" #carousel>
@@ -8,4 +8,28 @@
   </div>
 
   <button class="carousel-arrow next" (click)="scrollNext()">&#8250;</button>
+</div>
+
+<!-- <div class="carousel-wrapper" *ngIf="page === 'evento'">
+  <button class="carousel-arrow prev" (click)="scrollPrev()">&#8249;</button>
+
+  <div class="carousel-container" #carousel>
+    <app-carousel-item class="main-carousel-item" *ngFor="let item of carouselData" [carousel]="item"
+      [type]="page ?? 'evento'">
+    </app-carousel-item>
+  </div>
+
+  <button class="carousel-arrow next" (click)="scrollNext()">&#8250;</button>
+</div> -->
+
+<div class="carousel-wrapper datacard" *ngIf="page === 'evento'">
+  <button class="carousel-arrow prev" (click)="scrollPrev()" aria-label="Imagen anterior">&#8249;</button>
+
+  <div class="carousel-container" #carousel>
+    <app-carousel-item class="main-carousel-item" *ngFor="let item of carouselData" [carousel]="item"
+      [type]="page ?? 'evento'">
+    </app-carousel-item>
+  </div>
+
+  <button class="carousel-arrow next" (click)="scrollNext()" aria-label="Imagen siguiente">&#8250;</button>
 </div>

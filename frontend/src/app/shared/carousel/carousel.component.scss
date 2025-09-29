@@ -6,7 +6,7 @@
 .carousel-wrapper {
     position: relative;
     width: 100%;
-    max-width: 100%; // asegura full width
+    max-width: 100%;
 
     .carousel-container {
         display: flex;
@@ -54,27 +54,22 @@
     .carousel-container {
         display: flex;
         overflow-x: hidden;
-        /* ocultar el resto */
         scroll-snap-type: x mandatory;
     }
 
     .carousel-container.category .main-carousel-item {
         flex: 0 0 30%;
-        /* varias a la vista */
         scroll-snap-align: center;
     }
 
     .carousel-container.evento .main-carousel-item {
         flex: 0 0 100%;
-        /* una a la vista, ocupa todo el ancho */
         scroll-snap-align: center;
     }
 
-    /* Imagen dentro del item */
     .main-carousel-item img {
         width: 100%;
         height: 240px;
-        /* altura fija para consistencia */
         object-fit: cover;
     }
 }

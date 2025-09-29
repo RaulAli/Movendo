@@ -1,4 +1,3 @@
-/* Contenedor de listado */
 .list-evento {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); // varias columnas
@@ -6,7 +5,6 @@
   padding: 16px;
 }
 
-/* Spinner y mensajes de error */
 .loading,
 .error {
   text-align: center;
@@ -19,12 +17,10 @@
   color: #dc3545;
 }
 
-/* card-evento individual */
 card-evento {
-  display: block; // asegura que se comporte como un bloque en el grid
+  display: block;
 }
 
-/* card-evento.component.scss */
 .card-evento {
   background-color: #fff;
   border-radius: 12px;
@@ -33,8 +29,8 @@ card-evento {
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
-  border-top: 5px solid #ff3e3e; // barra superior estilo ticket
-  min-height: 240px; // altura uniforme
+  border-top: 5px solid #ff3e3e;
+  min-height: 240px;
   width: 100%;
 
   h3 {
@@ -107,7 +103,6 @@ card-evento {
   }
 }
 
-/* Botón de nuevo evento */
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -129,7 +124,6 @@ card-evento {
   }
 }
 
-/* Mensajes vacíos */
 ng-template#empty {
   text-align: center;
   padding: 20px;
