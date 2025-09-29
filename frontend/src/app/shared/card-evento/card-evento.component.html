@@ -9,5 +9,6 @@
     <p *ngIf="evento.genero"><strong>Deporte:</strong> {{ evento.genero }}</p>
   </div>
 
-  <app-carousel class="main-carousel" page="evento"></app-carousel>
+  <app-carousel class="main-carousel" page="evento" [slug_evento]="evento?.slug ?? null">
+  </app-carousel>
 </div>
