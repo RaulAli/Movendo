@@ -32,6 +32,11 @@ export class CarouselComponent implements OnInit {
                 console.log('[CarouselComponent] Data received:', res);
                 this.carouselData = res.category;
             });
+        } else {
+            this.carouselService.getCarouselEvento(this.slug_evento).subscribe((res: any) => {
+                console.log('[CarouselComponent] Evento data received:', res);
+                this.carouselData = res.evento.image;
+            });
         }
     }
 
