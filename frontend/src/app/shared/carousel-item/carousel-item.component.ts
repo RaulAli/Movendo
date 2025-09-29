@@ -13,9 +13,4 @@ export class CarouselItemComponent implements OnInit {
     @Input() carousel!: CarouselHome;
     @Input() type!: string;
 
-    ngOnInit() {
-        // console.log('CarouselItemComponent initialized');
-        // console.log('carousel:', this.carousel);
-        // console.log('type:', this.type);
-    }
 }
