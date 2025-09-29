@@ -1,0 +1,20 @@
+<!-- pages/details/details.page.html -->
+<ng-container *ngIf="evento$ | async as evento; else loadingTpl">
+    <article class="evento-details">
+        <h1 class="title">{{ evento.nombre }}</h1>
+
+        <ul class="meta">
+            <li><strong>Fecha:</strong> {{ evento.fecha | date:'fullDate' }}</li>
+            <li><strong>Ciudad:</strong> {{ evento.ciudad }}</li>
+            <li *ngIf="evento.genero"><strong>Género:</strong> {{ evento.genero }}</li>
+            <li *ngIf="evento.slug"><strong>Slug:</strong> {{ evento.slug }}</li>
+            <li *ngIf="evento._id"><strong>ID:</strong> {{ evento._id }}</li>
+        </ul>
+
+        <a routerLink="/" class="btn-back">← Volver</a>
+    </article>
+</ng-container>
+
+<ng-template #loadingTpl>
+    <div class="loading">Cargando…</div>
+</ng-template>
