@@ -30,7 +30,7 @@ const EventoSchema = new mongoose.Schema({
     trim: true
   },
   image: {
-    type: String,
+    type: [String],
     required: true
   }
 }, { timestamps: true });
