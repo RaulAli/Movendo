@@ -122,28 +122,27 @@
     pointer-events: none;
 }
 
-.carousel-container::before {
-    left: 0;
-    background: linear-gradient(to right, rgba(245, 247, 250, 0.9), transparent);
-}
+.grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
 
-.carousel-container::after {
-    right: 0;
-    background: linear-gradient(to left, rgba(245, 247, 250, 0.9), transparent);
-}
-
-@media (max-width: 768px) {
-    .carousel-container {
-        padding: 0 30px;
+    .carousel-container::after {
+        right: 0;
+        background: linear-gradient(to left, rgba(245, 247, 250, 0.9), transparent);
     }
 
-    .carousel {
-        gap: 20px;
+    @media (max-width: 768px) {
+        .carousel-container {
+            padding: 0 30px;
+        }
+
+        .carousel {
+            gap: 20px;
+        }
     }
 
-    .carousel-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+    .grid-item {
+        text-decoration: none;
+        color: inherit;
     }
-}

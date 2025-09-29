@@ -6,8 +6,13 @@
   {{ error }}
 </div>
 
-<card-category *ngFor="let p of category; trackBy: trackByCategory" [category]="p">
-</card-category>
+<div *ngIf="!loading && category?.length; else empty" class="list-container">
+  <div class="list">
+    <div class="list-item" *ngFor="let c of category; trackBy: trackByCategory">
+      <card-category [category]="c"></card-category>
+    </div>
+  </div>
+</div>
 
 <ng-template #empty>
   <p class="empty-message">No hay categorías disponibles.</p>

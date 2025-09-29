@@ -20,7 +20,7 @@ export class ListCategoryComponent implements OnInit {
 
     constructor(
         private categoryService: CategoryService,
-        private router: Router
+        private router: Router // <- lo mantengo para respetar tu código original
     ) { }
 
     ngOnInit(): void {

@@ -4,10 +4,14 @@
     <span class="event-date">{{ evento.fecha | date:'mediumDate' }}</span>
   </div>
 
-  <div class="event-info">
-    <p><strong>Ciudad:</strong> {{ evento.ciudad }}</p>
-    <p *ngIf="evento.genero"><strong>Deporte:</strong> {{ evento.genero }}</p>
-  </div>
+  <p><strong>Ciudad:</strong> {{ evento.ciudad }}</p>
+  <p><strong>Fecha:</strong> {{ evento.fecha | date:'mediumDate' }}</p>
+  <p *ngIf="evento.genero"><strong>Género:</strong> {{ evento.genero }}</p>
+  <p>Slug: {{ evento.slug }}</p>
+  <a class="btn details px-auto" [routerLink]="['/details', evento.slug]">
+    View Details
+  </a>
+  <br />
 
   <app-carousel class="main-carousel" page="evento" [slug_evento]="evento?.slug ?? null">
   </app-carousel>

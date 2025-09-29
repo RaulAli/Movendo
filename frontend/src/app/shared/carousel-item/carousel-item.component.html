@@ -4,8 +4,6 @@
 </div>
 
 <div class="carousel-item" *ngIf="type === 'evento'">
-  <ng-container *ngFor="let img of carousel.image">
-    <img [src]="img" [alt]="carousel.slug || 'Imagen evento'">
-    <h3>{{ carousel.slug }}</h3>
-  </ng-container>
+  <img [src]="carousel" [alt]="carousel.nombre || 'Imagen'">
+  <h3>{{ carousel.nombre }}</h3>
 </div>

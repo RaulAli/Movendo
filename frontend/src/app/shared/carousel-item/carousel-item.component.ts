@@ -15,11 +15,11 @@ export class CarouselItemComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['carousel']) {
-            // console.log('[CarouselItemComponent] Datos recibidos (carousel):', this.carousel);
+            console.log('[CarouselItemComponent] Datos recibidos (carousel):', this.carousel);
         }
 
         if (changes['type']) {
-            // console.log('[CarouselItemComponent] Tipo recibido (type):', this.type);
+            console.log('[CarouselItemComponent] Tipo recibido (type):', this.type);
         }
     }
 }
