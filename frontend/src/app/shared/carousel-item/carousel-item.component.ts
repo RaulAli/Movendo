@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselHome } from '../../core/models/carousel.model';
 
@@ -9,8 +9,13 @@ import { CarouselHome } from '../../core/models/carousel.model';
     templateUrl: './carousel-item.component.html',
     styleUrls: ['./carousel-item.component.scss']
 })
-export class CarouselItemComponent {
+export class CarouselItemComponent implements OnInit {
     @Input() carousel!: CarouselHome;
     @Input() type!: string;
 
+    ngOnInit() {
+        console.log('CarouselItemComponent initialized');
+        console.log('carousel:', this.carousel);
+        console.log('type:', this.type);
+    }
 }
