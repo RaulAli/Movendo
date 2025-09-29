@@ -1,0 +1,83 @@
+/* Contenedor principal */
+.evento-details {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Animación suave de entrada */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Título */
+.evento-details .title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #1a237e;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+}
+
+/* Lista de metadatos */
+.evento-details .meta {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.evento-details .meta li {
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+}
+
+.evento-details .meta strong {
+    color: #3949ab;
+    margin-right: 0.5rem;
+}
+
+/* Botón volver */
+.btn-back {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: #3949ab;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-back:hover {
+    background: #283593;
+    transform: translateY(-2px);
+}
+
+/* Estados */
+.loading,
+.error {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 1.2rem;
+}
+
+.loading {
+    color: #757575;
+}
+
+.error {
+    color: #d32f2f;
+}
