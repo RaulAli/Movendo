@@ -11,4 +11,6 @@ import { CarouselHome } from '../../core/models/carousel.model';
 })
 export class CarouselItemComponent {
     @Input() carousel!: CarouselHome;
+    @Input() type!: string;
+
 }

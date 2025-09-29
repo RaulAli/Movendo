@@ -22,4 +22,14 @@ export class CarouselService {
       })
     );
   }
+
+  getCarouselEvento(slug: string): Observable<CarouselHome[]> {
+    console.log('[Service] Fetching carousel data from:', `${URL}/evento/${slug}/`);
+    return this.http.get<CarouselHome[]>(`${URL}/evento/${slug}/`).pipe(
+      map((res) => {
+        console.log('[Service] Response:', res);
+        return res;
+      })
+    );
+  }
 }
