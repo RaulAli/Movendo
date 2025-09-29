@@ -20,6 +20,7 @@ export class CategoryService {
           nombre: item.nombre,
           descripcion: item.descripcion,
           slug: item.slug,
+          image: item.image,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt
         }));

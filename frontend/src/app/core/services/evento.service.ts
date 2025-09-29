@@ -22,6 +22,7 @@ export class EventoService {
           ciudad: item.ciudad,
           genero: item.genero,
           slug: item.slug,
+          image: item.image,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt
         }));

@@ -1,8 +1,13 @@
-<div class="card-evento">
-  <h3>{{ evento.nombre }}</h3>
+<div class="event-card">
+  <div class="event-header">
+    <h2 class="event-title">{{ evento.nombre }}</h2>
+    <span class="event-date">{{ evento.fecha | date:'mediumDate' }}</span>
+  </div>
 
-  <p><strong>Ciudad:</strong> {{ evento.ciudad }}</p>
-  <p><strong>Fecha:</strong> {{ evento.fecha | date:'mediumDate' }}</p>
-  <p *ngIf="evento.genero"><strong>Género:</strong> {{ evento.genero }}</p>
+  <div class="event-info">
+    <p><strong>Ciudad:</strong> {{ evento.ciudad }}</p>
+    <p *ngIf="evento.genero"><strong>Deporte:</strong> {{ evento.genero }}</p>
+  </div>
 
+  <app-carousel class="main-carousel" page="evento"></app-carousel>
 </div>

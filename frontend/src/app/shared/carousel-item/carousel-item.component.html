@@ -1,4 +1,11 @@
-<div class="carousel-item">
+<div class="carousel-item" *ngIf="type === 'category'">
   <img [src]="carousel.image" [alt]="carousel.nombre || 'Imagen'">
   <h3>{{ carousel.nombre }}</h3>
+</div>
+
+<div class="carousel-item" *ngIf="type === 'evento'">
+  <ng-container *ngFor="let img of carousel.image">
+    <img [src]="img" [alt]="carousel.slug || 'Imagen evento'">
+    <h3>{{ carousel.slug }}</h3>
+  </ng-container>
 </div>

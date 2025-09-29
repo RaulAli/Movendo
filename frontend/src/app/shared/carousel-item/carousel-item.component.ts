@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselHome } from '../../core/models/carousel.model';
 
@@ -9,6 +9,17 @@ import { CarouselHome } from '../../core/models/carousel.model';
     templateUrl: './carousel-item.component.html',
     styleUrls: ['./carousel-item.component.scss']
 })
-export class CarouselItemComponent {
+export class CarouselItemComponent implements OnChanges {
     @Input() carousel!: CarouselHome;
+    @Input() type!: string;
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['carousel']) {
+            console.log('[CarouselItemComponent] Datos recibidos (carousel):', this.carousel);
+        }
+
+        if (changes['type']) {
+            console.log('[CarouselItemComponent] Tipo recibido (type):', this.type);
+        }
+    }
 }
