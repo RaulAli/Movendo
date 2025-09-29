@@ -17,7 +17,7 @@ export class CarouselComponent implements OnInit {
 
     carouselData: CarouselHome[] = [];
 
-    @ViewChild('carousel', { static: true }) carousel!: ElementRef<HTMLDivElement>;
+    @ViewChild('carousel', { static: false }) carousel!: ElementRef<HTMLDivElement>;
 
     constructor(private carouselService: CarouselService) { }
 

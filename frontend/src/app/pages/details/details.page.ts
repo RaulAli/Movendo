@@ -5,11 +5,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { switchMap } from 'rxjs';
 import { Evento } from '../../core/models/evento.model';
 import { EventoService } from '../../core/services/evento.service';
+import { CarouselComponent } from '../../shared/carousel/carousel.component';
 
 @Component({
   selector: 'details-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, CarouselComponent],
   templateUrl: './details.page.html',
   styleUrls: ['./details.page.scss']
 })
