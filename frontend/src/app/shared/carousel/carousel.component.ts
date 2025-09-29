@@ -26,7 +26,7 @@ export class CarouselComponent implements OnInit {
     }
 
     load_carousel(): void {
-        // console.log(this.slug_evento);
+        console.log(this.slug_evento);
         if (!this.slug_evento) {
             this.carouselService.getCarouselHome().subscribe((res: any) => {
                 console.log('[CarouselComponent] Data received:', res);
