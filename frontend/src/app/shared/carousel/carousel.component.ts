@@ -14,7 +14,6 @@ import { CarouselHome } from '../../core/models/carousel.model';
 export class CarouselComponent implements OnInit {
     @Input() slug_evento!: string | null;
     @Input() page!: string | null;
-
     carouselData: CarouselHome[] = [];
 
     @ViewChild('carousel', { static: false }) carousel!: ElementRef<HTMLDivElement>;
@@ -40,11 +39,27 @@ export class CarouselComponent implements OnInit {
         }
     }
 
-    scrollNext() {
-        this.carousel.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
+    scrollNext(): void {
+        if (!this.carousel) return;
+
+        const container = this.carousel.nativeElement;
+        const scrollAmount = container.clientWidth;
+
+        container.scrollBy({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
     }
 
-    scrollPrev() {
-        this.carousel.nativeElement.scrollBy({ left: -300, behavior: 'smooth' });
+    scrollPrev(): void {
+        if (!this.carousel) return;
+
+        const container = this.carousel.nativeElement;
+        const scrollAmount = container.clientWidth;
+
+        container.scrollBy({
+            left: -scrollAmount,
+            behavior: 'smooth'
+        });
     }
 }

@@ -1,15 +1,38 @@
 <div class="card-evento">
-  <h3>{{ evento.nombre }}</h3>
-
-  <p><strong>Ciudad:</strong> {{ evento.ciudad }}</p>
-  <p><strong>Fecha:</strong> {{ evento.fecha | date:'mediumDate' }}</p>
-  <p *ngIf="evento.genero"><strong>Género:</strong> {{ evento.genero }}</p>
-  <p>Slug: {{ evento.slug }}</p>
-  <a class="btn details px-auto" [routerLink]="['/details', evento.slug]">
-    View Details
-  </a>
-  <br />
-
+  <!-- Imagen -->
   <app-carousel class="main-carousel" page="evento" [slug_evento]="evento.slug ?? null"></app-carousel>
 
+  <div class="card-evento__body">
+    <!-- Badge categoría -->
+    <span *ngIf="evento?.genero" class="badge">
+      {{ evento.genero }}
+    </span>
+
+    <h3 class="card-evento__title">{{ evento.nombre }}</h3>
+
+    <div class="meta-row">
+      <!-- Icono calendario -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span>{{ evento.fecha | date:'mediumDate' }}</span>
+    </div>
+
+    <div class="meta-row" *ngIf="evento?.ciudad">
+      <!-- Icono ubicación -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span>{{ evento.ciudad }}</span>
+    </div>
+
+    <div class="card-evento__actions">
+      <a class="btn details" [routerLink]="['/details', evento.slug]">Ver Detalles</a>
+    </div>
+  </div>
 </div>
