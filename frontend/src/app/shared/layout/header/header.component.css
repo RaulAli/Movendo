@@ -1,57 +1,106 @@
-:host {
-    display: block;
+.header {
     position: sticky;
+    /* sticky top-0 */
     top: 0;
     z-index: 50;
-}
-
-header {
+    /* z-50 */
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1rem;
+    /* py-3 px-4 */
     background: #fff;
-    border-bottom: 1px solid #eee;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    /* bg-white */
+    border-bottom: 1px solid #e5e7eb;
+    /* border-gray-200 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* shadow-sm */
 }
 
+@media (min-width: 640px) {
+    .header {
+        padding-left: 1.5rem;
+        /* sm:px-6 */
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .header {
+        padding-left: 2rem;
+        /* lg:px-8 */
+        padding-right: 2rem;
+    }
+}
+
+/* Marca */
 .brand {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: #111827;
+    /* text-gray-900 */
     text-decoration: none;
-    color: inherit;
 }
 
+/* Logo */
 .logo {
+    width: 1.5rem;
+    /* h-6 */
+    height: 1.5rem;
+    /* w-6 */
+    color: #4f46e5;
+    /* text-indigo-600 */
+}
+
+/* Nombre */
+.brand-name {
     font-weight: 700;
-    letter-spacing: 0.3px;
+    /* font-bold */
+    font-size: 1.25rem;
+    /* text-xl */
+    letter-spacing: 0.05em;
+    /* tracking-wide */
 }
 
-nav {
+/* Nav */
+.nav {
     display: flex;
+    align-items: center;
     gap: 1rem;
+    /* gap-4 */
 }
 
-nav a {
-    text-decoration: none;
-    color: #222;
-    font-weight: 500;
-    opacity: 0.9;
-    transition: opacity 0.2s, border-bottom-color 0.2s;
-}
-
-nav a:hover {
-    opacity: 1;
-}
-
-nav a.active {
-    opacity: 1;
-    border-bottom: 2px solid #222;
-}
-
-@media (max-width: 640px) {
-    nav {
-        gap: 0.75rem;
+@media (min-width: 640px) {
+    .nav {
+        gap: 1.5rem;
+        /* sm:gap-6 */
     }
+}
+
+.nav a {
+    font-weight: 500;
+    /* font-medium */
+    opacity: 0.9;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    padding-bottom: 0.25rem;
+    /* pb-1 */
+    border-bottom: 2px solid transparent;
+}
+
+/* Activo */
+.nav a.active {
+    color: #1f2937;
+    /* text-gray-800 */
+    border-bottom-color: #4f46e5;
+    /* border-indigo-600 */
+}
+
+/* Hover */
+.nav a:hover {
+    color: #4f46e5;
+    /* hover:text-indigo-600 */
+    border-bottom-color: #4f46e5;
+    opacity: 1;
 }
