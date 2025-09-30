@@ -1,35 +1,61 @@
-:host {
-    display: block;
-}
-
-footer {
+.footer {
     margin-top: 2rem;
-    border-top: 1px solid #eee;
-    background: #fafafa;
+    /* mt-8 */
+    border-top: 1px solid #e5e7eb;
+    /* border-gray-200 */
+    background: #f3f4f6;
+    /* bg-gray-100 */
 }
 
-.inner {
+/* Contenedor */
+.footer__inner {
+    max-width: 80rem;
+    /* ~1280px (max-w-7xl) */
+    margin-left: auto;
+    margin-right: auto;
+    /* mx-auto */
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
     align-items: center;
     justify-content: space-between;
+    /* justify-between */
+    gap: 1rem;
+    /* gap-4 */
     padding: 1rem;
-    color: #444;
+    /* p-4 */
+    color: #4b5563;
+    /* text-gray-600 */
 }
 
-nav {
+/* Navegación */
+.footer__nav {
     display: flex;
     gap: 1rem;
+    /* sm:gap-6 en desktop lo ajustamos abajo */
 }
 
-a {
+/* Enlaces */
+.footer__nav a {
     color: inherit;
+    /* text-inherit */
     text-decoration: none;
+    /* no-underline */
     opacity: 0.9;
+    /* opacity-90 */
+    transition: opacity 0.2s ease, text-decoration-color 0.2s ease;
 }
 
-a:hover {
+.footer__nav a:hover {
     opacity: 1;
+    /* hover:opacity-100 */
     text-decoration: underline;
+    /* hover:underline */
+}
+
+/* Breakpoint ~640px (sm) para aumentar separación en nav */
+@media (min-width: 640px) {
+    .footer__nav {
+        gap: 1.5rem;
+        /* sm:gap-6 */
+    }
 }

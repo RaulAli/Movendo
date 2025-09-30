@@ -1,44 +1,153 @@
+/* Base card styling */
 .card-evento {
-  background-color: #fff;
-  border-radius: 12px;
+  background-color: #ffffff;
+  /* bg-white */
+  border-radius: 0.5rem;
+  /* rounded-lg */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* shadow-lg */
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s, box-shadow 0.2s;
+  /* overflow-hidden */
   display: flex;
+  /* flex */
   flex-direction: column;
-  margin-bottom: 20px;
-  border-top: 5px solid #ff3e3e; // barra superior tipo ticket
-  min-height: 220px; // altura uniforme de la card
-  width: 100%; // ocupa todo el ancho del contenedor
+  /* flex-col */
+  transform: translateY(0);
+  /* initial transform for hover */
+  transition: transform 0.3s ease-in-out;
+  /* transition-transform duration-300 */
+  border: 1px solid #f3f4f6;
+  /* border border-gray-100 */
+}
 
-  h3 {
-    margin: 0;
-    font-size: 1.4rem;
-    font-weight: 700;
-    padding: 12px 16px;
-    background: linear-gradient(to right, #ff7e5f, #feb47b);
-    color: #fff;
-    border-bottom: 1px solid #ddd;
-  }
+.card-evento:hover {
+  transform: translateY(-0.25rem);
+  /* hover:-translate-y-1 */
+}
 
-  .event-details {
-    padding: 12px 16px;
-    flex: 1; // fuerza a que este bloque crezca y ocupe el espacio
+/* Image styling (assuming app-carousel acts like an img here) */
+.main-carousel {
+  width: 100%;
+  /* w-full */
+  height: 12rem;
+  /* h-48 */
+  object-fit: cover;
+  /* object-cover */
+  /* If app-carousel itself doesn't render an img, you might need to target an inner img element if it exists */
+}
 
-    p {
-      margin: 6px 0;
-      font-size: 0.95rem;
-      color: #333;
+/* Card body styling */
+.card-evento__body {
+  padding: 1.5rem;
+  /* p-6 */
+  display: flex;
+  /* flex */
+  flex-direction: column;
+  /* flex-col */
+  flex-grow: 1;
+  /* flex-grow */
+}
 
-      strong {
-        font-weight: 600;
-        color: #555;
-      }
-    }
-  }
+/* Badge styling */
+.badge {
+  display: inline-block;
+  /* inline-block */
+  background-color: #e0e7ff;
+  /* bg-indigo-100 */
+  color: #3730a3;
+  /* text-indigo-800 */
+  font-size: 0.75rem;
+  /* text-xs */
+  font-weight: 600;
+  /* font-semibold */
+  margin-bottom: 0.5rem;
+  /* mb-2 */
+  padding: 0.125rem 0.625rem;
+  /* px-2.5 py-0.5 */
+  border-radius: 9999px;
+  /* rounded-full */
+  align-self: flex-start;
+  /* self-start */
+}
 
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  }
+/* Title styling */
+.card-evento__title {
+  font-size: 1.25rem;
+  /* text-xl */
+  font-weight: 700;
+  /* font-bold */
+  color: #1a202c;
+  /* text-gray-900 */
+  margin-bottom: 0.5rem;
+  /* mb-2 */
+}
+
+/* Meta row (date/location) styling */
+.meta-row {
+  display: flex;
+  /* flex */
+  align-items: center;
+  /* items-center */
+  color: #4a5568;
+  /* text-gray-600 */
+  margin-bottom: 0.5rem;
+  /* mb-2 */
+}
+
+.meta-row:last-of-type {
+  margin-bottom: 1rem;
+  /* mb-4 for the last meta row */
+}
+
+/* Icon styling */
+.meta-row .icon {
+  height: 1.25rem;
+  /* h-5 */
+  width: 1.25rem;
+  /* w-5 */
+  margin-right: 0.5rem;
+  /* mr-2 */
+  color: #6b7280;
+  /* text-gray-500 */
+}
+
+/* Actions section styling */
+.card-evento__actions {
+  margin-top: auto;
+  /* mt-auto */
+}
+
+/* Button styling */
+.btn.details {
+  width: 100%;
+  /* w-full */
+  text-align: center;
+  /* text-center */
+  display: block;
+  /* block */
+  background-color: #4f46e5;
+  /* bg-indigo-600 */
+  color: #ffffff;
+  /* text-white */
+  font-weight: 600;
+  /* font-semibold */
+  padding-top: 0.5rem;
+  /* py-2 */
+  padding-bottom: 0.5rem;
+  /* py-2 */
+  padding-left: 1rem;
+  /* px-4 */
+  padding-right: 1rem;
+  /* px-4 */
+  border-radius: 0.375rem;
+  /* rounded-md */
+  transition: background-color 0.3s ease-in-out;
+  /* transition-colors duration-300 */
+  text-decoration: none;
+  /* remove underline from link */
+}
+
+.btn.details:hover {
+  background-color: #4338ca;
+  /* hover:bg-indigo-700 */
 }

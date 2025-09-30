@@ -1,0 +1,58 @@
+/* home.page.scss */
+
+/* Base container styling for the entire home page content */
+:host {
+    display: block; // Ensures the component takes up its own block space
+    padding-left: 1rem; // px-4
+    padding-right: 1rem; // px-4
+    padding-top: 2rem; // py-8
+    padding-bottom: 2rem; // py-8
+    margin-left: auto; // mx-auto
+    margin-right: auto; // mx-auto
+    max-width: 1280px; // Equivalent to container max-w-7xl (adjust if needed, Tailwind's default 'container' has breakpoints)
+
+    /* Apply space-y-16 to the direct children of the host */
+    &>*+* {
+        margin-top: 4rem; // space-y-16
+    }
+}
+
+/* Styling for app-carousel with class "main-carousel" */
+app-carousel.main-carousel {
+    // This carousel is likely acting as the Highlighted Categories section
+    // The internal styling of the carousel items will be handled by the carousel component itself.
+    // We just ensure it's displayed correctly within the home page flow.
+    display: block;
+}
+
+/* Styling for list-category (Categories Carousel Section) */
+list-category {
+    display: block;
+
+    // If list-category is meant to have a title and a carousel like the React example:
+    // We assume list-category and list-evento will contain their own sections, titles, and carousels/grids.
+    // The SCSS here primarily sets up the layout for the HomePage itself.
+}
+
+/* Styling for list-evento (Events Grid Section) */
+list-evento {
+    display: block;
+
+    // Similar to list-category, this will contain its own section, title, and grid.
+}
+
+/*
+  Since the provided HTML is very high-level and uses custom Angular components
+  (<app-carousel>, <list-category>, <list-evento>), this SCSS focuses on the
+  layout of the HomePage component itself, applying the `container mx-auto px-4 py-8 space-y-16`
+  styling from the React HomePage.tsx.
+
+  The internal styling for the cards and specific carousel behaviors will need
+  to be applied within the SCSS of `app-carousel`, `list-category`, and `list-evento`
+  components respectively, mimicking the `Carousel.tsx`, `CategoryCard.tsx`,
+  `EventCard.tsx`, and `HighlightedCategoryCard.tsx` files.
+
+  Let me know when you want to move on to styling the individual components
+  like app-carousel, list-category, and list-evento, and I can help you translate
+  the Tailwind CSS from the React components into SCSS for your Angular components.
+*/

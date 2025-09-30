@@ -1,23 +1,26 @@
-<div class="carousel-wrapper" *ngIf="page === 'category'">
-  <button class="carousel-arrow prev" (click)="scrollPrev()">&#8249;</button>
+<!-- Carrusel para EVENTO -->
+<div class="carousel-wrapper is-evento" *ngIf="page === 'evento'">
+  <button class="carousel-arrow prev" (click)="scrollPrev()" aria-label="Anterior">&#8249;</button>
 
-  <div class="carousel-container" #carousel>
-    <app-carousel-item class="main-carousel-item" *ngFor="let item of carouselData" [carousel]="item"
-      [type]="page ?? 'category'">
-    </app-carousel-item>
-  </div>
-
-  <button class="carousel-arrow next" (click)="scrollNext()">&#8250;</button>
-</div>
-
-<div class="carousel-wrapper" *ngIf="page === 'evento'">
-  <button class="carousel-arrow prev" (click)="scrollPrev()">&#8249;</button>
-
-  <div class="carousel-container" #carousel>
-    <app-carousel-item class="main-carousel-item" *ngFor="let item of carouselData" [carousel]="item"
+  <div class="carousel-container is-evento" #carousel>
+    <app-carousel-item class="main-carousel-item is-evento" *ngFor="let item of carouselData" [carousel]="item"
       [type]="page ?? 'evento'">
     </app-carousel-item>
   </div>
 
-  <button class="carousel-arrow next" (click)="scrollNext()">&#8250;</button>
+  <button class="carousel-arrow next" (click)="scrollNext()" aria-label="Siguiente">&#8250;</button>
+</div>
+
+<!-- (Opcional) Si mantienes también el de categorías, deja este bloque,
+     pero recuerda que los estilos de abajo están acotados a .is-evento -->
+<div class="carousel-wrapper is-category" *ngIf="page === 'category'">
+  <button class="carousel-arrow prev" (click)="scrollPrev()" aria-label="Anterior">&#8249;</button>
+
+  <div class="carousel-container is-category" #carousel>
+    <app-carousel-item class="main-carousel-item is-category" *ngFor="let item of carouselData" [carousel]="item"
+      [type]="page ?? 'category'">
+    </app-carousel-item>
+  </div>
+
+  <button class="carousel-arrow next" (click)="scrollNext()" aria-label="Siguiente">&#8250;</button>
 </div>
