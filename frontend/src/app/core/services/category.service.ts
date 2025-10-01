@@ -13,17 +13,7 @@ export class CategoryService {
 
   list(): Observable<Category[]> {
     return this.http.get<any>(this.baseUrl).pipe(
-      map(res => {
-        const data = res.data ?? res;
-        return data.map((item: any) => ({
-          _id: item._id,
-          nombre: item.nombre,
-          descripcion: item.descripcion,
-          slug: item.slug,
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt
-        }));
-      })
+      map(res => res.data ?? res)
     );
   }
 

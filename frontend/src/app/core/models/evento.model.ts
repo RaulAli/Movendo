@@ -5,4 +5,5 @@ export interface Evento {
   ciudad: string;
   genero?: string;
   slug?: string;
+  image?: string;
 }

@@ -1,4 +1,4 @@
-<div class="card-evento">
+<div class="card-evento" [routerLink]="['/details', evento.slug]">
   <!-- Imagen -->
   <app-carousel class="main-carousel" page="evento" [slug_evento]="evento.slug ?? null"></app-carousel>
 
@@ -29,10 +29,6 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
       <span>{{ evento.ciudad }}</span>
-    </div>
-
-    <div class="card-evento__actions">
-      <a class="btn details" [routerLink]="['/details', evento.slug]">Ver Detalles</a>
     </div>
   </div>
 </div>

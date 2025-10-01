@@ -1,43 +1,121 @@
-.categories-card {
+/* Estilos para cada tarjeta de categoría */
+.card-category {
     background-color: #fff;
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s, box-shadow 0.2s;
+    /* Asegura que la imagen no sobresalga */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+    height: 100%;
+    /* Para que todas las tarjetas tengan la misma altura si el contenido es variable */
     display: flex;
     flex-direction: column;
-    border-top: 5px solid #ff3e3e;
-    min-height: 240px;
-    width: 100%;
+    /* Para organizar la imagen y el texto */
+}
 
-    .card-header {
-        margin: 0;
-        font-size: 1.4rem;
-        font-weight: 700;
-        padding: 12px 16px;
-        background: linear-gradient(to right, #ff7e5f, #feb47b);
-        color: #fff;
-        border-bottom: 1px solid #ddd;
-    }
+.card-category:hover {
+    transform: translateY(-5px);
+}
 
-    .card-body {
-        padding: 12px 16px;
-        flex: 1;
+.card-category .card-header {
+    height: 150px;
+    /* Altura de la imagen de la categoría, ajusta si es necesario */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    /* Alinea el texto del título en la parte inferior */
+    padding: 15px;
+    color: #fff;
+    /* Color del texto del título */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    /* Sombra para mejor legibilidad del texto */
+}
 
-        p {
-            margin: 6px 0;
-            font-size: 0.95rem;
-            color: #333;
+/* Ejemplo de cómo aplicar una imagen de fondo a cada tarjeta */
+/* Esto debería ser dinámico, por ejemplo, usando un estilo inline en el HTML o una clase */
+.card-category:nth-child(1) .card-header {
+    background-image: url('https://via.placeholder.com/300x150/007bff/ffffff?text=Fútbol');
+}
 
-            strong {
-                font-weight: 600;
-                color: #555;
-            }
-        }
-    }
+.card-category:nth-child(2) .card-header {
+    background-image: url('https://via.placeholder.com/300x150/28a745/ffffff?text=Baloncesto');
+}
 
-    &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    }
+.card-category:nth-child(3) .card-header {
+    background-image: url('https://via.placeholder.com/300x150/dc3545/ffffff?text=Tenis');
+}
+
+.card-category:nth-child(4) .card-header {
+    background-image: url('https://via.placeholder.com/300x150/ffc107/333333?text=Atletismo');
+}
+
+.card-category:nth-child(5) .card-header {
+    background-image: url('https://via.placeholder.com/300x150/6f42c1/ffffff?text=Natación');
+}
+
+.card-category:nth-child(6) .card-header {
+    background-image: url('https://via.placeholder.com/300x150/17a2b8/ffffff?text=Ciclismo');
+}
+
+
+.card-category .card-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    /* Tamaño del título de la categoría */
+    position: relative;
+    /* Necesario para el z-index */
+    z-index: 2;
+    /* Para que esté por encima del overlay si lo hay */
+}
+
+/* Para crear el efecto de oscurecimiento sobre la imagen */
+.card-category .card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 50%);
+    /* Degradado oscuro en la parte inferior */
+    z-index: 1;
+}
+
+.card-category .card-body {
+    padding: 15px;
+    flex-grow: 1;
+    /* Permite que el cuerpo crezca para ocupar el espacio restante */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Empuja la descripción hacia abajo si es necesario */
+}
+
+.card-category .card-body p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.4;
+}
+
+.card-category .card-body strong {
+    color: #333;
+}
+
+/* Estilos para mensajes de carga y error */
+.loading,
+.error,
+.empty-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.1em;
+    color: #555;
+}
+
+.error {
+    color: #dc3545;
+    /* Rojo para mensajes de error */
 }

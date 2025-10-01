@@ -1,153 +1,170 @@
-/* Base card styling */
+/* Contenedor principal de la tarjeta de evento */
 .card-evento {
-  background-color: #ffffff;
-  /* bg-white */
-  border-radius: 0.5rem;
-  /* rounded-lg */
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  /* shadow-lg */
-  overflow: hidden;
-  /* overflow-hidden */
   display: flex;
-  /* flex */
-  flex-direction: column;
-  /* flex-col */
-  transform: translateY(0);
-  /* initial transform for hover */
-  transition: transform 0.3s ease-in-out;
-  /* transition-transform duration-300 */
-  border: 1px solid #f3f4f6;
-  /* border border-gray-100 */
+  /* Para que la imagen y el contenido se pongan uno al lado del otro */
+  background-color: #fff;
+  /* Fondo blanco */
+  border-radius: 12px;
+  /* Bordes ligeramente redondeados */
+  overflow: hidden;
+  /* Asegura que la imagen no se salga del radio */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Sombra sutil como en la imagen de referencia */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: #333;
+  /* Color de texto general */
+  position: relative;
+  /* Para posicionar el ícono de "chevron" */
+  transition: transform 0.2s ease-in-out;
+  /* Animación al pasar el ratón */
+  cursor: pointer;
+  /* Indica que es clickeable */
 }
 
 .card-evento:hover {
-  transform: translateY(-0.25rem);
-  /* hover:-translate-y-1 */
+  transform: translateY(-2px);
+  /* Efecto ligero de elevación al pasar el ratón */
 }
 
-/* Image styling (assuming app-carousel acts like an img here) */
+/* Estilos para la imagen del evento (carousel) */
 .main-carousel {
-  width: 100%;
-  /* w-full */
-  height: 12rem;
-  /* h-48 */
+  flex-shrink: 0;
+  /* Evita que la imagen se encoja */
+  width: 120px;
+  /* Ancho fijo para la imagen del evento */
+  height: 100px;
+  /* Alto fijo para la imagen del evento, puedes ajustarlo */
   object-fit: cover;
-  /* object-cover */
-  /* If app-carousel itself doesn't render an img, you might need to target an inner img element if it exists */
+  /* Asegura que la imagen cubra el área sin distorsionarse */
+  border-radius: 12px 0 0 12px;
+  /* Solo los bordes izquierdos redondeados */
+  /* Ajusta estos estilos según cómo `app-carousel` maneje sus imágenes */
 }
 
-/* Card body styling */
+/* Si tu carousel maneja directamente un `img` dentro, podrías necesitar esto: */
+.main-carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Cuerpo del contenido de la tarjeta */
 .card-evento__body {
-  padding: 1.5rem;
-  /* p-6 */
-  display: flex;
-  /* flex */
-  flex-direction: column;
-  /* flex-col */
   flex-grow: 1;
-  /* flex-grow */
+  /* Permite que el cuerpo ocupe el espacio restante */
+  padding: 12px 16px;
+  /* Espaciado interno */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Centra verticalmente el contenido */
+  gap: 4px;
+  /* Espacio entre los elementos del cuerpo */
 }
 
-/* Badge styling */
+/* Badge de categoría */
 .badge {
-  display: inline-block;
-  /* inline-block */
-  background-color: #e0e7ff;
-  /* bg-indigo-100 */
-  color: #3730a3;
-  /* text-indigo-800 */
-  font-size: 0.75rem;
-  /* text-xs */
+  background-color: #e0f2f7;
+  /* Color de fondo claro */
+  color: #29b6f6;
+  /* Color de texto azul */
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75em;
   font-weight: 600;
-  /* font-semibold */
-  margin-bottom: 0.5rem;
-  /* mb-2 */
-  padding: 0.125rem 0.625rem;
-  /* px-2.5 py-0.5 */
-  border-radius: 9999px;
-  /* rounded-full */
   align-self: flex-start;
-  /* self-start */
+  /* Para que el badge no ocupe todo el ancho */
+  margin-bottom: 4px;
+  /* Espacio debajo del badge */
 }
 
-/* Title styling */
+/* Título del evento */
 .card-evento__title {
-  font-size: 1.25rem;
-  /* text-xl */
-  font-weight: 700;
-  /* font-bold */
-  color: #1a202c;
-  /* text-gray-900 */
-  margin-bottom: 0.5rem;
-  /* mb-2 */
+  font-size: 1.1em;
+  /* Tamaño de fuente ligeramente más grande */
+  font-weight: 600;
+  color: #1a1a1a;
+  /* Un color más oscuro para el título */
+  margin: 0;
+  /* Elimina márgenes predeterminados del h3 */
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* Limita el título a 2 líneas */
+  -webkit-box-orient: vertical;
 }
 
-/* Meta row (date/location) styling */
+/* Filas de metadatos (fecha, ubicación) */
 .meta-row {
   display: flex;
-  /* flex */
   align-items: center;
-  /* items-center */
-  color: #4a5568;
-  /* text-gray-600 */
-  margin-bottom: 0.5rem;
-  /* mb-2 */
+  gap: 6px;
+  /* Espacio entre el ícono y el texto */
+  font-size: 0.9em;
+  color: #666;
+  /* Color de texto más suave */
 }
 
-.meta-row:last-of-type {
-  margin-bottom: 1rem;
-  /* mb-4 for the last meta row */
-}
-
-/* Icon styling */
 .meta-row .icon {
-  height: 1.25rem;
-  /* h-5 */
-  width: 1.25rem;
-  /* w-5 */
-  margin-right: 0.5rem;
-  /* mr-2 */
-  color: #6b7280;
-  /* text-gray-500 */
+  width: 16px;
+  /* Tamaño del ícono */
+  height: 16px;
+  color: #999;
+  /* Color del ícono */
+  flex-shrink: 0;
+  /* Evita que el ícono se encoja */
 }
 
-/* Actions section styling */
+/* Ocultar las acciones de "Ver Detalles" ya que queremos un "chevron" */
 .card-evento__actions {
-  margin-top: auto;
-  /* mt-auto */
+  display: none;
+  /* Oculta el botón "Ver Detalles" */
 }
 
-/* Button styling */
-.btn.details {
-  width: 100%;
-  /* w-full */
-  text-align: center;
-  /* text-center */
-  display: block;
-  /* block */
-  background-color: #4f46e5;
-  /* bg-indigo-600 */
-  color: #ffffff;
-  /* text-white */
-  font-weight: 600;
-  /* font-semibold */
-  padding-top: 0.5rem;
-  /* py-2 */
-  padding-bottom: 0.5rem;
-  /* py-2 */
-  padding-left: 1rem;
-  /* px-4 */
-  padding-right: 1rem;
-  /* px-4 */
-  border-radius: 0.375rem;
-  /* rounded-md */
-  transition: background-color 0.3s ease-in-out;
-  /* transition-colors duration-300 */
-  text-decoration: none;
-  /* remove underline from link */
+/* Chevron al final de la tarjeta */
+.card-evento::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  /* Gira para formar el chevron */
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid #999;
+  border-top: 2px solid #999;
+  transition: border-color 0.2s ease-in-out;
 }
 
-.btn.details:hover {
-  background-color: #4338ca;
-  /* hover:bg-indigo-700 */
+.card-evento:hover::after {
+  border-color: #007bff;
+  /* Color azul al pasar el ratón */
+}
+
+/* Media query para pantallas más pequeñas (si es necesario apilar la imagen y el texto) */
+@media (max-width: 600px) {
+  .card-evento {
+    flex-direction: row;
+    /* Mantener en fila, pero se puede cambiar a column si prefieres */
+    align-items: flex-start;
+  }
+
+  .main-carousel {
+    width: 100px;
+    /* Ajusta el ancho de la imagen para móviles */
+    height: 80px;
+    border-radius: 12px 0 0 12px;
+  }
+
+  .card-evento__body {
+    padding: 10px 12px;
+  }
+
+  .card-evento__title {
+    font-size: 1em;
+  }
 }
