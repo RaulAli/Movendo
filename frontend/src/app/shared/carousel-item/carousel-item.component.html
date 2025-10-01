@@ -1,11 +1,17 @@
 <!-- Carousel CATEGORY MAIN -->
-<div class="carousel-item" *ngIf="type === 'category'">
+<!-- carousel-item.component.html -->
+<!-- Añade la clase 'main-carousel-item' al div principal -->
+<div class="carousel-item is-category main-carousel-item" *ngIf="type === 'category'">
   <img [src]="carousel.image" [alt]="carousel.nombre || 'Imagen'">
-  <h3>{{ carousel.nombre }}</h3>
+  <div class="category-content">
+    <h3>{{ carousel.nombre }}</h3>
+    <!-- Si decides usar la descripción, descomenta esta línea -->
+    <!-- <p *ngIf="carousel.descripcion">{{ carousel.descripcion }}</p> -->
+  </div>
 </div>
 
 <!-- Carousel EVENTO -->
-<div class="carousel-item" *ngIf="type === 'evento'">
+<div class="carousel-item is-evento" *ngIf="type === 'evento'">
   <ng-container *ngFor="let img of carousel.image">
     <img [src]="img" [alt]="carousel.slug || 'Imagen evento'">
     <h3>{{ carousel.slug }}</h3>

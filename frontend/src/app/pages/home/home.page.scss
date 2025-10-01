@@ -1,58 +1,54 @@
-/* home.page.scss */
-
-/* Base container styling for the entire home page content */
-:host {
-    display: block; // Ensures the component takes up its own block space
-    padding-left: 1rem; // px-4
-    padding-right: 1rem; // px-4
-    padding-top: 2rem; // py-8
-    padding-bottom: 2rem; // py-8
-    margin-left: auto; // mx-auto
-    margin-right: auto; // mx-auto
-    max-width: 1280px; // Equivalent to container max-w-7xl (adjust if needed, Tailwind's default 'container' has breakpoints)
-
-    /* Apply space-y-16 to the direct children of the host */
-    &>*+* {
-        margin-top: 4rem; // space-y-16
-    }
+/* Estilos generales para el layout */
+.home-container {
+    padding: 20px;
+    max-width: 1200px;
+    /* O el ancho máximo que prefieras */
+    margin: 0 auto;
+    /* Centra el contenido */
 }
 
-/* Styling for app-carousel with class "main-carousel" */
+/* Espaciado entre el carrusel principal y la lista de categorías */
 app-carousel.main-carousel {
-    // This carousel is likely acting as the Highlighted Categories section
-    // The internal styling of the carousel items will be handled by the carousel component itself.
-    // We just ensure it's displayed correctly within the home page flow.
-    display: block;
+    margin-bottom: 40px;
+    /* Ajusta el valor según tus preferencias */
 }
 
-/* Styling for list-category (Categories Carousel Section) */
+/* Espaciado entre la lista de categorías y la lista de eventos */
 list-category {
-    display: block;
-
-    // If list-category is meant to have a title and a carousel like the React example:
-    // We assume list-category and list-evento will contain their own sections, titles, and carousels/grids.
-    // The SCSS here primarily sets up the layout for the HomePage itself.
+    margin-bottom: 40px;
+    /* Ajusta el valor según tus preferencias */
 }
 
-/* Styling for list-evento (Events Grid Section) */
+/* Estilos para los títulos de sección (si los usas) */
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Para asegurar que los componentes de lista no colapsen los márgenes */
+list-category,
 list-evento {
     display: block;
-
-    // Similar to list-category, this will contain its own section, title, and grid.
+    /* Asegura que tomen su propio espacio y respeten los márgenes */
 }
 
-/*
-  Since the provided HTML is very high-level and uses custom Angular components
-  (<app-carousel>, <list-category>, <list-evento>), this SCSS focuses on the
-  layout of the HomePage component itself, applying the `container mx-auto px-4 py-8 space-y-16`
-  styling from the React HomePage.tsx.
+/* Estilos para el carrusel (ejemplo, ajusta según tu componente) */
+app-carousel {
+    /* Aquí puedes añadir estilos específicos para el carrusel si es necesario */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-  The internal styling for the cards and specific carousel behaviors will need
-  to be applied within the SCSS of `app-carousel`, `list-category`, and `list-evento`
-  components respectively, mimicking the `Carousel.tsx`, `CategoryCard.tsx`,
-  `EventCard.tsx`, and `HighlightedCategoryCard.tsx` files.
-
-  Let me know when you want to move on to styling the individual components
-  like app-carousel, list-category, and list-evento, and I can help you translate
-  the Tailwind CSS from the React components into SCSS for your Angular components.
-*/
+/* Estilos para las tarjetas dentro de las listas (ejemplo, ajusta según tu componente) */
+/* Suponiendo que tus listas tienen tarjetas o ítems similares a los del diseño */
+.category-card,
+.event-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    /* Otros estilos como padding, margin, etc. */
+}

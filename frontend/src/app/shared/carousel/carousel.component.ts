@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselItemComponent } from '../carousel-item/carousel-item.component';
 import { CarouselService } from '../../core/services/carousel.service';
@@ -11,12 +11,14 @@ import { CarouselHome } from '../../core/models/carousel.model';
     templateUrl: './carousel.component.html',
     styleUrls: ['./carousel.component.scss']
 })
-export class CarouselComponent implements OnInit {
+export class CarouselComponent implements OnInit, AfterViewInit {
     @Input() slug_evento!: string | null;
     @Input() page!: string | null;
     carouselData: CarouselHome[] = [];
 
     @ViewChild('carousel', { static: false }) carousel!: ElementRef<HTMLDivElement>;
+
+    private currentIndex = 0;
 
     constructor(private carouselService: CarouselService) { }
 
@@ -24,41 +26,62 @@ export class CarouselComponent implements OnInit {
         this.load_carousel();
     }
 
+    ngAfterViewInit(): void {
+        // Asegurarse que el scroll inicia en 0
+        this.resetScroll();
+    }
+
     load_carousel(): void {
-        console.log(this.slug_evento);
         if (!this.slug_evento) {
             this.carouselService.getCarouselHome().subscribe((res: any) => {
-                console.log('[CarouselComponent] Data received:', res);
                 this.carouselData = res.category;
+                // Opcional: despué de cargar datos, reinicia scrolls
+                setTimeout(() => this.resetScroll(), 0);
             });
         } else {
             this.carouselService.getCarouselEvento(this.slug_evento).subscribe((res: any) => {
-                console.log('[CarouselComponent] Evento data received:', res);
                 this.carouselData = res.evento.image;
+                setTimeout(() => this.resetScroll(), 0);
             });
         }
     }
 
     scrollNext(): void {
         if (!this.carousel) return;
-
         const container = this.carousel.nativeElement;
-        const scrollAmount = container.clientWidth;
+        const items = container.querySelectorAll<HTMLElement>('app-carousel-item');
+        if (!items.length) return;
 
-        container.scrollBy({
-            left: scrollAmount,
-            behavior: 'smooth'
-        });
+        if (this.currentIndex < items.length - 1) {
+            this.currentIndex++;
+            container.scrollTo({
+                left: items[this.currentIndex].offsetLeft,
+                behavior: 'smooth'
+            });
+        }
     }
 
     scrollPrev(): void {
         if (!this.carousel) return;
-
         const container = this.carousel.nativeElement;
-        const scrollAmount = container.clientWidth;
+        const items = container.querySelectorAll<HTMLElement>('app-carousel-item');
+        if (!items.length) return;
 
-        container.scrollBy({
-            left: -scrollAmount,
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+            container.scrollTo({
+                left: items[this.currentIndex].offsetLeft,
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    resetScroll(): void {
+        this.currentIndex = 0;
+        if (!this.carousel) return;
+        const container = this.carousel.nativeElement;
+        container.scrollTo({
+            left: 0,
             behavior: 'smooth'
         });
     }
