@@ -33,6 +33,7 @@ export class ListCategoryComponent implements OnInit {
 
         this.categoryService.list().subscribe({
             next: data => {
+                console.log(data);
                 this.category = data;
                 this.loading = false;
             },

@@ -88,71 +88,99 @@
    ======================================== */
 
 /* Wrapper del carrusel de categorías */
+/* carousel.component.css */
+
+/* Estilos generales para el contenedor del carrusel */
 .carousel-wrapper.is-category {
-    width: 100%;
     position: relative;
-    padding: 2rem 0;
+    /* Necesario para posicionar las flechas */
+    width: 100%;
+    /* Ocupa el ancho completo disponible */
+    overflow: hidden;
+    /* Oculta cualquier contenido que se desborde, crucial para el carrusel */
+    /* El border-radius se aplicará a los items individuales, no al wrapper aquí */
 }
 
-/* Contenedor scrollable del carrusel de categorías */
+/* Contenedor de los items del carrusel */
 .carousel-container.is-category {
     display: flex;
-    overflow-x: auto;
+    /* Permite que los items se coloquen uno al lado del otro */
+    overflow-x: scroll;
+    /* Habilita el desplazamiento horizontal */
     scroll-behavior: smooth;
+    /* Desplazamiento suave al navegar */
+    -webkit-overflow-scrolling: touch;
+    /* Mejora el scrolling en dispositivos táctiles */
+    gap: 16px;
+    /* Espacio entre los items del carrusel, como en la imagen */
+    padding-left: 16px;
+    /* Espacio al inicio del carrusel */
+    padding-right: 16px;
+    /* Espacio al final del carrusel */
+    /* Ocultar la barra de desplazamiento */
     scrollbar-width: none;
+    /* Firefox */
     -ms-overflow-style: none;
-    gap: 1.5rem;
-    padding: 0 3rem;
+    /* Internet Explorer 10+ */
 }
 
 .carousel-container.is-category::-webkit-scrollbar {
     display: none;
+    /* Webkit (Chrome, Safari) */
 }
 
-/* Items del carrusel de categorías */
-.main-carousel-item.is-category {
-    flex-shrink: 0;
-    width: 250px;
-}
-
-/* Flechas de navegación para categorías */
-.carousel-wrapper.is-category .carousel-arrow {
+/* Estilos para las flechas de navegación */
+.carousel-arrow {
     position: absolute;
+    /* Posicionamiento absoluto respecto a .carousel-wrapper */
     top: 50%;
+    /* Centra verticalmente */
     transform: translateY(-50%);
-    background: #1e3a8a;
+    /* Ajuste fino para el centrado vertical */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fondo semitransparente oscuro */
+    color: white;
+    /* Color del icono de flecha */
     border: none;
-    width: 2.5rem;
-    height: 2.5rem;
+    /* Sin borde */
     border-radius: 50%;
-    font-size: 1.75rem;
-    color: #ffffff;
+    /* Forma circular */
+    width: 48px;
+    /* Ancho del botón */
+    height: 48px;
+    /* Altura del botón */
+    font-size: 2em;
+    /* Tamaño del icono de flecha */
     cursor: pointer;
+    /* Indica que es un elemento interactivo */
     z-index: 10;
-    transition: all 0.3s ease;
+    /* Asegura que las flechas estén por encima de todo */
     display: flex;
-    align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    align-items: center;
+    user-select: none;
+    /* Evita la selección de texto */
+    transition: background-color 0.3s ease;
+    /* Transición suave al pasar el ratón */
 }
 
-.carousel-wrapper.is-category .carousel-arrow:hover {
-    background: #1e40af;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transform: translateY(-50%) scale(1.1);
+.carousel-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Color más oscuro al pasar el ratón */
 }
 
-.carousel-wrapper.is-category .carousel-arrow:active {
-    transform: translateY(-50%) scale(0.95);
+.carousel-arrow.prev {
+    left: 10px;
+    /* Posiciona la flecha izquierda */
 }
 
-.carousel-wrapper.is-category .carousel-arrow.prev {
-    left: 0.5rem;
+.carousel-arrow.next {
+    right: 10px;
+    /* Posiciona la flecha derecha */
 }
 
-.carousel-wrapper.is-category .carousel-arrow.next {
-    right: 0.5rem;
-}
+/* Wrapper del carrusel de categorías */
+
 
 /* ========================================
    RESPONSIVE PARA CARRUSELES
@@ -175,13 +203,4 @@
         right: 0.5rem;
     }
 
-    /* Ajustes para carrusel de categorías en móvil */
-    .carousel-container.is-category {
-        padding: 0 2rem;
-        gap: 1rem;
-    }
-
-    .main-carousel-item.is-category {
-        width: 200px;
-    }
 }

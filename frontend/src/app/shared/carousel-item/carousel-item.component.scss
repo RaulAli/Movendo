@@ -1,34 +1,86 @@
-:host {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-    min-width: 220px;
-    max-width: 280px;
+/* carousel-item.component.css */
+
+/* Estilos para cada item individual del carrusel */
+.carousel-item.is-category {
+    flex-shrink: 0;
+    /* Evita que los items se encojan */
+    flex-grow: 0;
+    /* Evita que los items crezcan */
+    position: relative;
+    /* Necesario para posicionar el contenido sobre la imagen */
+    border-radius: 12px;
+    /* Bordes redondeados para cada tarjeta */
+    overflow: hidden;
+    /* Asegura que la imagen y el contenido se recorten con el borde redondeado */
+    display: flex;
+    /* Para controlar el posicionamiento interno del contenido */
+    align-items: flex-end;
+    /* Alinea el contenido (título y descripción) en la parte inferior */
+    padding-bottom: 20px;
+    /* Espacio inferior para el texto */
+    padding-left: 20px;
+    /* Espacio izquierdo para el texto */
+    color: white;
+    /* Color de texto predeterminado para el contenido superpuesto */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    /* Sombra para mejorar la legibilidad del texto */
+    /* Definir el tamaño base para los items */
+    width: 800px;
+    /* Ancho por defecto para los items grandes */
+    height: 300px;
+    /* Altura por defecto para todos los items principales */
 }
 
-.carousel-item {
-    border-radius: 0.75rem;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
+/* Estilo para el item "Cooperativo" que es más pequeño en la imagen */
+/* Asumiendo que `main-carousel-item` también es una clase en el `app-carousel-item` */
+/* Si necesitas una forma más robusta de identificarlo, podemos usar una propiedad en `carousel` */
+.main-carousel-item.is-category:nth-of-type(2) {
+    /* Selecciona el segundo 'app-carousel-item' en el ngFor */
+    width: 310px;
+    /* Ancho específico para el item más pequeño (Cooperativo) */
+}
 
-    &:hover {
-        transform: translateY(-5px);
-    }
+/* Estilo para la imagen dentro de cada item */
+.carousel-item.is-category img {
+    position: absolute;
+    /* Permite que la imagen sea el fondo del item */
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* La imagen ocupa todo el ancho del item */
+    height: 100%;
+    /* La imagen ocupa toda la altura del item */
+    object-fit: cover;
+    /* Asegura que la imagen cubra el área sin distorsionarse */
+    z-index: 1;
+    /* Coloca la imagen debajo del contenido (texto) */
+    border-radius: 12px;
+    /* Aplica el radio a la imagen también */
+}
 
-    img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-        display: block;
-    }
+/* Estilos para el contenedor del texto dentro del item */
+.category-content {
+    position: relative;
+    /* Permite que el contenido se posicione sobre la imagen */
+    z-index: 2;
+    /* Asegura que el texto esté por encima de la imagen */
+    /* El padding y color ya están definidos en .carousel-item.is-category */
+}
 
-    h3 {
-        margin: 0;
-        padding: 0.75rem;
-        font-size: 1rem;
-        color: #333;
-        background: #fafafa;
-        text-align: center;
-    }
+/* Estilos para el título h3 dentro del contenido */
+.category-content h3 {
+    margin: 0;
+    /* Elimina el margen predeterminado del h3 */
+    font-size: 2.5em;
+    /* Tamaño de fuente grande para el título */
+    font-weight: 700;
+    /* Negrita */
+}
+
+/* Estilos para la descripción p dentro del contenido (si decides usarla) */
+.category-content p {
+    margin: 5px 0 0;
+    /* Margen superior pequeño para separar de h3 */
+    font-size: 1em;
+    /* Tamaño de fuente normal */
 }
