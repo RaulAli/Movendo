@@ -3,7 +3,7 @@ export interface Evento {
   nombre: string;
   fecha: string;
   ciudad: string;
-  genero?: string;
+  category?: string;
   slug?: string;
   image?: string;
 }
