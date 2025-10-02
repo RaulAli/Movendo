@@ -11,6 +11,7 @@ function buildFilter(query) {
   return filter;
 }
 
+//cambia para funcionar con offset y limit
 exports.listar = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, sortBy = 'nombre', order = 'asc' } = req.query;
