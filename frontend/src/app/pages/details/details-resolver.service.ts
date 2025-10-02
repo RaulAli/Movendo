@@ -1,16 +1,26 @@
-// // src/app/pages/details/details-resolver.service.ts
-// import { Injectable, inject } from '@angular/core';
-// import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
-// import { Observable } from 'rxjs';
-// import { Evento } from '../../core/models/evento.model';
-// import { EventoService } from '../../core/services/evento.service';
+import { inject } from '@angular/core';
+import { ResolveFn, Router } from '@angular/router';
+import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { EventoService } from '../../core/services/evento.service';
+import { Evento } from '../../core/models/evento.model';
 
-// @Injectable({ providedIn: 'root' })
-// export class DetailsResolver implements Resolve<Evento> {
-//     private svc = inject(EventoService);
+export const detailsResolver: ResolveFn<Evento | null> = (route) => {
+    const svc = inject(EventoService);
+    const router = inject(Router);
+    const slug = route.paramMap.get('slug');
 
-//     resolve(route: ActivatedRouteSnapshot): Observable<Evento> {
-//         const slug = route.paramMap.get('slug') ?? '';
-//         return this.svc.get(slug);
-//     }
-// }
+    if (!slug) {
+        router.navigate(['/not-found']);
+        return of(null);
+    }
+
+    return svc.get(slug).pipe(
+        map(ev => ev ?? null),
+        catchError(() => {
+            // puedes redirigir si prefieres
+            // router.navigate(['/not-found']);
+            return of(null);
+        })
+    );
+};

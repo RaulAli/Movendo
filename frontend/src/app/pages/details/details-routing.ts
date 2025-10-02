@@ -1,12 +1,13 @@
-// // src/app/pages/details/details-routing.ts
-// import { Routes } from '@angular/router';
-// import { DetailsResolver } from './details-resolver.service';
+import { Routes } from '@angular/router';
+import { DetailsPage } from './details.page';
+import { detailsResolver } from './details-resolver.service';
 
-// export const DETAILS_ROUTES: Routes = [
-//     {
-//         path: ':slug',
-//         loadComponent: () => import('./details.page').then(c => c.DetailsPage),
-//         resolve: { evento: DetailsResolver }
-//     }
-// ];
-// // 
+export const DETAILS_ROUTES: Routes = [
+    {
+        path: ':slug',
+        component: DetailsPage,
+        resolve: { evento: detailsResolver },
+        runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+        title: 'Detalles del evento'
+    }
+];
