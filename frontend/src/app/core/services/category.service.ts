@@ -10,11 +10,13 @@ export class CategoryService {
 
   constructor(private apiService: ApiService) { }
 
-  list(): Observable<Category[]> {
-    return this.apiService.get('/category').pipe(
-      map(res => res.data ?? res)
+  list(params: any): Observable<Category[]> {
+    return this.apiService.get('/category', params).pipe(
+      map((res: any) => res.category ?? res.data ?? res)
+
     );
   }
+
 
   get(slug: string): Observable<Category> {
     return this.apiService.get(`/category/${slug}`);

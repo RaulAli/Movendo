@@ -4,17 +4,21 @@ import { Router } from '@angular/router';
 import { CategoryService } from '../../core/services/category.service';
 import { Category } from '../../core/models/category.model';
 import { CardCategory } from '../card-category/card-category.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @Component({
     selector: 'list-category',
     standalone: true,
-    imports: [CommonModule, CardCategory],
+    imports: [CommonModule, CardCategory, InfiniteScrollModule],
     templateUrl: './list-category.component.html',
     styleUrls: ['./list-category.component.scss']
 })
 export class ListCategoryComponent implements OnInit {
+    offset = 0;
+    limit = 3;
     category: Category[] = [];
     loading = false;
+    finished = false;
     error: string | null = null;
     editing: Category | null = null;
 
@@ -28,13 +32,23 @@ export class ListCategoryComponent implements OnInit {
     }
 
     loadCategory(): void {
+        // if (this.loading || this.finished) return;
+
+        const params = this.getRequestParams(this.offset, this.limit);
         this.loading = true;
         this.error = null;
 
-        this.categoryService.list().subscribe({
+        this.categoryService.list(params).subscribe({
             next: data => {
                 console.log(data);
+                var sizeCategory = data.length;
                 this.category = data;
+
+                if (sizeCategory < this.limit) {
+                    this.finished = true;
+                } else {
+                    this.limit = this.limit + 3;
+                }
                 this.loading = false;
             },
             error: () => {
@@ -42,6 +56,22 @@ export class ListCategoryComponent implements OnInit {
                 this.loading = false;
             }
         });
+    }
+
+    getRequestParams(offset: number, limit: number): any {
+        let params: any = {};
+
+        params[`offset`] = offset;
+        params[`limit`] = limit;
+
+        return params;
+    }
+
+    scroll() {
+        if (this.finished !== true) {
+            this.loadCategory();
+        }
+
     }
 
     trackByCategory(index: number, category: Category): string {
