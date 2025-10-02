@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { CarouselHome } from '../models/carousel.model';
-
-const URL = 'http://localhost:3000/api/movendo/carousel';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,23 +9,19 @@ const URL = 'http://localhost:3000/api/movendo/carousel';
 
 export class CarouselService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private apiService: ApiService) { }
 
   getCarouselHome(): Observable<CarouselHome[]> {
-    console.log('[Service] Fetching carousel data from:', URL);
-    return this.http.get<CarouselHome[]>(`${URL}/category`).pipe(
+    return this.apiService.get(`/carousel/category`, undefined, 3000).pipe(
       map((res) => {
-        console.log('[Service] Response:', res);
         return res;
       })
     );
   }
 
   getCarouselEvento(slug: string): Observable<CarouselHome[]> {
-    console.log('[Service] Fetching carousel data from:', `${URL}/evento/${slug}/`);
-    return this.http.get<CarouselHome[]>(`${URL}/evento/${slug}/`).pipe(
+    return this.apiService.get(`/carousel/evento/${slug}/`, undefined, 3000).pipe(
       map((res) => {
-        console.log('[Service] Response:', res);
         return res;
       })
     );

@@ -37,9 +37,9 @@ app.use(
 );
 
 // Ruta de la API
-app.use('/api/movendo', eventoRoutes);
-app.use('/api/movendo', categoryRoutes);
-app.use('/api/movendo', carouselRoutes);
+app.use('/', eventoRoutes);
+app.use('/', categoryRoutes);
+app.use('/', carouselRoutes);
 
 // Middleware centralizado de errores
 app.use(errorHandler);
