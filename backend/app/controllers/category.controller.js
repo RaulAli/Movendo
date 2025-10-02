@@ -11,25 +11,23 @@ function buildFilter(query) {
   return filter;
 }
 
-//cambia para funcionar con offset y limit
 exports.listar = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, sortBy = 'nombre', order = 'asc' } = req.query;
-    const filter = buildFilter(req.query);
-    const skip = (Number(page) - 1) * Number(limit);
+    const offset = parseInt(req.query.offset) || 0;
+    const limit = parseInt(req.query.limit) || 3;
 
-    const items = await Category.find(filter)
-      .sort({ [sortBy]: order === 'asc' ? 1 : -1 })
-      .skip(skip)
-      .limit(Number(limit));
+    const category = await Category.find({}, {}, { skip: Number(offset), limit: Number(limit) });
 
-    const total = await Category.countDocuments(filter);
-
-    res.json({
+    if (!category) {
+      return res.status(401).json({
+        message: "Categoria no encontrada"
+      })
+    }
+    return res.status(200).json({
       success: true,
-      data: items,
-      meta: { total, page: Number(page), limit: Number(limit) }
+      category: category,
     });
+
   } catch (err) {
     next(err);
   }

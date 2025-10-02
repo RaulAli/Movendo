@@ -6,7 +6,8 @@
   {{ error }}
 </div>
 
-<div *ngIf="!loading && category?.length; else empty" class="list-container">
+<div *ngIf="!loading && category?.length; else empty" class="list-container" infinite-scroll
+  [infiniteScrollDistance]="2" [infiniteScrollThrottle]="500" (scrolled)="scroll()">
   <div class="list">
     <div class="list-item" *ngFor="let c of category; trackBy: trackByCategory">
       <card-category [category]="c"></card-category>
