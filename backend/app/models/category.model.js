@@ -23,7 +23,13 @@ const CategorySchema = new mongoose.Schema({
   image: {
     type: [String],
     required: true
+  },
+  eventos: {
+    type: [String],
+    required: true
   }
+  // eventos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Evento" }] // En caso de Requerir por ID
+
 }, { timestamps: true });
 
 CategorySchema.plugin(uniqueValidator, { message: '{PATH} ya existe' });
@@ -57,6 +63,23 @@ CategorySchema.methods.toCategoryCarouselResponse = function () {
     image: this.image,
     slug: this.slug
   };
+};
+
+CategorySchema.methods.addEvento = async function (slug_evento) {
+  if (!slug_evento) throw new Error('slug_evento required');
+  if (!Array.isArray(this.evento)) this.evento = [];
+  if (!this.evento.includes(slug_evento)) {
+    this.evento.push(slug_evento);
+    await this.save();
+  }
+  return this;
+};
+
+CategorySchema.methods.removeEvento = async function (slug_evento) {
+  if (!Array.isArray(this.evento)) this.evento = [];
+  this.evento = this.evento.filter(s => s !== slug_evento);
+  await this.save();
+  return this;
 };
 
 

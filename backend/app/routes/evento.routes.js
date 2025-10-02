@@ -15,7 +15,7 @@ router.delete('/evento/:slug', controller.borrar);
 
 //Evento por Category
 
-// router.get('/evento', controller.listar);
+router.get('/category/:slug', controller.GetEventosByCategoria);
 
 // router.post('/evento', controller.crear);
 

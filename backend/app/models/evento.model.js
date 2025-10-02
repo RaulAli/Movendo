@@ -32,7 +32,11 @@ const EventoSchema = new mongoose.Schema({
   image: {
     type: [String],
     required: true
-  }
+  },
+  slug_categoria: [{
+    type: String,
+    trim: true
+  }]
 }, { timestamps: true });
 
 EventoSchema.plugin(uniqueValidator, { message: '{PATH} already taken' });
