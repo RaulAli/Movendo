@@ -6,7 +6,7 @@
         <ul class="meta">
             <li><strong>Fecha:</strong> {{ evento.fecha | date:'fullDate' }}</li>
             <li><strong>Ciudad:</strong> {{ evento.ciudad }}</li>
-            <li *ngIf="evento.genero"><strong>Género:</strong> {{ evento.genero }}</li>
+            <li *ngIf="evento.category"><strong>Género:</strong> {{ evento.category }}</li>
             <li *ngIf="evento.slug"><strong>Slug:</strong> {{ evento.slug }}</li>
             <li *ngIf="evento._id"><strong>ID:</strong> {{ evento._id }}</li>
             <app-carousel class="main-carousel" page="evento" [slug_evento]="evento.slug ?? null"></app-carousel>

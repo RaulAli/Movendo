@@ -18,7 +18,7 @@ const EventoSchema = new mongoose.Schema({
     required: [true, 'La ciudad es obligatorio'],
     trim: true
   },
-  genero: {
+  category: {
     type: String,
     default: ''
   },
