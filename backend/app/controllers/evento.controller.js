@@ -1,5 +1,5 @@
 const Evento = require('../models/evento.model');
-
+const Category = require('../models/category.model');
 function buildFilter(query) {
   const filter = {};
 
@@ -60,7 +60,7 @@ exports.crear = async (req, res, next) => {
   }
 };
 
-exports.actualizar = async (req, res, next) => { //Raul 
+exports.actualizar = async (req, res, next) => {
   try {
     const { slug: newSlug, ...data } = req.body;
 
@@ -70,17 +70,14 @@ exports.actualizar = async (req, res, next) => { //Raul
       return res.status(404).json({ success: false, message: 'Evento no encontrado' });
     }
 
-    // Si el título cambia, resetear el slug
     if (data.nombre && data.nombre !== evento.nombre) {
       evento.slug = null;
     }
 
-    //Comprobar
     for (let key in data) {
       evento[key] = data[key];
     }
 
-    // Si se proporciona un nuevo slug, actualiza
     if (newSlug) {
       evento.slug = newSlug;
     }
@@ -109,3 +106,35 @@ exports.borrar = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.GetEventosByCategoria = async (req, res, next) => {
+  try {
+    const slug = req.params.slug;
+    const offset = parseInt(req.query.offset) || 0;
+    const limit = parseInt(req.query.limit) || 3;
+
+    const category = await Category.findOne({ slug }).exec();
+
+    const eventoArray = Array.isArray(category.eventos) ? category.eventos : [];
+
+    const eventoSlugs = eventoArray.slice(offset, offset + limit);
+
+    const evento = await Evento.find({ slug: { $in: eventoSlugs } }).exec();
+
+    const eventoOrdenados = eventoSlugs.map(slug => evento.find(e => e.slug === slug)).filter(Boolean);
+
+    return res.status(200).json({
+      success: true,
+      eventos: eventoOrdenados,
+      evento_count: eventoArray.length
+    });
+
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+
+
+
