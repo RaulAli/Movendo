@@ -21,8 +21,11 @@ exports.listar = async (req, res, next) => {
     };
 
     if (category !== "") {
-      query.slug_category = category;
+      const categories = category.split(",");
+      query.slug_category = { $in: categories };
     }
+
+
 
     const eventos = await Evento.find(query)
       .limit(Number(limit))
