@@ -20,7 +20,7 @@ exports.listar = async (req, res, next) => {
 
     if (!category) {
       return res.status(401).json({
-        message: "Categoria no encontrada"
+        message: "Category no encontrada"
       })
     }
     return res.status(200).json({
@@ -62,25 +62,25 @@ exports.crear = async (req, res, next) => {
 exports.actualizar = async (req, res, next) => {
   try {
     const { slug: newSlug, ...data } = req.body;
-    const categoria = await Category.findOne({ slug: req.params.slug });
+    const category = await Category.findOne({ slug: req.params.slug });
 
-    if (!categoria) {
+    if (!category) {
       return res.status(404).json({ success: false, message: 'Categoría no encontrada' });
     }
 
-    if (data.nombre && data.nombre !== categoria.nombre) {
-      categoria.slug = null;
+    if (data.nombre && data.nombre !== category.nombre) {
+      category.slug = null;
     }
 
     for (let key in data) {
-      categoria[key] = data[key];
+      category[key] = data[key];
     }
 
     if (newSlug) {
-      categoria.slug = newSlug;
+      category.slug = newSlug;
     }
 
-    const updated = await categoria.save();
+    const updated = await category.save();
     res.json({ success: true, data: updated });
 
   } catch (err) {
