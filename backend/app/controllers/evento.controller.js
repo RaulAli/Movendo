@@ -114,11 +114,11 @@ exports.GetEventosByCategory = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 3;
 
     const [eventos, total] = await Promise.all([
-      Evento.find({ slug_categoria: slug })
+      Evento.find({ slug_category: slug })
         .skip(offset)
         .limit(limit)
         .exec(),
-      Evento.countDocuments({ slug_categoria: slug })
+      Evento.countDocuments({ slug_category: slug })
     ]);
 
     return res.status(200).json({

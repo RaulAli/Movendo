@@ -33,7 +33,7 @@ const EventoSchema = new mongoose.Schema({
     type: [String],
     required: true
   },
-  slug_categoria: [{
+  slug_category: [{
     type: String,
     trim: true
   }]
