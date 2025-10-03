@@ -28,7 +28,7 @@ export class ListComponent implements OnInit {
   ngOnInit(): void {
     this.slug_Category = this.route.snapshot.paramMap.get('slug');
 
-    if (this.slug_Category !== null) { // Salto home al shop con categorias
+    if (this.slug_Category !== null) { // Salto home al shop con categorys
 
       this.get_evento_by_cat();
 

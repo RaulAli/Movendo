@@ -30,7 +30,7 @@ const CategorySchema = new mongoose.Schema({
 CategorySchema.plugin(uniqueValidator, { message: '{PATH} ya existe' });
 
 async function generateSlug(doc) {
-  const base = slug(doc.nombre || 'categoria', { lower: true });
+  const base = slug(doc.nombre || 'category', { lower: true });
   let candidate = base;
   let i = 0;
 
