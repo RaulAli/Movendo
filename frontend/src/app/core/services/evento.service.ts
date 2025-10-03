@@ -22,6 +22,12 @@ export class EventoService {
     );
   }
 
+  getEventoByCategory(slug: string): Observable<Evento[]> {
+    return this.apiService.get(`/category/${slug}`).pipe(
+      map((res: any) => res?.eventos ?? [])
+    );
+  }
+
   create(evento: Evento): Observable<Evento> {
     return this.apiService.post(`/evento`, evento).pipe(
       map(res => res.data ?? res)

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { EventoService } from '../../core/services/evento.service';
 import { Evento } from '../../core/models/evento.model';
 import { CardComponent } from '../card-evento/card-evento.component';
@@ -18,21 +18,50 @@ export class ListComponent implements OnInit {
   loading = false;
   error: string | null = null;
   editing: Evento | null = null;
+  slug_Category!: string | null;
 
   constructor(
-    private prodService: EventoService,
-    private router: Router
+    private eventoService: EventoService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.loadEvento();
+    this.slug_Category = this.route.snapshot.paramMap.get('slug');
+
+    if (this.slug_Category !== null) { // Salto home al shop con categorias
+
+      this.get_evento_by_cat();
+
+    } else {
+
+      this.loadEvento();
+    }
+  }
+
+  get_evento_by_cat(): void {
+    this.loading = true;
+    this.error = null;
+
+    if (this.slug_Category) {
+      this.eventoService.getEventoByCategory(this.slug_Category).subscribe({
+        next: (eventos) => {
+          this.evento = eventos;
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = 'Error cargando eventos';
+          this.loading = false;
+        }
+      });
+    }
   }
 
   loadEvento(): void {
     this.loading = true;
     this.error = null;
 
-    this.prodService.list().subscribe({
+    this.eventoService.list().subscribe({
       next: data => {
         this.evento = data;
         this.loading = false;
