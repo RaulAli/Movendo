@@ -15,7 +15,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 })
 export class ListCategoryComponent implements OnInit {
     offset = 0;
-    limit = 3;
+    limit = 9;
     category: Category[] = [];
     loading = false;
     finished = false;
@@ -40,7 +40,7 @@ export class ListCategoryComponent implements OnInit {
 
         this.categoryService.list(params).subscribe({
             next: data => {
-                console.log(data);
+                // console.log(data);
                 var sizeCategory = data.length;
                 this.category = data;
 
