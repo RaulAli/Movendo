@@ -1,38 +1,56 @@
 const Evento = require('../models/evento.model');
 const Category = require('../models/category.model');
-function buildFilter(query) {
-  const filter = {};
-
-  if (query.q) {
-    const regex = new RegExp(query.q, 'i');
-    filter.$or = [{ nombre: regex }, { ciudad: regex }];
-  }
-
-  return filter;
-}
 
 exports.listar = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, sortBy = 'fecha', order = 'asc' } = req.query;
-    const filter = buildFilter(req.query);
-    const skip = (Number(page) - 1) * Number(limit);
+    let query = {};
+    let transUndefined = (varQuery, otherResult) => {
+      return varQuery != "undefined" && varQuery ? varQuery : otherResult;
+    };
 
-    const items = await Evento.find(filter)
-      .sort({ [sortBy]: order === 'asc' ? 1 : -1 })
-      .skip(skip)
-      .limit(Number(limit));
+    let limit = transUndefined(req.query.limit, 3); // Cantidad de productos al SHOP
+    let offset = transUndefined(req.query.offset, 0);
+    let category = transUndefined(req.query.category, "");
+    // let name = transUndefined(req.query.name, "");
+    let price_min = transUndefined(req.query.price_min, 0);
+    let price_max = transUndefined(req.query.price_max, Number.MAX_SAFE_INTEGER);
+    // let nameReg = new RegExp(name, "i");
 
-    const total = await Evento.countDocuments(filter);
+    query = {
+      // name: { $regex: nameReg },
+      $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }],
+    };
 
-    res.json({
+    if (category !== "") {
+      query.category = category; /// que quiero Filtrar
+    }
+    console.log
+    const eventos = await Evento.find(query)
+      .limit(Number(limit))
+      .skip(Number(offset));
+    const evento_count = await Evento.countDocuments(query);
+
+    if (!eventos || eventos.length === 0) {
+      return res.status(404).json({
+        success: false,
+        msg: "No se encontraron eventos con los filtros aplicados",
+      });
+    }
+
+    return res.status(200).json({
       success: true,
-      data: items,
-      meta: { total, page: Number(page), limit: Number(limit) }
+      eventos: await Promise.all(
+        eventos.map(async (evento) => {
+          return evento;
+        })
+      ),
+      evento_count: evento_count,
     });
   } catch (err) {
     next(err);
   }
 };
+
 
 exports.obtener = async (req, res, next) => {
   try {
