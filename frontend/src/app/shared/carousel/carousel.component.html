@@ -4,7 +4,7 @@
 
   <div class="carousel-container is-evento" #carousel>
     <app-carousel-item class="main-carousel-item is-evento" *ngFor="let item of carouselData" [carousel]="item"
-      [type]="page ?? 'evento'">
+      [type]="page">
     </app-carousel-item>
   </div>
 
@@ -16,7 +16,7 @@
 
   <div class="carousel-container is-category" #carousel>
     <app-carousel-item class="main-carousel-item is-category" *ngFor="let item of carouselData" [carousel]="item"
-      [type]="page ?? 'category'">
+      [type]="page">
     </app-carousel-item>
   </div>
 
