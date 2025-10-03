@@ -107,26 +107,24 @@ exports.borrar = async (req, res, next) => {
   }
 };
 
-exports.GetEventosByCategoria = async (req, res, next) => {
+exports.GetEventosByCategory = async (req, res, next) => {
   try {
     const slug = req.params.slug;
     const offset = parseInt(req.query.offset) || 0;
     const limit = parseInt(req.query.limit) || 3;
 
-    const category = await Category.findOne({ slug }).exec();
-
-    const eventoArray = Array.isArray(category.eventos) ? category.eventos : [];
-
-    const eventoSlugs = eventoArray.slice(offset, offset + limit);
-
-    const evento = await Evento.find({ slug: { $in: eventoSlugs } }).exec();
-
-    const eventoOrdenados = eventoSlugs.map(slug => evento.find(e => e.slug === slug)).filter(Boolean);
+    const [eventos, total] = await Promise.all([
+      Evento.find({ slug_categoria: slug })
+        .skip(offset)
+        .limit(limit)
+        .exec(),
+      Evento.countDocuments({ slug_categoria: slug })
+    ]);
 
     return res.status(200).json({
       success: true,
-      eventos: eventoOrdenados,
-      evento_count: eventoArray.length
+      eventos,
+      evento_count: total
     });
 
   } catch (err) {
@@ -134,6 +132,7 @@ exports.GetEventosByCategoria = async (req, res, next) => {
     next(err);
   }
 };
+
 
 
 

@@ -24,7 +24,6 @@ const CategorySchema = new mongoose.Schema({
     type: [String],
     required: true
   }
-  // eventos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Evento" }] // En caso de Requerir por ID
 
 }, { timestamps: true });
 
