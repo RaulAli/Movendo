@@ -1,5 +1,5 @@
 <!-- card-category.component.html -->
-<div class="card-category">
+<div class="card-category" [routerLink]="['/shop/category/', category.slug]">
     <!-- El card-header ahora será el contenedor de la imagen de fondo y el título -->
     <div class="card-header"
         [style.background-image]="category.image?.[0] ? 'url(' + category.image?.[0] + ')' : 'none'">
