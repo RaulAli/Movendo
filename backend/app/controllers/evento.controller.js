@@ -1,5 +1,4 @@
 const Evento = require('../models/evento.model');
-const Category = require('../models/category.model');
 
 exports.listar = async (req, res, next) => {
   try {
@@ -8,7 +7,7 @@ exports.listar = async (req, res, next) => {
       return varQuery != "undefined" && varQuery ? varQuery : otherResult;
     };
 
-    let limit = transUndefined(req.query.limit, 3); // Cantidad de productos al SHOP
+    let limit = transUndefined(req.query.limit, 3);
     let offset = transUndefined(req.query.offset, 0);
     let category = transUndefined(req.query.category, "");
     // let name = transUndefined(req.query.name, "");
@@ -22,9 +21,9 @@ exports.listar = async (req, res, next) => {
     };
 
     if (category !== "") {
-      query.category = category; /// que quiero Filtrar
+      query.slug_category = category;
     }
-    console.log
+
     const eventos = await Evento.find(query)
       .limit(Number(limit))
       .skip(Number(offset));
