@@ -36,7 +36,11 @@ const EventoSchema = new mongoose.Schema({
   slug_category: [{
     type: String,
     trim: true
-  }]
+  }],
+  price: {
+    type: Number,
+    required: true
+  }
 }, { timestamps: true });
 
 EventoSchema.plugin(uniqueValidator, { message: '{PATH} already taken' });
