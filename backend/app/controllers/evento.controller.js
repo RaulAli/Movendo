@@ -2,21 +2,16 @@ const Evento = require('../models/evento.model');
 
 exports.listar = async (req, res, next) => {
   try {
-    let query = {};
-    let transUndefined = (varQuery, otherResult) => {
-      return varQuery != "undefined" && varQuery ? varQuery : otherResult;
-    };
+    const transUndefined = (varQuery, otherResult) =>
+      varQuery != "undefined" && varQuery ? varQuery : otherResult;
 
-    let limit = transUndefined(req.query.limit, 3);
-    let offset = transUndefined(req.query.offset, 0);
-    let category = transUndefined(req.query.category, "");
-    // let name = transUndefined(req.query.name, "");
-    let price_min = transUndefined(req.query.price_min, 0);
-    let price_max = transUndefined(req.query.price_max, Number.MAX_SAFE_INTEGER);
-    // let nameReg = new RegExp(name, "i");
+    const limit = Number(transUndefined(req.query.limit, 10));
+    const offset = Number(transUndefined(req.query.offset, 0));
+    const category = transUndefined(req.query.category, "");
+    const price_min = Number(transUndefined(req.query.price_min, 0));
+    const price_max = Number(transUndefined(req.query.price_max, Number.MAX_SAFE_INTEGER));
 
-    query = {
-      // name: { $regex: nameReg },
+    const query = {
       $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }],
     };
 
@@ -25,33 +20,42 @@ exports.listar = async (req, res, next) => {
       query.slug_category = { $in: categories };
     }
 
-
-
-    const eventos = await Evento.find(query)
-      .limit(Number(limit))
-      .skip(Number(offset));
+    const eventos = await Evento.find(query).limit(limit).skip(offset);
     const evento_count = await Evento.countDocuments(query);
 
     if (!eventos || eventos.length === 0) {
       return res.status(404).json({
         success: false,
-        msg: "No se encontraron eventos con los filtros aplicados",
+        message: "No se encontraron eventos con los filtros aplicados",
+        data: [],
+        meta: {
+          total: 0,
+          limit,
+          offset,
+        },
       });
     }
 
     return res.status(200).json({
       success: true,
-      eventos: await Promise.all(
-        eventos.map(async (evento) => {
-          return evento;
-        })
-      ),
-      evento_count: evento_count,
+      message: "Eventos cargados correctamente",
+      data: eventos, // 👈 AQUÍ está la estandarización
+      meta: {
+        total: evento_count,
+        limit,
+        offset,
+        filters: {
+          category,
+          price_min,
+          price_max,
+        },
+      },
     });
   } catch (err) {
     next(err);
   }
 };
+
 
 
 exports.obtener = async (req, res, next) => {
