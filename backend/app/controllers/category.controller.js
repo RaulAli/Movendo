@@ -14,7 +14,7 @@ function buildFilter(query) {
 exports.listar = async (req, res, next) => {
   try {
     const offset = parseInt(req.query.offset) || 0;
-    const limit = parseInt(req.query.limit) || 3;
+    const limit = parseInt(req.query.limit) || 0;
 
     const category = await Category.find({}, {}, { skip: Number(offset), limit: Number(limit) });
 
