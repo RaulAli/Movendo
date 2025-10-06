@@ -6,4 +6,5 @@ export interface Evento {
   category?: string;
   slug?: string;
   image?: string;
+  price?: number;
 }
