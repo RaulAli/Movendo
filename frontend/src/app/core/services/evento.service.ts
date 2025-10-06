@@ -16,6 +16,20 @@ export class EventoService {
     );
   }
 
+  list_filters(filters: any = {}): Observable<Evento[]> {
+    const params = new URLSearchParams();
+
+    if (filters.category) params.append('category', filters.category);
+    if (filters.price_min) params.append('price_min', filters.price_min);
+    if (filters.price_max) params.append('price_max', filters.price_max);
+    if (filters.limit) params.append('limit', filters.limit);
+    if (filters.offset) params.append('offset', filters.offset);
+
+    return this.apiService.get(`/evento?${params.toString()}`).pipe(
+      map(res => res.data ?? res)
+    );
+  }
+
   get(slug: string): Observable<Evento> {
     return this.apiService.get(`/evento/${slug}`).pipe(
       map(res => res.data ?? res)

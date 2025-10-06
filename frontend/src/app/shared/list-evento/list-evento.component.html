@@ -4,10 +4,14 @@
 <!-- Error -->
 <div *ngIf="error" class="error">{{ error }}</div>
 
-<!-- Lista -->
+<!-- Filtros -->
+<app-filters [listCategories]="listCategories" [initialFilters]="initialFilters"
+  (eventofiltros)="get_list_filtered($event)">
+</app-filters>
+
+<!-- Lista de eventos -->
 <div *ngIf="!loading && evento?.length; else empty" class="list-evento grid">
-  <card-evento *ngFor="let p of evento; trackBy: trackByEvento" [evento]="p">
-  </card-evento>
+  <card-evento *ngFor="let p of evento; trackBy: trackByEvento" [evento]="p"></card-evento>
 </div>
 
 <ng-template #empty>
