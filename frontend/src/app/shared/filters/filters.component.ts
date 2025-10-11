@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Category } from '../../core/models/category.model';
+import { Filters } from '../../core/models/filters.model';
 
 export interface EventoFilters {
     category: string;

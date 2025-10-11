@@ -4,6 +4,9 @@
 <!-- Error -->
 <div *ngIf="error" class="error">{{ error }}</div>
 
+
+<app-search (searchEvent)="get_list_filtered_search($event)"></app-search>
+
 <!-- Filtros -->
 <app-filters [listCategories]="listCategories" [initialFilters]="initialFilters"
   (eventofiltros)="get_list_filtered($event)">

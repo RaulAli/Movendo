@@ -59,4 +59,12 @@ export class EventoService {
       map(res => res.data ?? res)
     );
   }
+
+  //Search
+  find_product_nombre(search: string): Observable<any> {
+    // console.log("Search Test:", `/evento/?nombre=${search}`);
+    return this.apiService.get(`/evento/?nombre=${search}`).pipe(
+      map(res => res.data ?? res)
+    );
+  }
 }
