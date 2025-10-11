@@ -8,6 +8,7 @@ exports.listar = async (req, res, next) => {
     const limit = Number(transUndefined(req.query.limit, 10));
     const offset = Number(transUndefined(req.query.offset, 0));
     const category = transUndefined(req.query.category, "");
+    const nombre = transUndefined(req.query.nombre, "");
     const price_min = Number(transUndefined(req.query.price_min, 0));
     const price_max = Number(transUndefined(req.query.price_max, Number.MAX_SAFE_INTEGER));
 
@@ -19,6 +20,11 @@ exports.listar = async (req, res, next) => {
       const categories = category.split(",");
       query.slug_category = { $in: categories };
     }
+
+    if (nombre !== "") {
+      query.slug = { $regex: `^${nombre}`, $options: 'i' };
+    }
+
 
     const eventos = await Evento.find(query).limit(limit).skip(offset);
     const evento_count = await Evento.countDocuments(query);
@@ -39,7 +45,7 @@ exports.listar = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Eventos cargados correctamente",
-      data: eventos, // 👈 AQUÍ está la estandarización
+      data: eventos,
       meta: {
         total: evento_count,
         limit,
@@ -135,7 +141,7 @@ exports.GetEventosByCategory = async (req, res, next) => {
   try {
     const slug = req.params.slug;
     const offset = parseInt(req.query.offset) || 0;
-    const limit = parseInt(req.query.limit) || 3;
+    const limit = parseInt(req.query.limit) || 10;
 
     const [eventos, total] = await Promise.all([
       Evento.find({ slug_category: slug })
