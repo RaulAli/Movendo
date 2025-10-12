@@ -4,12 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Category } from '../../core/models/category.model';
 import { Filters } from '../../core/models/filters.model';
 
-export interface EventoFilters {
-    category: string;
-    price_min: number | null;
-    price_max: number | null;
-}
-
 @Component({
     selector: 'app-filters',
     standalone: true,
@@ -30,9 +24,9 @@ export class FiltersComponent implements OnInit {
         return this._listCategories;
     }
 
-    @Input() initialFilters: EventoFilters | null = null;
+    @Input() initialFilters: Filters | null = null;
 
-    @Output() eventofiltros = new EventEmitter<EventoFilters>();
+    @Output() eventofiltros = new EventEmitter<Filters>();
 
     filterForm: FormGroup;
 
@@ -54,9 +48,7 @@ export class FiltersComponent implements OnInit {
         const categoryGroup = this.filterForm.get('categories') as FormGroup;
         if (!categoryGroup) return;
 
-        Object.keys(categoryGroup.controls).forEach(key => {
-            categoryGroup.removeControl(key);
-        });
+        Object.keys(categoryGroup.controls).forEach(key => categoryGroup.removeControl(key));
 
         this.listCategories.forEach(category => {
             if (category.slug) {
@@ -70,13 +62,15 @@ export class FiltersComponent implements OnInit {
     }
 
     private setInitialFilters(): void {
-        const { category, price_min, price_max } = this.initialFilters!;
-        if (price_min !== null) this.filterForm.get('price_min')?.setValue(price_min);
-        if (price_max !== null) this.filterForm.get('price_max')?.setValue(price_max);
+        if (!this.initialFilters) return;
+
+        const { category, price_min, price_max } = this.initialFilters;
+        this.filterForm.patchValue({ price_min, price_max });
 
         if (category) {
             const selected = category.split(',');
             const categoryGroup = this.filterForm.get('categories') as FormGroup;
+            Object.keys(categoryGroup.controls).forEach(slug => categoryGroup.get(slug)?.setValue(false));
             selected.forEach(slug => {
                 if (categoryGroup.get(slug)) {
                     categoryGroup.get(slug)?.setValue(true);
@@ -92,8 +86,8 @@ export class FiltersComponent implements OnInit {
             .filter(slug => formValue.categories[slug] === true)
             .join(',');
 
-        const filters: EventoFilters = {
-            category: selectedCategories,
+        const filters: Filters = {
+            category: selectedCategories || undefined,
             price_min: formValue.price_min,
             price_max: formValue.price_max
         };
@@ -103,6 +97,6 @@ export class FiltersComponent implements OnInit {
 
     clearFilters(): void {
         this.filterForm.reset();
-        this.eventofiltros.emit({ category: '', price_min: null, price_max: null });
+        this.eventofiltros.emit({ category: undefined, price_min: undefined, price_max: undefined, nombre: undefined });
     }
 }

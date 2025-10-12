@@ -6,7 +6,7 @@ import { CategoryService } from '../../core/services/category.service';
 import { Evento } from '../../core/models/evento.model';
 import { Category } from '../../core/models/category.model';
 import { CardComponent } from '../card-evento/card-evento.component';
-import { FiltersComponent, EventoFilters } from '../filters/filters.component';
+import { FiltersComponent } from '../filters/filters.component';
 import { SearchComponent } from '../search/search.component';
 import { Filters } from '../../core/models/filters.model';
 
@@ -23,9 +23,10 @@ export class ListComponent implements OnInit {
   listCategories: Category[] = [];
   loading = false;
   error: string | null = null;
-  slug_Category!: string | null;
-  initialFilters: EventoFilters | null = null;
-  initialFiltersSearch: Filters | null = null;
+  initialFilters!: Filters;
+
+  private readonly DEFAULT_LIMIT = 3;
+  private readonly DEFAULT_OFFSET = 0;
 
   constructor(
     private eventoService: EventoService,
@@ -40,130 +41,61 @@ export class ListComponent implements OnInit {
       error: (err) => console.error('Error cargando categorías', err)
     });
 
-    this.slug_Category = this.route.snapshot.paramMap.get('slug');
-
     const qp = this.route.snapshot.queryParamMap;
+
     this.initialFilters = {
-      category: qp.get('category') || '',
-      price_min: qp.get('price_min') ? Number(qp.get('price_min')) : null,
-      price_max: qp.get('price_max') ? Number(qp.get('price_max')) : null
+      nombre: qp.get('nombre') || undefined,
+      category: qp.get('category') || undefined,
+      price_min: qp.get('price_min') ? Number(qp.get('price_min')) : undefined,
+      price_max: qp.get('price_max') ? Number(qp.get('price_max')) : undefined,
+      limit: qp.get('limit') ? Number(qp.get('limit')) : this.DEFAULT_LIMIT,
+      offset: qp.get('offset') ? Number(qp.get('offset')) : this.DEFAULT_OFFSET
     };
 
-    if (this.initialFilters.category || this.initialFilters.price_min || this.initialFilters.price_max) {
-      this.get_list_filtered(this.initialFilters);
-    } else if (this.slug_Category) {
-      this.get_evento_by_cat();
-    } else {
-      this.loadEvento();
-    }
+    this.get_list_filtered(this.initialFilters);
   }
 
-  get_list_filtered(filters: EventoFilters): void {
+  get_list_filtered(newFilters: Filters): void {
     this.loading = true;
     this.error = null;
+
+    const combinedFilters: Filters = {
+      ...this.initialFilters,
+      ...newFilters
+    };
+
+    if (newFilters.category || newFilters.nombre) {
+      combinedFilters.offset = 0;
+    }
+
+    combinedFilters.limit = combinedFilters.limit ?? this.DEFAULT_LIMIT;
+    combinedFilters.offset = combinedFilters.offset ?? this.DEFAULT_OFFSET;
+
+    this.initialFilters = combinedFilters;
 
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
-        category: filters.category || null,
-        price_min: filters.price_min || null,
-        price_max: filters.price_max || null
+        nombre: combinedFilters.nombre || null,
+        category: combinedFilters.category || null,
+        price_min: combinedFilters.price_min || null,
+        price_max: combinedFilters.price_max || null,
+        limit: combinedFilters.limit,
+        offset: combinedFilters.offset
       },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
+      replaceUrl: true
     });
 
-    this.eventoService.list_filters(filters).subscribe({
+    this.eventoService.list_filters(combinedFilters).subscribe({
       next: (data) => {
         this.evento = data;
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
-        this.error = 'Error cargando eventos filtrados';
-        this.loading = false;
-      }
-    });
-  }
-
-  get_list_filtered_search(filters: Filters): void {
-    this.loading = true;
-    this.error = null;
-    console.log('ListComponent.get_list_filtered_search - recibido:', filters);
-
-    // Actualizar query params con 'nombre' (merge para mantener otros params)
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        nombre: filters.nombre || null,
-        offset: filters.offset || null
-      },
-      queryParamsHandling: 'merge'
-    });
-
-    const nombreToSend = (filters.nombre || '').trim().toLowerCase();
-    if (!nombreToSend) {
-      // si no hay nombre, recargar lista general
-      this.loadEvento();
-      return;
-    }
-
-    console.log('ListComponent.get_list_filtered_search - llamando a find_product_nombre("' + nombreToSend + '")');
-
-    this.eventoService.find_product_nombre(nombreToSend).subscribe({
-      next: (data: any) => {
-        console.log('ListComponent.get_list_filtered_search - respuesta del servidor:', data);
-        // soporte para dos formatos de respuesta:
-        if (Array.isArray(data)) {
-          this.evento = data;
-        } else if (Array.isArray(data?.eventos)) {
-          this.evento = data.eventos;
-        } else {
-          // si backend devuelve { data: { eventos: [...] } } o distinto, ajusta aquí
-          this.evento = [];
-        }
-        console.log('ListComponent.get_list_filtered_search - eventos asignados:', this.evento.length);
-        if (this.evento.length) console.table(this.evento);
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('ListComponent.get_list_filtered_search - error:', err);
-        this.error = 'Error cargando eventos por búsqueda';
-        this.loading = false;
-      }
-    });
-  }
-
-  get_evento_by_cat(): void {
-    this.loading = true;
-    this.error = null;
-
-    if (this.slug_Category) {
-      this.eventoService.getEventoByCategory(this.slug_Category).subscribe({
-        next: (eventos) => {
-          this.evento = eventos;
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error(err);
-          this.error = 'Error cargando eventos';
-          this.loading = false;
-        }
-      });
-    }
-  }
-
-  loadEvento(): void {
-    this.loading = true;
-    this.error = null;
-
-    this.eventoService.list().subscribe({
-      next: data => {
-        this.evento = data;
-        this.loading = false;
-      },
-      error: err => {
-        console.error(err);
-        this.error = 'Error cargando eventos';
+        console.error('Error cargando eventos:', err);
+        this.error = 'Error al cargar los eventos';
+        this.evento = [];
         this.loading = false;
       }
     });
