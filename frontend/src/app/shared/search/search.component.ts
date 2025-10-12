@@ -51,7 +51,7 @@ export class SearchComponent implements OnInit {
 
     this.eventoService.list_filters(filters).subscribe({
       next: (eventos) => {
-        this.listEventos = eventos;
+        this.listEventos = eventos.data;
       },
       error: (err) => {
         console.error('Error fetching autocomplete suggestions', err);

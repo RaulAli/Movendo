@@ -8,7 +8,7 @@
 <app-search (searchEvent)="get_list_filtered($event)"></app-search>
 
 <!-- Filtros -->
-<app-filters [listCategories]="listCategories" [initialFilters]="initialFilters"
+<app-filters [listCategories]="listCategories" [initialFilters]="filters"
   (eventofiltros)="get_list_filtered($event)">
 </app-filters>
 
@@ -20,3 +20,10 @@
 <ng-template #empty>
   <p class="empty">No hay eventos aún.</p>
 </ng-template>
+
+<app-pagination 
+  [currentPage]="currentPage" 
+  [totalItems]="totalItems" 
+  [itemsPerPage]="filters.limit ?? 3" 
+  (pageChange)="onPageChange($event)">
+</app-pagination>

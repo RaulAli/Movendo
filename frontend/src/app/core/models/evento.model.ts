@@ -8,3 +8,8 @@ export interface Evento {
   image?: string;
   price?: number;
 }
+
+export interface EventosResponse {
+  data: Evento[];
+  total: number;
+}
