@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { Evento } from '../models/evento.model';
+import { Evento, EventosResponse } from '../models/evento.model';
 import { ApiService } from './api.service';
 import { Filters } from '../models/filters.model';
 
@@ -17,7 +17,7 @@ export class EventoService {
     );
   }
 
-  list_filters(filters: Filters): Observable<Evento[]> {
+  list_filters(filters: Filters): Observable<EventosResponse> {
     const params = new URLSearchParams();
 
     if (filters.nombre) params.append('nombre', filters.nombre);
@@ -28,7 +28,10 @@ export class EventoService {
     if (filters.offset) params.append('offset', String(filters.offset));
 
     return this.apiService.get(`/evento?${params.toString()}`).pipe(
-      map(res => res.data ?? res)
+      map(res => ({
+        data: res.data,
+        total: res.meta.total
+      }))
     );
   }
 
