@@ -5,7 +5,7 @@ exports.listar = async (req, res, next) => {
     const transUndefined = (varQuery, otherResult) =>
       varQuery != "undefined" && varQuery ? varQuery : otherResult;
 
-    const limit = Number(transUndefined(req.query.limit, 10));
+    const limit = Number(transUndefined(req.query.limit, 3));
     const offset = Number(transUndefined(req.query.offset, 0));
     const category = transUndefined(req.query.category, "");
     const nombre = transUndefined(req.query.nombre, "");
@@ -22,7 +22,7 @@ exports.listar = async (req, res, next) => {
     }
 
     if (nombre !== "") {
-      query.slug = { $regex: `^${nombre}`, $options: 'i' };
+      query.nombre = { $regex: nombre, $options: 'i' };
     }
 
 
@@ -61,8 +61,6 @@ exports.listar = async (req, res, next) => {
     next(err);
   }
 };
-
-
 
 exports.obtener = async (req, res, next) => {
   try {
