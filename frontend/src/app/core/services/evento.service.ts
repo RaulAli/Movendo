@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Evento } from '../models/evento.model';
 import { ApiService } from './api.service';
+import { Filters } from '../models/filters.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +17,15 @@ export class EventoService {
     );
   }
 
-  list_filters(filters: any = {}): Observable<Evento[]> {
+  list_filters(filters: Filters): Observable<Evento[]> {
     const params = new URLSearchParams();
 
+    if (filters.nombre) params.append('nombre', filters.nombre);
     if (filters.category) params.append('category', filters.category);
-    if (filters.price_min) params.append('price_min', filters.price_min);
-    if (filters.price_max) params.append('price_max', filters.price_max);
-    if (filters.limit) params.append('limit', filters.limit);
-    if (filters.offset) params.append('offset', filters.offset);
+    if (filters.price_min) params.append('price_min', String(filters.price_min));
+    if (filters.price_max) params.append('price_max', String(filters.price_max));
+    if (filters.limit) params.append('limit', String(filters.limit));
+    if (filters.offset) params.append('offset', String(filters.offset));
 
     return this.apiService.get(`/evento?${params.toString()}`).pipe(
       map(res => res.data ?? res)
@@ -33,12 +35,6 @@ export class EventoService {
   get(slug: string): Observable<Evento> {
     return this.apiService.get(`/evento/${slug}`).pipe(
       map(res => res.data ?? res)
-    );
-  }
-
-  getEventoByCategory(slug: string): Observable<Evento[]> {
-    return this.apiService.get(`/category/${slug}`).pipe(
-      map((res: any) => res?.eventos ?? [])
     );
   }
 
@@ -56,14 +52,6 @@ export class EventoService {
 
   delete(slug: string): Observable<any> {
     return this.apiService.delete(`/evento/${slug}`).pipe(
-      map(res => res.data ?? res)
-    );
-  }
-
-  //Search
-  find_product_nombre(search: string): Observable<any> {
-    // console.log("Search Test:", `/evento/?nombre=${search}`);
-    return this.apiService.get(`/evento/?nombre=${search}`).pipe(
       map(res => res.data ?? res)
     );
   }
