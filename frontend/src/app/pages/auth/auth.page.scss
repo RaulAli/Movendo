@@ -1,0 +1,314 @@
+$primary-white: #ffffff;
+$primary-blue: #0066cc;
+$secondary-blue: #0099ff;
+$accent-blue: #33ccff;
+$dark-blue: #004d99;
+$text-dark: #333333;
+$text-light: #666666;
+$border-color: #e0e0e0;
+$success-color: #28a745;
+$error-color: #dc3545;
+$light-bg: #f8fafc;
+
+@mixin card-shadow {
+    box-shadow: 0 8px 32px rgba(0, 102, 204, 0.12);
+    border: 1px solid rgba($border-color, 0.8);
+}
+
+@mixin sport-gradient {
+    background: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+}
+
+.auth-page {
+    background: $primary-white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba($accent-blue, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba($secondary-blue, 0.08) 0%, transparent 25%);
+
+    .container.page {
+        padding: 2rem 0;
+    }
+}
+
+.auth-card {
+    @include card-shadow;
+    border-radius: 20px;
+    padding: 3rem;
+    background: $primary-white;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        @include sport-gradient;
+    }
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.auth-title {
+    color: $primary-blue;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    font-size: 2.4rem;
+    letter-spacing: -0.5px;
+
+    &::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: $accent-blue;
+        margin: 1rem auto;
+        border-radius: 4px;
+    }
+}
+
+.auth-subtitle {
+    margin-bottom: 0;
+
+    a {
+        color: $secondary-blue;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        background: rgba($secondary-blue, 0.05);
+
+        &:hover {
+            background: rgba($secondary-blue, 0.15);
+            color: $dark-blue;
+            transform: translateY(-1px);
+        }
+    }
+}
+
+.alert-danger {
+    background: rgba($error-color, 0.08);
+    border: 1px solid rgba($error-color, 0.3);
+    border-radius: 12px;
+    color: $error-color;
+    padding: 1rem 1.5rem;
+
+    ul {
+        padding-left: 0;
+        margin-bottom: 0;
+
+        li {
+            list-style: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    }
+}
+
+.auth-form {
+    .form-field {
+        margin-bottom: 2rem;
+    }
+}
+
+.input-container {
+    position: relative;
+    background: $light-bg;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+
+    &:focus-within {
+        border-color: $secondary-blue;
+        background: $primary-white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba($secondary-blue, 0.15);
+
+        .input-icon {
+            color: $secondary-blue;
+        }
+    }
+}
+
+.form-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 1.25rem 1rem 1.25rem 3rem;
+    font-size: 1rem;
+    color: $text-dark;
+    font-weight: 500;
+    outline: none;
+
+    &::placeholder {
+        color: $text-light;
+        transition: color 0.3s ease;
+    }
+
+    &:focus::placeholder {
+        color: lighten($text-light, 20%);
+    }
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-light;
+    transition: all 0.3s ease;
+    width: 20px;
+    height: 20px;
+}
+
+.error-message {
+    font-size: 0.85rem;
+    color: $error-color;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    display: flex;
+    align-items: center;
+
+    &::before {
+        content: '⚠';
+        margin-right: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+.auth-submit-btn {
+    @include sport-gradient;
+    border: none;
+    color: $primary-white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    padding: 1.25rem 2rem;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    width: 100%;
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba($primary-blue, 0.4);
+
+        &::before {
+            transform: translateX(0);
+        }
+    }
+
+    &:active {
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        background: lighten($primary-blue, 25%);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba($primary-white, 0.2), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.6s;
+    }
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-loader {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid $primary-white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-page .container.page {
+        padding: 1rem;
+    }
+
+    .auth-card {
+        padding: 2.5rem 2rem;
+        margin: 0 0.5rem;
+    }
+
+    .auth-title {
+        font-size: 2rem;
+    }
+
+    .form-input {
+        padding: 1.25rem 1rem 1.25rem 2.5rem;
+        font-size: 1rem;
+    }
+
+    .input-icon {
+        left: 0.75rem;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.form-input.ng-valid.ng-touched {
+    &~.input-icon {
+        color: $success-color;
+    }
+}
+
+.form-input.ng-invalid.ng-touched {
+    &~.input-icon {
+        color: $error-color;
+    }
+}
