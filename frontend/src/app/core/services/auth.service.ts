@@ -22,21 +22,25 @@ export class UserService {
   populate() {
     const token = this.jwtService.getToken();
     if (token) {
-      this.apiService.get('/user', undefined, 3000).subscribe(
-        (data) => {
-          return this.setAuth({ ...data.user, token });
+      console.log('Token encontrado:', token);
+      this.apiService.get('/user', undefined, 3000).subscribe({
+        next: (data) => {
+          console.log('Datos del usuario:', data);
+          this.setAuth({ ...data.user, token });
         },
-        (err) => {
+        error: (err) => {
+          console.error('Error al cargar usuario:', err);
           this.purgeAuth();
         }
-      );
+      });
     } else {
       this.purgeAuth();
     }
   }
 
+
   setAuth(user: User) {
-    // console.log(user);
+    console.log(user);
     this.jwtService.saveToken(user.token);
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
