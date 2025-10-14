@@ -1,8 +1,8 @@
-// src/app/app.ts (ejemplo)
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/layout/header/header.component';
 import { FooterComponent } from './shared/layout/footer/footer.component';
+import { UserService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +13,12 @@ import { FooterComponent } from './shared/layout/footer/footer.component';
     <main class="container"><router-outlet /></main>
     <app-footer></app-footer>
   `,
-  styles: [`.container{max-width:1100px;margin:0 auto;padding:1rem;}`]
+  styles: [`.container{max-width:1100px;margin:0 auto;padding:1rem;}`],
 })
-export class AppComponent { }
+export class AppComponent implements OnInit {
+  constructor(private userService: UserService) {}
+
+  ngOnInit() {
+    this.userService.populate();
+  }
+}
