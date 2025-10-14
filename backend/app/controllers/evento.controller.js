@@ -11,10 +11,41 @@ exports.listar = async (req, res, next) => {
     const nombre = transUndefined(req.query.nombre, "");
     const price_min = Number(transUndefined(req.query.price_min, 0));
     const price_max = Number(transUndefined(req.query.price_max, Number.MAX_SAFE_INTEGER));
+    const startDate = transUndefined(req.query.startDate, "");
+    const endDate = transUndefined(req.query.endDate, "");
+    const ciudad = transUndefined(req.query.ciudad, "");
 
     const query = {
       $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }],
     };
+
+    let validDateRange = true;
+    if (startDate !== "" && endDate !== "") {
+      if (new Date(startDate) > new Date(endDate)) {
+        validDateRange = false;
+      }
+    }
+
+    if (validDateRange) {
+      const queryStartDate = startDate !== "" ? new Date(startDate) : null;
+      const queryEndDate = endDate !== "" ? new Date(endDate) : null;
+
+      if (queryEndDate) {
+        queryEndDate.setHours(23, 59, 59, 999);
+      }
+
+      if (queryStartDate) {
+        query.$and.push({ startDate: { $gte: queryStartDate } });
+      }
+
+      if (queryEndDate) {
+        query.$and.push({ endDate: { $lte: queryEndDate } });
+      }
+    }
+
+    if (ciudad !== "") {
+      query.ciudad = { $regex: ciudad, $options: 'i' };
+    }
 
     if (category !== "") {
       const categories = category.split(",");
@@ -54,6 +85,9 @@ exports.listar = async (req, res, next) => {
           category,
           price_min,
           price_max,
+          startDate,
+          endDate,
+          ciudad,
         },
       },
     });
