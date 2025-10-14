@@ -2,8 +2,12 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
+
 
 const userSchema = new mongoose.Schema({
+    _id: { type: String, default: uuidv4 },
+
     username: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     email: {
@@ -18,7 +22,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "https://static.productionready.io/images/smiley-cyrus.jpg"
     },
-}, { timestamps: true });
+}, { timestamps: true, id: false });
 
 userSchema.plugin(uniqueValidator);
 
