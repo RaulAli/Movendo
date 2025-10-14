@@ -1,7 +1,7 @@
 // controllers/user.controller.js
 const User = require('../models/user.model');
 const asyncHandler = require('express-async-handler');
-const bcrypt = require('bcryptjs');
+const argon2 = require('argon2');
 
 // Registro
 const registerUser = asyncHandler(async (req, res) => {
@@ -11,7 +11,7 @@ const registerUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "All fields are required" });
     }
 
-    const hashedPwd = await bcrypt.hash(user.password, 10); // salt rounds
+    const hashedPwd = await argon2.hash(user.password);
 
     const userObject = {
         username: user.username,
@@ -50,7 +50,7 @@ const userLogin = asyncHandler(async (req, res) => {
     const loginUser = await User.findOne({ email: user.email }).exec();
     if (!loginUser) return res.status(404).json({ message: "User Not Found" });
 
-    const match = await bcrypt.compare(user.password, loginUser.password);
+    const match = await argon2.verify(loginUser.password, user.password);
     if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' });
 
     return res.status(200).json({ user: loginUser.toUserResponse() });
@@ -69,7 +69,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
     if (user.email) target.email = user.email;
     if (user.username) target.username = user.username;
-    if (user.password) target.password = await bcrypt.hash(user.password, 10);
+    if (user.password) target.password = await argon2.hash(user.password, 10);
     if (typeof user.image !== 'undefined') target.image = user.image;
     if (typeof user.bio !== 'undefined') target.bio = user.bio;
 
