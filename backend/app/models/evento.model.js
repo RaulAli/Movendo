@@ -8,10 +8,13 @@ const EventoSchema = new mongoose.Schema({
     required: [true, 'El nombre es obligatorio'],
     trim: true
   },
-  fecha: {
-    type: String,
-    required: [true, 'La fecha es obligatorio'],
-    trim: true
+  startDate: {
+    type: Date,
+    required: [true, 'La fecha de inicio es obligatoria'],
+  },
+  endDate: {
+    type: Date,
+    required: [true, 'La fecha de fin es obligatoria'],
   },
   ciudad: {
     type: String,
