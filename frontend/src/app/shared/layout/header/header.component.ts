@@ -14,6 +14,7 @@ import { NgIf } from '@angular/common';
 })
 export class HeaderComponent implements OnInit {
   logged = false;
+  user: any;
   private subscription!: Subscription;
 
   constructor(
@@ -24,9 +25,21 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.subscription = this.userService.isAuthenticated.subscribe((auth) => {
       this.logged = auth;
+      if (auth) {
+        this.loadDataUser();
+      } else {
+        this.user = null;
+      }
       console.log(auth);
     });
+  }
 
+  loadDataUser() {
+    this.user = this.userService.getCurrentUser();
+  }
+
+  onProfileClick(): void {
+    this.router.navigate(['/profile']);
   }
 
   logout() {
