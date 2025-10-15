@@ -1,0 +1,136 @@
+// settings-errors.scss
+
+// Variables
+$error-color: #e03e2d;
+$error-bg: rgba(224, 62, 45, 0.06);
+$error-border: rgba(224, 62, 45, 0.25);
+$muted-color: #6c757d;
+$radius: 6px;
+$font-size-sm: 0.875rem;
+$transition-fast: 160ms ease-in-out;
+
+// Small fade-in for error messages
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* General error list (server errors) */
+.error-list {
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    border-radius: $radius;
+    background: $error-bg;
+    border: 1px solid $error-border;
+    color: $error-color;
+    font-size: $font-size-sm;
+    line-height: 1.35;
+
+    ul {
+        margin: 0;
+        padding-left: 1.2em;
+
+        li {
+            margin: 4px 0;
+
+            &::marker {
+                color: $error-color;
+            }
+        }
+    }
+}
+
+/* Inline invalid feedback (under each input) */
+.invalid-feedback {
+    display: block;
+    /* tus plantillas usan d-block; forzamos display */
+    margin-top: 6px;
+    font-size: $font-size-sm;
+    color: $error-color;
+    animation: fadeInUp 180ms ease both;
+}
+
+/* input / textarea invalid styles — Angular adds .ng-invalid and .ng-touched */
+.form-control.ng-invalid.ng-touched,
+input.form-control.ng-invalid.ng-touched,
+textarea.form-control.ng-invalid.ng-touched {
+    border-color: $error-color;
+    box-shadow: 0 0 0 3px rgba(224, 62, 45, 0.06);
+    outline: none;
+    transition: box-shadow $transition-fast, border-color $transition-fast;
+}
+
+/* Optional: add a small error icon on the right of invalid inputs */
+.input-with-error {
+    position: relative;
+
+    .form-control {
+        padding-right: 36px; // space for icon
+    }
+
+    .error-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: $error-color;
+        color: #fff;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        pointer-events: none;
+    }
+}
+
+/* Small helper text for optional password hint */
+.form-text.text-muted {
+    color: $muted-color;
+    font-size: $font-size-sm;
+}
+
+/* Global "invalid" badge for buttons/labels if needed */
+.invalid-badge {
+    display: inline-block;
+    background: $error-color;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-left: 8px;
+}
+
+/* Accessibility helper (screen reader only) */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Responsive tweak: smaller font on narrow screens */
+@media (max-width: 480px) {
+
+    .invalid-feedback,
+    .error-list {
+        font-size: 0.8rem;
+    }
+}

@@ -1,55 +1,41 @@
-<!-- <h1>Setting works!</h1> -->
+<form [formGroup]="settingsForm" (ngSubmit)="submitForm()">
+  <fieldset [disabled]="isSubmitting">
 
-<div class="settings-page">
-  <div class="container page">
-    <div class="row">
-      <div class="col-md-6 offset-md-3 col-xs-12">
+    <fieldset class="form-group">
+      <input class="form-control" type="text" placeholder="URL of profile picture" formControlName="image" />
+    </fieldset>
 
-        <h1 class="text-xs-center">Your Settings</h1>
-
-        <!-- <app-list-errors [errors]="errors"></app-list-errors> -->
-
-        <form [formGroup]="settingsForm" (ngSubmit)="submitForm()">
-          <fieldset [disabled]="isSubmitting">
-
-            <fieldset class="form-group">
-              <input class="form-control" type="text" placeholder="URL of profile picture" formControlName="image" />
-            </fieldset>
-
-            <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="text" placeholder="Username"
-                formControlName="username" />
-            </fieldset>
-
-            <fieldset class="form-group">
-              <textarea class="form-control form-control-lg" rows="8" placeholder="Short bio about you"
-                formControlName="bio">
-              </textarea>
-            </fieldset>
-
-            <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="email" placeholder="Email" formControlName="email" />
-            </fieldset>
-
-            <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="password" placeholder="New Password"
-                formControlName="password" />
-            </fieldset>
-
-            <button class="btn btn-lg btn-primary pull-xs-right" type="submit">
-              Update Settings
-            </button>
-
-          </fieldset>
-        </form>
-
-        <hr />
-
-        <button class="btn btn-outline-danger" (click)="logout()">
-          Or click here to logout.
-        </button>
-
+    <fieldset class="form-group">
+      <input class="form-control form-control-lg" type="text" placeholder="Username" formControlName="username" />
+      <div *ngIf="username?.touched && username?.invalid" class="invalid-feedback d-block">
+        <div *ngIf="username?.errors?.['required']">El nombre de usuario es obligatorio.</div>
+        <div *ngIf="username?.errors?.['minlength']">El nombre de usuario debe tener al menos 6 caracteres.</div>
+        <div *ngIf="username?.errors?.['maxlength']">El nombre de usuario no puede tener más de 20 caracteres.</div>
       </div>
-    </div>
-  </div>
-</div>
+    </fieldset>
+
+    <fieldset class="form-group">
+      <input class="form-control form-control-lg" type="email" placeholder="Email" formControlName="email" />
+      <div *ngIf="email?.touched && email?.invalid" class="invalid-feedback d-block">
+        <div *ngIf="email?.errors?.['required']">El email es obligatorio.</div>
+        <div *ngIf="email?.errors?.['email']">El email no tiene un formato válido.</div>
+        <div *ngIf="email?.errors?.['pattern']">El email no cumple el patrón requerido.</div>
+      </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+      <input class="form-control form-control-lg" type="password" placeholder="New Password"
+        formControlName="password" />
+      <div *ngIf="password?.touched && password?.invalid" class="invalid-feedback d-block">
+        <div *ngIf="password?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
+        <div *ngIf="password?.errors?.['maxlength']">La contraseña no puede tener más de 20 caracteres.</div>
+      </div>
+      <small class="form-text text-muted">Deja en blanco si no quieres cambiar la contraseña.</small>
+    </fieldset>
+
+    <button class="btn btn-lg btn-primary pull-xs-right" type="submit">
+      Update Settings
+    </button>
+
+  </fieldset>
+</form>

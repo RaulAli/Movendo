@@ -56,25 +56,29 @@ const userLogin = asyncHandler(async (req, res) => {
     return res.status(200).json({ user: loginUser.toUserResponse() });
 });
 
-// Update user (protegido)
 const updateUser = asyncHandler(async (req, res) => {
     const { user } = req.body;
-    if (!user) return res.status(400).json({ message: "Required a User object" });
+    const username = req.username;
+    if (!username) return res.status(401).json({ message: 'No autenticado' });
 
-    const email = req.userEmail;
-    if (!email) return res.status(401).json({ message: 'No autenticado' });
+    const updatedFields = {};
+    if (user.email) updatedFields.email = user.email;
+    if (user.username) updatedFields.username = user.username;
+    if (typeof user.image !== 'undefined') updatedFields.image = user.image;
+    // if (typeof user.bio !== 'undefined') updatedFields.bio = user.bio;
+    if (user.password) updatedFields.password = await argon2.hash(user.password);
 
-    const target = await User.findOne({ email }).exec();
-    if (!target) return res.status(404).json({ message: 'User Not Found' });
+    const updatedUser = await User.findOneAndUpdate(
+        { username },
+        { $set: updatedFields },
+        { new: true }
+    ).exec();
 
-    if (user.email) target.email = user.email;
-    if (user.username) target.username = user.username;
-    if (user.password) target.password = await argon2.hash(user.password, 10);
-    if (typeof user.image !== 'undefined') target.image = user.image;
-    if (typeof user.bio !== 'undefined') target.bio = user.bio;
+    if (!updatedUser) {
+        return res.status(404).json({ message: 'User Not Found' });
+    }
 
-    await target.save();
-    return res.status(200).json({ user: target.toUserResponse() });
+    return res.status(200).json({ user: updatedUser.toUserResponse() });
 });
 
 module.exports = {
