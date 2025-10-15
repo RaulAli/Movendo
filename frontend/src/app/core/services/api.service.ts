@@ -21,7 +21,7 @@ export class ApiService {
     }
 
     put(path: string, body: object = {}, port = 3000): Observable<any> {
-        return this.http.put(`${environment.api_url}:${port}${path}`, JSON.stringify(body))
+        return this.http.put(`${environment.api_url}:${port}${path}`, body)
             .pipe(catchError(this.formatErrors));
     }
 

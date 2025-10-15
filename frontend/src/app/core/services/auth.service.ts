@@ -81,8 +81,9 @@ export class UserService {
     );
   }
 
-  update(user: any): Observable<User> {
-    return this.apiService.put('/user', { user }, 3000).pipe(
+  update(credentials: any): Observable<User> {
+    console.log('📦 Datos:', { user: credentials });
+    return this.apiService.put('/user', { user: credentials }, 3000).pipe(
       map((data: any) => {
         this.currentUserSubject.next(data.user);
         return data.user;
