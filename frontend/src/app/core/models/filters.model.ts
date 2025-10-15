@@ -3,6 +3,9 @@ export class Filters {
     offset?: number;
     price_min?: number;
     price_max?: number;
-    category?: string;
+    category?: string[];
     nombre?: string;
+    startDate?: string;
+    endDate?: string;
+    ciudad?: string[];
 }
