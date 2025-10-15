@@ -17,8 +17,8 @@ router.delete('/evento/:slug', controller.borrar);
 
 router.get('/category/:slug', controller.GetEventosByCategory);
 
-// router.post('/evento', controller.crear);
+router.get('/cities', controller.getUniqueCities);
 
-// router.get('/evento/:slug', controller.obtener);
+router.get('/prices/minmax', controller.getMinMaxPrices);
 
 module.exports = router;

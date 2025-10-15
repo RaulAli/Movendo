@@ -10,6 +10,7 @@ import { FiltersComponent } from '../filters/filters.component';
 import { SearchComponent } from '../search/search.component';
 import { Filters } from '../../core/models/filters.model';
 import { PaginationComponent } from '../pagination/pagination.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'list-evento',
@@ -40,31 +41,41 @@ export class ListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.categoryService.list({}).subscribe({
-      next: (cats) => this.listCategories = cats,
-      error: (err) => console.error('Error cargando categorías', err)
+    forkJoin({
+      categories: this.categoryService.list({}),
+      minMaxPrices: this.eventoService.getMinMaxPrices()
+    }).subscribe({
+      next: (results) => {
+        this.listCategories = results.categories;
+        const minPrice = results.minMaxPrices.minPrice;
+        const maxPrice = results.minMaxPrices.maxPrice;
+
+        const qp = this.route.snapshot.queryParamMap;
+
+        const initialFilters: Filters = {
+          nombre: qp.get('nombre') || undefined,
+          category: qp.getAll('category').length > 0 ? qp.getAll('category') : undefined,
+          price_min: qp.get('price_min') ? Number(qp.get('price_min')) : minPrice,
+          price_max: qp.get('price_max') ? Number(qp.get('price_max')) : maxPrice,
+          limit: qp.get('limit') ? Number(qp.get('limit')) : this.DEFAULT_LIMIT,
+          offset: qp.get('offset') ? Number(qp.get('offset')) : this.DEFAULT_OFFSET,
+          ciudad: qp.getAll('ciudad').length > 0 ? qp.getAll('ciudad') : undefined,
+        };
+
+        this.get_list_filtered(initialFilters);
+      },
+      error: (err) => {
+        console.error('Error cargando datos iniciales', err);
+        this.error = 'Error al cargar datos iniciales';
+      }
     });
-
-    const qp = this.route.snapshot.queryParamMap;
-
-    const initialFilters: Filters = {
-      nombre: qp.get('nombre') || undefined,
-      category: qp.get('category') || undefined,
-      price_min: qp.get('price_min') ? Number(qp.get('price_min')) : undefined,
-      price_max: qp.get('price_max') ? Number(qp.get('price_max')) : undefined,
-      limit: qp.get('limit') ? Number(qp.get('limit')) : this.DEFAULT_LIMIT,
-      offset: qp.get('offset') ? Number(qp.get('offset')) : this.DEFAULT_OFFSET
-    };
-
-    this.get_list_filtered(initialFilters);
   }
 
   get_list_filtered(newFilters: Filters): void {
     this.loading = true;
     this.error = null;
 
-    // Reset offset if category or name filters are applied
-    if (newFilters.category || newFilters.nombre) {
+    if ((newFilters.category && newFilters.category.length > 0) || newFilters.nombre) {
       newFilters.offset = 0;
     }
 

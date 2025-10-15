@@ -2,18 +2,29 @@ const Evento = require('../models/evento.model');
 
 exports.listar = async (req, res, next) => {
   try {
-    const transUndefined = (varQuery, otherResult) =>
-      varQuery != "undefined" && varQuery ? varQuery : otherResult;
+    // Helper function to safely get query parameters, handling arrays
+    const getQueryParam = (paramName, defaultValue) => {
+      const param = req.query[paramName];
+      if (param === undefined || param === "undefined" || param === null || param === "") {
+        return defaultValue;
+      }
+      // If it's an array, return it as is
+      if (Array.isArray(param)) {
+        return param;
+      }
+      // If it's a string, return it as is
+      return param;
+    };
 
-    const limit = Number(transUndefined(req.query.limit, 3));
-    const offset = Number(transUndefined(req.query.offset, 0));
-    const category = transUndefined(req.query.category, "");
-    const nombre = transUndefined(req.query.nombre, "");
-    const price_min = Number(transUndefined(req.query.price_min, 0));
-    const price_max = Number(transUndefined(req.query.price_max, Number.MAX_SAFE_INTEGER));
-    const startDate = transUndefined(req.query.startDate, "");
-    const endDate = transUndefined(req.query.endDate, "");
-    const ciudad = transUndefined(req.query.ciudad, "");
+    const limit = Number(getQueryParam('limit', 3));
+    const offset = Number(getQueryParam('offset', 0));
+    const category = getQueryParam('category', []); // Default to empty array
+    const nombre = getQueryParam('nombre', "");
+    const price_min = Number(getQueryParam('price_min', 0));
+    const price_max = Number(getQueryParam('price_max', Number.MAX_SAFE_INTEGER));
+    const startDate = getQueryParam('startDate', "");
+    const endDate = getQueryParam('endDate', "");
+    const ciudad = getQueryParam('ciudad', []); // Default to empty array
 
     const query = {
       $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }],
@@ -43,13 +54,12 @@ exports.listar = async (req, res, next) => {
       }
     }
 
-    if (ciudad !== "") {
-      query.ciudad = { $regex: ciudad, $options: 'i' };
+    if (ciudad.length > 0) {
+      query.ciudad = { $in: ciudad }; // Use $in for multiple cities
     }
 
-    if (category !== "") {
-      const categories = category.split(",");
-      query.slug_category = { $in: categories };
+    if (category.length > 0) {
+      query.slug_category = { $in: category }; // Use $in for multiple categories
     }
 
     if (nombre !== "") {
@@ -189,6 +199,50 @@ exports.GetEventosByCategory = async (req, res, next) => {
       evento_count: total
     });
 
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+exports.getUniqueCities = async (req, res, next) => {
+  try {
+    const cities = await Evento.distinct('ciudad');
+    return res.status(200).json({
+      success: true,
+      data: cities
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+exports.getMinMaxPrices = async (req, res, next) => {
+  try {
+    const category = req.query.category;
+    let pipeline = [];
+
+    if (category) {
+      pipeline.push({ $match: { slug_category: category } });
+    }
+
+    pipeline.push({ $group: { _id: null, minPrice: { $min: "$price" }, maxPrice: { $max: "$price" } } });
+
+    const result = await Evento.aggregate(pipeline);
+
+    if (result.length > 0) {
+      return res.status(200).json({
+        success: true,
+        data: { minPrice: result[0].minPrice, maxPrice: result[0].maxPrice }
+      });
+    } else {
+      // If no events match the category, return default min/max
+      return res.status(200).json({
+        success: true,
+        data: { minPrice: 0, maxPrice: 0 }
+      });
+    }
   } catch (err) {
     console.error(err);
     next(err);

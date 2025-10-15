@@ -21,11 +21,22 @@ export class EventoService {
     const params = new URLSearchParams();
 
     if (filters.nombre) params.append('nombre', filters.nombre);
-    if (filters.category) params.append('category', filters.category);
+
+    if (filters.category && filters.category.length > 0) {
+      filters.category.forEach(cat => params.append('category', cat));
+    }
+
     if (filters.price_min) params.append('price_min', String(filters.price_min));
     if (filters.price_max) params.append('price_max', String(filters.price_max));
     if (filters.limit) params.append('limit', String(filters.limit));
     if (filters.offset) params.append('offset', String(filters.offset));
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+
+    // Handle ciudad as string[]
+    if (filters.ciudad && filters.ciudad.length > 0) {
+      filters.ciudad.forEach(ciu => params.append('ciudad', ciu));
+    }
 
     return this.apiService.get(`/evento?${params.toString()}`).pipe(
       map(res => ({
@@ -56,6 +67,22 @@ export class EventoService {
   delete(slug: string): Observable<any> {
     return this.apiService.delete(`/evento/${slug}`).pipe(
       map(res => res.data ?? res)
+    );
+  }
+
+  getUniqueCities(): Observable<string[]> {
+    return this.apiService.get(`/cities`).pipe(
+      map(res => res.data ?? [])
+    );
+  }
+
+  getMinMaxPrices(category?: string): Observable<{ minPrice: number, maxPrice: number }> {
+    const params = new URLSearchParams();
+    if (category) {
+      params.append('category', category);
+    }
+    return this.apiService.get(`/prices/minmax?${params.toString()}`).pipe(
+      map(res => res.data ?? { minPrice: 0, maxPrice: 0 })
     );
   }
 }
