@@ -15,4 +15,10 @@ const controller = require('../controllers/comment.controller');
 //Crear un comentario
 router.post('/:slug/comment', verifyJWT, controller.createCommentForEvento);
 
+//Obtener la información
+router.get('/:slug/comment', controller.getCommentFromEvento);
+
+//Eliminar un comentario
+router.delete('/:slug/comment/:id', verifyJWT, controller.deleteCommentFromEvento);
+
 module.exports = router;

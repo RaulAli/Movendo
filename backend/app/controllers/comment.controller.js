@@ -30,3 +30,71 @@ exports.createCommentForEvento = asyncHandler(async (req, res) => {
         comment: await comment.toCommentResponse(author)
     });
 });
+
+exports.getCommentFromEvento = asyncHandler(async (req, res) => {
+    const { slug } = req.params;
+
+    const evento = await Evento.findOne({ slug }).select('_id').exec();
+
+    if (!evento) return res.status(404).json({ message: 'Evento Not Found' });
+
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const skip = (page - 1) * limit;
+
+    const [rows, total] = await Promise.all([
+        Comment.find({ evento: evento._id })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate({ path: 'author', model: 'User', select: '_id username image' })
+            .exec(),
+        Comment.countDocuments({ evento: evento._id })
+    ]);
+
+    const comments = rows.map(c => ({
+        id: c._id,
+        body: c.body,
+        createdAt: c.createdAt,
+        author: c.author ? {
+            id: c.author._id,
+            username: c.author.username,
+            image: c.author.image
+        } : undefined
+    }));
+
+    res.status(200).json({ comments, total, page, limit });
+});
+
+exports.deleteCommentFromEvento = asyncHandler(async (req, res) => {
+    const { slug, id } = req.params;
+    const userId = req.userId;
+
+    const [evento, comment] = await Promise.all([
+        Evento.findOne({ slug }).select('_id').exec(),
+        Comment.findById(id).exec()
+    ]);
+
+    if (!evento) return res.status(404).json({ message: 'Evento Not Found' });
+    if (!comment) return res.status(404).json({ message: 'Comment Not Found' });
+
+    if (String(comment.evento) !== String(evento._id)) {
+        return res.status(400).json({ message: 'Comment does not belong to this event' });
+    }
+
+    if (String(comment.author) !== String(userId)) {
+        return res.status(403).json({ message: 'Not authorized to delete this comment' });
+    }
+
+    await comment.deleteOne();
+
+    res.status(200).json({
+        message: 'Comment deleted successfully',
+        deleted: {
+            id: comment._id,
+            body: comment.body,
+            evento: evento._id,
+            author: comment.author
+        }
+    });
+});
