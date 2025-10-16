@@ -7,6 +7,7 @@ const eventoRoutes = require('./app/routes/evento.routes');
 const categoryRoutes = require('./app/routes/category.routes');
 const carouselRoutes = require('./app/routes/carousel.routes');
 const userRoutes = require('./app/routes/user.routes');
+const commentRoutes = require('./app/routes/comment.routes');
 
 const errorHandler = require('./app/middlewares/errorHandler');
 // const slug = require('slug'); // para CommonJS
@@ -43,6 +44,7 @@ app.use('/', eventoRoutes);
 app.use('/', categoryRoutes);
 app.use('/', carouselRoutes);
 app.use('/', userRoutes);
+app.use('/', commentRoutes);
 
 // Middleware centralizado de errores
 app.use(errorHandler);
