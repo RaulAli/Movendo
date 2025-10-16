@@ -43,7 +43,11 @@ const EventoSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: true
-  }
+  },
+  comments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment'
+  }]
 }, { timestamps: true });
 
 EventoSchema.plugin(uniqueValidator, { message: '{PATH} already taken' });
