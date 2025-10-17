@@ -128,7 +128,6 @@ userSchema.methods.unfollow = function (id) {
 userSchema.methods.updateFollowersCount = async function (user) {
     const a = await user.save();
     this.followersCount = await mongoose.model('User').countDocuments({ followingUsers: this._id });
-    this.followingCount = this.followingUsers.length;
     const b = await this.save();
     return { a, b };
 };

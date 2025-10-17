@@ -1,0 +1,22 @@
+<div class="list-user-overlay">
+    <div class="list-user-modal">
+        <div class="modal-header">
+            <h3 class="modal-title">{{ listType === 'followers' ? 'Followers' : 'Following' }}</h3>
+            <button class="close-button" (click)="onClose()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div *ngIf="users.length === 0" class="no-users-message">
+                No users to display.
+            </div>
+            <div *ngFor="let user of users" class="user-item">
+                <img [src]="user.image" alt="{{ user.username }}" class="user-avatar" />
+                <a [routerLink]="['/profile', user.username]" class="username-link" (click)="onClose()">{{ user.username
+                    }}</a>
+                <button *ngIf="currentUsername && currentUsername !== user.username" class="btn follow-toggle-button"
+                    (click)="onToggleFollowing(user)">
+                    {{ user.following ? 'Unfollow' : 'Follow' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
