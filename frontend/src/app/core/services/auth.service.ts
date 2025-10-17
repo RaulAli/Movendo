@@ -3,7 +3,7 @@ import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { ApiService } from './api.service';
 import { JwtService } from './jwt.service';
 import { User } from '../models/auth.model';
-import { map, distinctUntilChanged } from 'rxjs/operators';
+import { map, distinctUntilChanged, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -80,14 +80,20 @@ export class UserService {
       })
     );
   }
-
+  //REVISAR
   update(credentials: any): Observable<User> {
-    console.log('📦 Datos:', { user: credentials });
+    console.log('📦 Datos de actualización:', { user: credentials });
     return this.apiService.put('/user', { user: credentials }, 3000).pipe(
-      map((data: any) => {
-        this.currentUserSubject.next(data.user);
-        return data.user;
-      })
+      tap((data: any) => {
+        if (data.user && data.user.token) {
+          this.setAuth(data.user);
+        } else if (data.user) {
+          const currentUser = this.getCurrentUser();
+          const updatedUser = { ...data.user, token: currentUser.token };
+          this.currentUserSubject.next(updatedUser);
+        }
+      }),
+      map((data: any) => data.user)
     );
   }
 
