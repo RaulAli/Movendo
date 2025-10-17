@@ -132,7 +132,12 @@ exports.obtener = async (req, res, next) => {
 
 exports.crear = async (req, res, next) => {
   try {
+    const id = req.userId;
+    const author = await User.findById(id).exec();
+    if (!author) return res.status(401).json({ message: 'User Not Found' });
+
     const nuevo = new Evento(req.body);
+    nuevo.author = author._id;
     const saved = await nuevo.save();
     res.status(201).json({ success: true, data: saved });
   } catch (err) {

@@ -33,7 +33,19 @@ const userSchema = new mongoose.Schema({
     favouriteEvento: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Evento'
-    }]
+    }],
+    followingUsers: [{
+        type: String,
+        ref: 'User'
+    }],
+    followersCount: {
+        type: Number,
+        default: 0
+    },
+    followingCount: {
+        type: Number,
+        default: 0
+    }
 }, { timestamps: true, id: false });
 
 userSchema.plugin(uniqueValidator);
@@ -66,7 +78,9 @@ userSchema.methods.toProfileJSON = function (user) {
     return {
         username: this.username,
         image: this.image,
-        following: user ? user.isFollowing(this._id) : false
+        following: user ? user.isFollowing(this._id) : false,
+        followersCount: this.followersCount,
+        followingCount: this.followingCount
     };
 };
 
@@ -85,6 +99,38 @@ userSchema.methods.isFavorite = function (id) {
     return this.favouriteEvento.some((favoriteId) => {
         return favoriteId.toString() === id.toString();
     });
+};
+
+userSchema.methods.isFollowing = function (id) {
+    const idStr = id.toString();
+    for (const followingUser of this.followingUsers) {
+        if (followingUser.toString() === idStr) {
+            return true;
+        }
+    }
+    return false;
+};
+
+userSchema.methods.follow = function (id) {
+    if (this.followingUsers.indexOf(id) === -1) {
+        this.followingUsers.push(id);
+    }
+    return this.save();
+};
+
+userSchema.methods.unfollow = function (id) {
+    if (this.followingUsers.indexOf(id) !== -1) {
+        this.followingUsers.pull(id);
+    }
+    return this.save();
+};
+
+userSchema.methods.updateFollowersCount = async function (user) {
+    const a = await user.save();
+    this.followersCount = await mongoose.model('User').countDocuments({ followingUsers: this._id });
+    this.followingCount = this.followingUsers.length;
+    const b = await this.save();
+    return { a, b };
 };
 
 module.exports = mongoose.model('User', userSchema);
