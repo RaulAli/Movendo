@@ -76,4 +76,15 @@ userSchema.methods.favorite = function (eventoId) {
     return this.save();
 };
 
+userSchema.methods.unfavorite = function (eventoId) {
+    this.favouriteEvento = this.favouriteEvento.filter(id => String(id) !== String(eventoId));
+    return this.save();
+};
+
+userSchema.methods.isFavorite = function (id) {
+    return this.favouriteEvento.some((favoriteId) => {
+        return favoriteId.toString() === id.toString();
+    });
+};
+
 module.exports = mongoose.model('User', userSchema);

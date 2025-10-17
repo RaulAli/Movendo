@@ -96,4 +96,23 @@ EventoSchema.methods.updateFavoriteCount = async function () {
 
 
 
+
+EventoSchema.methods.toEventoResponse = function (user) {
+    return {
+        slug: this.slug,
+        nombre: this.nombre,
+        description: this.description,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        ciudad: this.ciudad,
+        price: this.price,
+        image: this.image,
+        category: this.category,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
+        favorited: user ? user.isFavorite(this._id) : false,
+        favouritesCount: this.favouritesCount,
+    }
+}
+
 module.exports = mongoose.model('Evento', EventoSchema);
