@@ -68,16 +68,13 @@ export class AuthPage implements OnInit {
 
     this.userService.attemptAuth(this.authType, credentials).subscribe({
       next: (response) => {
-        // console.log('✅ Auth response:', response);
 
         const token = response.token;
-        // console.log('✅ Token encontrado:', token); //Falla
 
         if (this.authType === 'login' && token) {
           this.jwtService.saveToken(token);
           try {
             const decodedToken: any = jwtDecode(token);
-            // console.log('✅ Decoded token:', decodedToken);
           } catch (error) {
             console.error('❌ Error decodificando token:', error);
           }
