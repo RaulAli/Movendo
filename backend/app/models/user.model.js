@@ -8,8 +8,16 @@ const { v4: uuidv4 } = require('uuid');
 const userSchema = new mongoose.Schema({
     _id: { type: String, default: uuidv4 },
 
-    username: { type: String, required: true, unique: true, lowercase: true },
-    password: { type: String, required: true },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         required: true,
@@ -22,6 +30,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "https://static.productionready.io/images/smiley-cyrus.jpg"
     },
+    favouriteEvento: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Evento'
+    }]
 }, { timestamps: true, id: false });
 
 userSchema.plugin(uniqueValidator);
@@ -56,6 +68,12 @@ userSchema.methods.toProfileJSON = function (user) {
         image: this.image,
         following: user ? user.isFollowing(this._id) : false
     };
+};
+
+userSchema.methods.favorite = function (eventoId) {
+    const exists = this.favouriteEvento.some(id => String(id) === String(eventoId));
+    if (!exists) this.favouriteEvento.push(eventoId);
+    return this.save();
 };
 
 module.exports = mongoose.model('User', userSchema);

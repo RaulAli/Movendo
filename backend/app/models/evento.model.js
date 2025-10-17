@@ -44,6 +44,10 @@ const EventoSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  favouritesCount: {
+    type: Number,
+    default: 0
+  },
   comments: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment'
@@ -80,6 +84,14 @@ EventoSchema.methods.toEventouctCarouselResponse = function () {
     image: this.image,
     slug: this.slug
   };
+};
+
+EventoSchema.methods.updateFavoriteCount = async function () {
+  const User = mongoose.model('User');
+  const count = await User.countDocuments({ favouriteEvento: this._id });
+  this.favouritesCount = count;
+  await this.save();
+  return this;
 };
 
 
