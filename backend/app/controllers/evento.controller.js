@@ -1,4 +1,5 @@
 const Evento = require('../models/evento.model');
+const User = require('../models/user.model');
 
 exports.listar = async (req, res, next) => {
   try {
@@ -245,6 +246,34 @@ exports.getMinMaxPrices = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
+    next(err);
+  }
+};
+
+exports.addfavoriteEvento = async (req, res, next) => {
+  try {
+    const id = req.userId;
+    const { slug } = req.params;
+
+    const [loginUser, evento] = await Promise.all([
+      User.findById(id).exec(),
+      Evento.findOne({ slug }).exec()
+    ]);
+
+    if (!loginUser) return res.status(401).json({ message: 'User Not Found' });
+    if (!evento) return res.status(404).json({ message: 'Evento Not Found' });
+
+    await loginUser.favorite(evento._id);
+    const updatedEvento = await evento.updateFavoriteCount();
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        slug: updatedEvento.slug,
+        favouritesCount: updatedEvento.favouritesCount
+      }
+    });
+  } catch (err) {
     next(err);
   }
 };
