@@ -26,4 +26,6 @@ router.get('/prices/minmax', controller.getMinMaxPrices);
 
 router.post('/evento/:slug/favorite', verifyJWT, controller.addfavoriteEvento);
 
+router.delete('/evento/:slug/favorite', verifyJWT, controller.unfavoriteEvento);
+
 module.exports = router;
