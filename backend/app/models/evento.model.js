@@ -53,7 +53,7 @@ const EventoSchema = new mongoose.Schema({
     ref: 'Comment'
   }],
   author: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true
   }
@@ -103,22 +103,22 @@ EventoSchema.methods.updateFavoriteCount = async function () {
 
 
 EventoSchema.methods.toEventoResponse = function (user) {
-    return {
-        slug: this.slug,
-        nombre: this.nombre,
-        description: this.description,
-        startDate: this.startDate,
-        endDate: this.endDate,
-        ciudad: this.ciudad,
-        price: this.price,
-        image: this.image,
-        category: this.category,
-        createdAt: this.createdAt,
-        updatedAt: this.updatedAt,
-        favorited: user ? user.isFavorite(this._id) : false,
-        favouritesCount: this.favouritesCount,
-        comments: this.comments
-    }
+  return {
+    slug: this.slug,
+    nombre: this.nombre,
+    description: this.description,
+    startDate: this.startDate,
+    endDate: this.endDate,
+    ciudad: this.ciudad,
+    price: this.price,
+    image: this.image,
+    category: this.category,
+    createdAt: this.createdAt,
+    updatedAt: this.updatedAt,
+    favorited: user ? user.isFavorite(this._id) : false,
+    favouritesCount: this.favouritesCount,
+    comments: this.comments
+  }
 }
 
 module.exports = mongoose.model('Evento', EventoSchema);
