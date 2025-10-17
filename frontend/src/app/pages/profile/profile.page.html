@@ -1,0 +1,29 @@
+<div class="profile-page" *ngIf="profile">
+    <div *ngIf="currentView === 'profile'">
+        <div class="profile-header">
+            <div class="profile-image">
+                <img [src]="profile.image" class="user-img" />
+            </div>
+            <div class="profile-info">
+                <div class="username-actions">
+                    <h2 class="username">{{ profile.username }}</h2>
+                    <button *ngIf="!isUser" class="btn" (click)="onToggleFollowing()">
+                        {{ profile.following ? 'Unfollow' : 'Follow' }}
+                    </button>
+                    <button *ngIf="isUser" class="btn" (click)="showSettings()">
+                        Edit Profile
+                    </button>
+                </div>
+                <div class="stats">
+                    <div><strong>{{ profile.followersCount }}</strong> followers</div>
+                    <div><strong>{{ profile.followingCount }}</strong> following</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <settings-component 
+        *ngIf="currentView === 'settings'" 
+        (backToProfile)="showProfile()">
+    </settings-component>
+</div>
