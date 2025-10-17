@@ -15,15 +15,19 @@
                     </button>
                 </div>
                 <div class="stats">
-                    <div><strong>{{ profile.followersCount }}</strong> followers</div>
-                    <div><strong>{{ profile.followingCount }}</strong> following</div>
+                    <div (click)="showFollowers()" class="clickable-stat"><strong>{{ profile.followersCount }}</strong>
+                        followers</div>
+                    <div (click)="showFollowing()" class="clickable-stat"><strong>{{ profile.followingCount }}</strong>
+                        following</div>
                 </div>
             </div>
         </div>
 
     </div>
-    <settings-component 
-        *ngIf="currentView === 'settings'" 
-        (backToProfile)="showProfile()">
+    <settings-component *ngIf="currentView === 'settings'" (backToProfile)="showProfile()">
     </settings-component>
+
+    <list-user *ngIf="currentView === 'followers' || currentView === 'following'" [users]="listUsers"
+        [listType]="currentView" (closeList)="closeList()">
+    </list-user>
 </div>
