@@ -1,0 +1,70 @@
+<div class="profile-container">
+  <div class="user-info-card" role="region" aria-label="Información de usuario">
+    <img class="user-avatar" [src]="currentUser?.image" [alt]="'Avatar de ' + (currentUser?.username || 'usuario')" />
+    <div class="user-meta">
+      <h2 class="user-name">{{ currentUser?.username || 'Nombre de Usuario' }}</h2>
+      <p class="user-email">{{ currentUser?.email || 'usuario@email.com' }}</p>
+    </div>
+
+    <div class="profile-actions-right">
+      <div class="pill" *ngIf="currentUser?.isMember">Miembros</div>
+      <div class="pill" *ngIf="currentUser?.isPro">Pro</div>
+    </div>
+  </div>
+
+  <div class="actions-grid" aria-label="Acciones principales">
+    <button class="action-card" type="button">
+      <div class="action-head">
+        <div>
+          <h3 class="action-title">Followers</h3>
+          <p class="action-sub">Ver y gestionar tus seguidores</p>
+        </div>
+      </div>
+    </button>
+
+    <button class="action-card" type="button">
+      <div class="action-head">
+        <div>
+          <h3 class="action-title">Likes</h3>
+          <p class="action-sub">Publicaciones que te gustaron</p>
+        </div>
+      </div>
+    </button>
+
+    <button class="action-card" type="button">
+      <div class="action-head">
+        <div>
+          <h3 class="action-title">Eventos Suscritos</h3>
+          <p class="action-sub">Tus próximos eventos y recordatorios</p>
+        </div>
+      </div>
+    </button>
+
+    <button class="action-card" type="button" (click)="goToSettings()">
+      <div class="action-head">
+        <div>
+          <h3 class="action-title">Settings</h3>
+          <p class="action-sub">Preferencias de cuenta y privacidad</p>
+        </div>
+      </div>
+    </button>
+
+    <button class="action-card" type="button">
+      <div class="action-head">
+        <div>
+          <h3 class="action-title">Algo</h3>
+          <p class="action-sub">Acceso rápido a herramientas</p>
+        </div>
+      </div>
+    </button>
+
+    <button class="action-card" type="button" (click)="logout()">
+      <div class="action-head">
+        <div>
+          <h3 class="action-title">Logout</h3>
+          <p class="action-sub">Cerrar sesión de forma segura</p>
+        </div>
+      </div>
+    </button>
+  </div>
+</div>
