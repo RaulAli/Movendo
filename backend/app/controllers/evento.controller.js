@@ -109,11 +109,15 @@ exports.listar = async (req, res, next) => {
 
 exports.obtener = async (req, res, next) => {
   try {
-    const item = await Evento.findOne({ slug: req.params.slug });
-    if (!item) {
+    const id = req.userId;
+    const user = id ? await User.findById(id).exec() : null;
+    const evento = await Evento.findOne({ slug: req.params.slug });
+
+    if (!evento) {
       return res.status(404).json({ success: false, message: 'Evento no encontrado' });
     }
-    res.json({ success: true, data: item });
+
+    return res.json({ success: true, data: await evento.toEventoResponse(user) });
   } catch (err) {
     next(err);
   }
@@ -268,17 +272,37 @@ exports.addfavoriteEvento = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      data: {
-        slug: updatedEvento.slug,
-        favouritesCount: updatedEvento.favouritesCount
-      }
+      data: await updatedEvento.toEventoResponse(loginUser)
     });
   } catch (err) {
     next(err);
   }
 };
 
+exports.unfavoriteEvento = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const { slug } = req.params;
 
+    const [user, evento] = await Promise.all([
+      User.findById(userId).exec(),
+      Evento.findOne({ slug }).exec()
+    ]);
+
+    if (!user) return res.status(401).json({ message: 'User Not Found' });
+    if (!evento) return res.status(404).json({ message: 'Evento Not Found' });
+
+    await user.unfavorite(evento._id);
+    const updated = await evento.updateFavoriteCount();
+
+    return res.status(200).json({
+      success: true,
+      data: await updated.toEventoResponse(user)
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 
 
