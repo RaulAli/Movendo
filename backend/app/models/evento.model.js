@@ -112,6 +112,7 @@ EventoSchema.methods.toEventoResponse = function (user) {
         updatedAt: this.updatedAt,
         favorited: user ? user.isFavorite(this._id) : false,
         favouritesCount: this.favouritesCount,
+        comments: this.comments
     }
 }
 

@@ -44,7 +44,7 @@ app.use('/', eventoRoutes);
 app.use('/', categoryRoutes);
 app.use('/', carouselRoutes);
 app.use('/', userRoutes);
-app.use('/', commentRoutes);
+app.use('/evento', commentRoutes);
 
 // Middleware centralizado de errores
 app.use(errorHandler);
