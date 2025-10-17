@@ -111,7 +111,14 @@ exports.obtener = async (req, res, next) => {
   try {
     const id = req.userId;
     const user = id ? await User.findById(id).exec() : null;
-    const evento = await Evento.findOne({ slug: req.params.slug });
+    const evento = await Evento.findOne({ slug: req.params.slug })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'author',
+          select: 'username image'
+        }
+      });
 
     if (!evento) {
       return res.status(404).json({ success: false, message: 'Evento no encontrado' });
