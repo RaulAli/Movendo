@@ -24,4 +24,14 @@ export class ProfileService {
         return this.apiService.delete(`/profile/${username}/follow`)
             .pipe(map(data => data.profile));
     }
+
+    getFollowers(username: string): Observable<Profile[]> {
+        return this.apiService.get(`/profile/${username}/followers`)
+            .pipe(map(data => data.profiles));
+    }
+
+    getFollowing(username: string): Observable<Profile[]> {
+        return this.apiService.get(`/profile/${username}/following`)
+            .pipe(map(data => data.profiles));
+    }
 }
