@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventoService } from '../../core/services/evento.service';
@@ -21,7 +21,7 @@ import { forkJoin } from 'rxjs';
 })
 export class ListComponent implements OnInit {
 
-  evento: Evento[] = [];
+  @Input() evento: Evento[] = [];
   listCategories: Category[] = [];
   loading = false;
   error: string | null = null;

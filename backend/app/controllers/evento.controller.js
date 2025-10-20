@@ -116,8 +116,7 @@ exports.obtener = async (req, res, next) => {
       .populate({
         path: 'comments',
         populate: { path: 'author', select: 'username image' }
-      })
-      .lean();
+      });
 
     if (!evento) return res.status(404).json({ success: false, message: 'Evento no encontrado' });
 
@@ -131,7 +130,7 @@ exports.obtener = async (req, res, next) => {
     } else {
       evento.author = null;
     }
-    return res.json({ success: true, data: evento });
+    return res.json({ success: true, data: await evento.toEventoResponse(currentUser) });
   } catch (err) {
     next(err);
   }
