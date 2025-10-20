@@ -110,21 +110,28 @@ exports.listar = async (req, res, next) => {
 exports.obtener = async (req, res, next) => {
   try {
     const id = req.userId;
-    const user = id ? await User.findById(id).exec() : null;
+    const currentUser = id ? await User.findById(id).exec() : null;
+
     const evento = await Evento.findOne({ slug: req.params.slug })
       .populate({
         path: 'comments',
-        populate: {
-          path: 'author',
-          select: 'username image'
-        }
-      });
+        populate: { path: 'author', select: 'username image' }
+      })
+      .lean();
 
-    if (!evento) {
-      return res.status(404).json({ success: false, message: 'Evento no encontrado' });
+    if (!evento) return res.status(404).json({ success: false, message: 'Evento no encontrado' });
+
+    if (evento.author) {
+      const authorDoc = await User.findOne({ username: evento.author }).select('username image _id').lean();
+      evento.author = authorDoc ? {
+        id: authorDoc._id,
+        username: authorDoc.username,
+        image: authorDoc.image || null
+      } : { username: evento.author };
+    } else {
+      evento.author = null;
     }
-
-    return res.json({ success: true, data: await evento.toEventoResponse(user) });
+    return res.json({ success: true, data: evento });
   } catch (err) {
     next(err);
   }
@@ -317,4 +324,26 @@ exports.unfavoriteEvento = async (req, res, next) => {
 };
 
 
+// #region OLD OBTENER METHOD
+// exports.obtener = async (req, res, next) => {
+//   try {
+//     const id = req.userId;
+//     const user = id ? await User.findById(id).exec() : null;
+//     const evento = await Evento.findOne({ slug: req.params.slug })
+//       .populate({
+//         path: 'comments',
+//         populate: {
+//           path: 'author',
+//           select: 'username image'
+//         }
+//       });
 
+//     if (!evento) {
+//       return res.status(404).json({ success: false, message: 'Evento no encontrado' });
+//     }
+
+//     return res.json({ success: true, data: await evento.toEventoResponse(user) });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
