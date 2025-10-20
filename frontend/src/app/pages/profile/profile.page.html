@@ -1,5 +1,5 @@
 <div class="profile-page" *ngIf="profile">
-    <div *ngIf="currentView === 'profile'">
+    <div *ngIf="currentView !== 'settings'">
         <div class="profile-header">
             <div class="profile-image">
                 <img [src]="profile.image" class="user-img" />
@@ -22,12 +22,35 @@
                 </div>
             </div>
         </div>
+        <div class="mid-bar">
+            <div (click)="showFavorites()" class="clickable-stat" [class.selected]="currentView === 'favorites'"><strong>{{ profile.favoritesCount }}</strong>
+                favorites</div>
+            <div (click)="showComments()" class="clickable-stat" [class.selected]="currentView === 'comments'"><strong>{{ profile.commentsCount }}</strong>
+                comments</div>
+        </div>
+        <div class="profile-content">
+            <div *ngIf="currentView === 'favorites'" class="favorites-section">
+                <div class="eventos-grid">
+                    <card-evento *ngFor="let evento of paginatedFavoriteEvents" [evento]="evento"
+                        class="profile-card-evento"></card-evento>
+                    <p *ngIf="favoriteEvents.length === 0" class="no-items-message">No favorite events to display.</p>
+                </div>
+                <app-pagination *ngIf="totalFavoriteEvents > itemsPerPage" [totalItems]="totalFavoriteEvents"
+                    [itemsPerPage]="itemsPerPage" [currentPage]="currentFavoritePage"
+                    (pageChange)="onFavoritePageChange($event)">
+                </app-pagination>
+            </div>
 
+            <div *ngIf="currentView === 'comments'" class="comments-list">
+                <app-comments *ngFor="let comment of comments" [comment]="comment"></app-comments>
+                <p *ngIf="comments.length === 0" class="no-items-message">No comments to display.</p>
+            </div>
+        </div>
     </div>
     <settings-component *ngIf="currentView === 'settings'" (backToProfile)="showProfile()">
     </settings-component>
 
-    <list-user *ngIf="currentView === 'followers' || currentView === 'following'" [users]="listUsers"
-        [listType]="currentView" (closeList)="closeList()">
+    <list-user *ngIf="showUserListModal" [users]="listUsers"
+        [listType]="userListType" (closeList)="closeUserListModal()">
     </list-user>
 </div>

@@ -7,19 +7,31 @@ import { switchMap } from 'rxjs/operators';
 import { UserService } from '../../core/services/auth.service';
 import { SettingsComponent } from '../../shared/settings/settings.component';
 import { UserListComponent } from '../../shared/list-user/list-user.component';
+import { CardComponent } from '../../shared/card-evento/card-evento.component';
+import { CommentsComponent } from '../../shared/comments/comments.component';
+import { PaginationComponent } from '../../shared/pagination/pagination.component';
+import { Evento } from '../../core/models/evento.model';
 
 @Component({
     selector: 'app-profile-page',
     standalone: true,
-    imports: [CommonModule, SettingsComponent, UserListComponent],
+    imports: [CommonModule, SettingsComponent, UserListComponent, CardComponent, CommentsComponent, PaginationComponent],
     templateUrl: './profile.page.html',
     styleUrls: ['./profile.page.scss']
 })
 export class ProfilePage implements OnInit {
     profile!: Profile;
     isUser: boolean = false;
-    currentView: 'profile' | 'settings' | 'followers' | 'following' = 'profile';
+    currentView: 'profile' | 'settings' | 'followers' | 'following' | 'favorites' | 'comments' = 'favorites';
     listUsers: Profile[] = [];
+    showUserListModal: boolean = false;
+    userListType: 'followers' | 'following' | null = null;
+    favoriteEvents: Evento[] = [];
+    paginatedFavoriteEvents: Evento[] = [];
+    totalFavoriteEvents: number = 0;
+    currentFavoritePage: number = 1;
+    itemsPerPage: number = 4;
+    comments: any[] = [];
 
     constructor(
         private route: ActivatedRoute,
@@ -46,6 +58,7 @@ export class ProfilePage implements OnInit {
             this.userService.currentUser.subscribe(user => {
                 this.isUser = user.username === this.profile.username;
             });
+            this.showFavorites();
         });
     }
 
@@ -62,25 +75,56 @@ export class ProfilePage implements OnInit {
     }
 
     showProfile(): void {
-        this.currentView = 'profile';
+        this.currentView = 'favorites';
+        this.showFavorites();
     }
 
     showFollowers(): void {
+        this.showUserListModal = true;
+        this.userListType = 'followers';
         this.profileService.getFollowers(this.profile.username).subscribe(users => {
             this.listUsers = users;
-            this.currentView = 'followers';
         });
     }
 
     showFollowing(): void {
+        this.showUserListModal = true;
+        this.userListType = 'following';
         this.profileService.getFollowing(this.profile.username).subscribe(users => {
             this.listUsers = users;
-            this.currentView = 'following';
         });
     }
 
-    closeList(): void {
+    closeUserListModal(): void {
+        this.showUserListModal = false;
+        this.userListType = null;
         this.listUsers = [];
-        this.currentView = 'profile';
+    }
+
+    showFavorites(): void {
+        this.currentView = 'favorites';
+        this.profileService.getFavorites(this.profile.username).subscribe(events => {
+            this.favoriteEvents = events;
+            this.totalFavoriteEvents = events.length;
+            this.paginateFavoriteEvents();
+        });
+    }
+
+    showComments(): void {
+        this.currentView = 'comments';
+        this.profileService.getComments(this.profile.username).subscribe(comments => {
+            this.comments = comments;
+        });
+    }
+
+    paginateFavoriteEvents(): void {
+        const startIndex = (this.currentFavoritePage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.paginatedFavoriteEvents = this.favoriteEvents.slice(startIndex, endIndex);
+    }
+
+    onFavoritePageChange(page: number): void {
+        this.currentFavoritePage = page;
+        this.paginateFavoriteEvents();
     }
 }

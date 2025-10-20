@@ -34,4 +34,16 @@ export class ProfileService {
         return this.apiService.get(`/profile/${username}/following`)
             .pipe(map(data => data.profiles));
     }
+
+    getFavorites(username: string): Observable<any[]> {
+        return this.apiService.get(`/profile/${username}/favorites`)
+            .pipe(map(data => data.eventos));
+    }
+
+    getComments(username: string): Observable<any[]> {
+        return this.apiService.get(`/profile/${username}/comments`)
+            .pipe(map(data => data.comments));
+    }
+
+
 }

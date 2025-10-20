@@ -53,7 +53,7 @@ const EventoSchema = new mongoose.Schema({
     ref: 'Comment'
   }],
   author: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true
   }
