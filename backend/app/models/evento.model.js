@@ -53,10 +53,11 @@ const EventoSchema = new mongoose.Schema({
     ref: 'Comment'
   }],
   author: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   }
+
 }, { timestamps: true });
 
 EventoSchema.plugin(uniqueValidator, { message: '{PATH} already taken' });
