@@ -14,4 +14,8 @@ router.get('/:username/followers', optionalVerifyJWT, controller.getFollowers);
 
 router.get('/:username/following', optionalVerifyJWT, controller.getFollowing);
 
+router.get('/:username/favorites', optionalVerifyJWT, controller.getFavorites);
+
+router.get('/:username/comments', optionalVerifyJWT, controller.getComments);
+
 module.exports = router;
