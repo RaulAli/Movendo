@@ -285,12 +285,12 @@ exports.addfavoriteEvento = async (req, res, next) => {
     if (!loginUser) return res.status(401).json({ message: 'User Not Found' });
     if (!evento) return res.status(404).json({ message: 'Evento Not Found' });
 
-    await loginUser.favorite(evento._id);
+    const updatedUser = await loginUser.favorite(evento._id);
     const updatedEvento = await evento.updateFavoriteCount();
 
     return res.status(200).json({
       success: true,
-      data: await updatedEvento.toEventoResponse(loginUser)
+      data: await updatedEvento.toEventoResponse(updatedUser)
     });
   } catch (err) {
     next(err);
@@ -310,12 +310,12 @@ exports.unfavoriteEvento = async (req, res, next) => {
     if (!user) return res.status(401).json({ message: 'User Not Found' });
     if (!evento) return res.status(404).json({ message: 'Evento Not Found' });
 
-    await user.unfavorite(evento._id);
+    const updatedUser = await user.unfavorite(evento._id);
     const updated = await evento.updateFavoriteCount();
 
     return res.status(200).json({
       success: true,
-      data: await updated.toEventoResponse(user)
+      data: await updated.toEventoResponse(updatedUser)
     });
   } catch (err) {
     next(err);

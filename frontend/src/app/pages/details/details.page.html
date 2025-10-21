@@ -4,14 +4,26 @@
         <h1 class="title">{{ evento.nombre }}</h1>
 
         <ul class="meta">
-            <li><strong>Fecha:</strong> {{ evento.fecha | date:'fullDate' }}</li>
+            <li><strong>Inicio:</strong> {{ evento.startDate | date:'fullDate' }}</li>
+            <li><strong>Fin:</strong> {{ evento.endDate | date:'fullDate' }}</li>
             <li><strong>Ciudad:</strong> {{ evento.ciudad }}</li>
             <li *ngIf="evento.category"><strong>Género:</strong> {{ evento.category }}</li>
-            <li *ngIf="evento.slug"><strong>Slug:</strong> {{ evento.slug }}</li>
-            <li *ngIf="evento._id"><strong>ID:</strong> {{ evento._id }}</li>
-            <app-carousel class="main-carousel" page="evento" [slug_evento]="evento.slug ?? null"></app-carousel>
         </ul>
 
+        @if (evento.favorited) {
+        <button class="btn btn-sm btn-outline-primary" (click)="toggleFavorite(evento)">
+            <i class="ion-heart"></i>
+            Unfavorite <span class="counter">({{ evento.favouritesCount }})</span>
+        </button>
+        } @else {
+        <button class="btn btn-sm btn-outline-primary" (click)="toggleFavorite(evento)">
+            <i class="ion-heart"></i>
+            Favorite <span class="counter">({{ evento.favouritesCount }})</span>
+        </button>
+        }
+
+        <app-carousel class="main-carousel" page="evento" [slug_evento]="evento.slug ?? null">
+        </app-carousel>
         <a routerLink="/" class="btn-back">← Volver</a>
     </article>
 </ng-container>
