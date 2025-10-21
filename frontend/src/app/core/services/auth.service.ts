@@ -60,10 +60,12 @@ export class UserService {
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
 
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.router.navigateByUrl(returnUrl).then(() => {
-      this.executePendingAction();
-    });
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+    if (returnUrl) {
+      this.router.navigateByUrl(returnUrl).then(() => {
+        this.executePendingAction();
+      });
+    }
   }
 
   purgeAuth() {
