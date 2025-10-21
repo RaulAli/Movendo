@@ -13,7 +13,7 @@ exports.getProfile = async (req, res, next) => {
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        return res.status(200).json({ profile: user.toProfileJSON(loggedinUser) });
+        return res.status(200).json({ profile: await user.toProfileJSON(loggedinUser) });
     } catch (err) {
         next(err);
     }
@@ -38,7 +38,7 @@ exports.followUser = async (req, res, next) => {
         await loggedinUser.save();
         await userToFollow.updateFollowersCount(loggedinUser);
 
-        return res.status(200).json({ profile: userToFollow.toProfileJSON(loggedinUser) });
+        return res.status(200).json({ profile: await userToFollow.toProfileJSON(loggedinUser) });
     } catch (err) {
         next(err);
     }
@@ -63,7 +63,7 @@ exports.unfollowUser = async (req, res, next) => {
         await loggedinUser.save();
         await userToUnfollow.updateFollowersCount(loggedinUser);
 
-        return res.status(200).json({ profile: userToUnfollow.toProfileJSON(loggedinUser) });
+        return res.status(200).json({ profile: await userToUnfollow.toProfileJSON(loggedinUser) });
     } catch (err) {
         next(err);
     }
@@ -82,7 +82,7 @@ exports.getFollowers = async (req, res, next) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         const followers = await User.find({ followingUsers: user._id }).exec();
-        const profiles = followers.map(follower => follower.toProfileJSON(loggedinUser));
+        const profiles = await Promise.all(followers.map(follower => follower.toProfileJSON(loggedinUser)));
 
         return res.status(200).json({ profiles });
     } catch (err) {
@@ -103,7 +103,7 @@ exports.getFollowing = async (req, res, next) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         const following = await User.find({ _id: { $in: user.followingUsers } }).exec();
-        const profiles = following.map(fu => fu.toProfileJSON(loggedinUser));
+        const profiles = await Promise.all(following.map(fu => fu.toProfileJSON(loggedinUser)));
 
         return res.status(200).json({ profiles });
     } catch (err) {

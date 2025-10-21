@@ -74,13 +74,16 @@ userSchema.methods.toUserResponse = function () {
     };
 };
 
-userSchema.methods.toProfileJSON = function (user) {
+userSchema.methods.toProfileJSON = async function (user) {
+    const commentsCount = await mongoose.model('Comment').countDocuments({ author: this._id });
     return {
         username: this.username,
         image: this.image,
         following: user ? user.isFollowing(this._id) : false,
         followersCount: this.followersCount,
-        followingCount: this.followingCount
+        followingCount: this.followingCount,
+        favoritesCount: this.favouriteEvento.length,
+        commentsCount: commentsCount
     };
 };
 
