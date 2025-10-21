@@ -7,6 +7,10 @@ export interface Evento {
   slug?: string;
   image?: string;
   price?: number;
+  favorited?: boolean;
+  favouritesCount?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface EventosResponse {
