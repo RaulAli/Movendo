@@ -65,6 +65,10 @@ export class ProfilePage implements OnInit {
         this.userService.actionTriggered.subscribe(action => {
             if (action.type === 'follow') { // Only re-trigger if the action was to follow
                 if (action.username === this.profile.username && !this.profile.following) {
+                    if (action.username === this.userService.getCurrentUser().username) {
+                        console.log('Cannot follow your own account.');
+                        return;
+                    }
                     // Directly call the follow method if not already following
                     this.profileService.follow(action.username).subscribe(profile => {
                         this.profile = profile; // Update the profile to reflect the change
