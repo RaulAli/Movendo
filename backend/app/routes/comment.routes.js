@@ -21,4 +21,7 @@ router.get('/:slug/comment', controller.getCommentFromEvento);
 //Eliminar un comentario
 router.delete('/:slug/comment/:id', verifyJWT, controller.deleteCommentFromEvento);
 
+//Eliminar un comentario
+router.put('/:slug/comment/:id', verifyJWT, controller.updateComment);
+
 module.exports = router;

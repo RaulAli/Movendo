@@ -1,12 +1,53 @@
-<br>
-<br>
-<div class="comment initial">
+@if (canModify==true) {
+<div class="comment owner-comment">
     <div class="comment-avatar-container">
-        <img class="comment-avatar" src="{{comment.author.image}}" />
+        <img class="comment-avatar" [src]="comment.author.image" alt="{{ comment.author.username }} avatar" />
     </div>
-    <h2 class="comment-title">Author: {{ comment.author.username }}</h2>
+
+    <a [routerLink]="['/profile']" class="username-link">
+        Tú ({{ comment.author.username }})
+    </a>
+
+    @if (!isEditing) {
     <p class="comment-text">{{ comment.body }}</p>
-    <!-- <p class="comment-time-stamp">{{ comment.createdAt | date: 'short'}}</p> -->
-    <div class="comment-delete-icon" *ngIf="canModify === true"><i class="bi bi-trash small"
-            (click)="deleteClicked()"></i></div>
+
+    <div class="comment-actions">
+        <a class="action-link action-edit" role="button" tabindex="0" (click)="startEditing()"
+            (keydown.enter)="startEditing()" (keydown.space)="$event.preventDefault(); startEditing()">
+            Editar
+        </a>
+        <a class="action-link action-delete" role="button" tabindex="0" (click)="deleteClicked()"
+            (keydown.enter)="deleteClicked()" (keydown.space)="$event.preventDefault(); deleteClicked()">
+            Borrar
+        </a>
+    </div>
+    } @else {
+    <div class="edit-comment-form">
+        <textarea class="comment-textarea" [(ngModel)]="editedBody" rows="3"
+            placeholder="Escribe tu comentario editado..."></textarea>
+        <div class="comment-actions">
+            <a class="action-link action-save" role="button" tabindex="0" (click)="saveEditedComment()"
+                (keydown.enter)="saveEditedComment()" (keydown.space)="$event.preventDefault(); saveEditedComment()">
+                Guardar
+            </a>
+            <a class="action-link action-cancel" role="button" tabindex="0" (click)="cancelEditing()"
+                (keydown.enter)="cancelEditing()" (keydown.space)="$event.preventDefault(); cancelEditing()">
+                Cancelar
+            </a>
+        </div>
+    </div>
+    }
 </div>
+} @else {
+<div class="comment other-comment">
+    <div class="comment-avatar-container">
+        <img class="comment-avatar" [src]="comment.author.image" alt="{{ comment.author.username }} avatar" />
+    </div>
+
+    <a [routerLink]="['/profile', comment.author.username]" class="username-link">
+        {{ comment.author.username }}
+    </a>
+
+    <p class="comment-text">{{ comment.body }}</p>
+</div>
+}

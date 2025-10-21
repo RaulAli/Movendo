@@ -29,9 +29,9 @@ export class DetailsPage implements OnInit {
   private svc = inject(EventoService);
   private reload$ = new Subject<void>();
 
-  author!: User; //GET CURRENT USER
-  slug!: string | null; //SLUG del EVENTo
-  currentUser!: User; //GET CURRENT USER
+  author!: User;
+  slug!: string | null;
+  currentUser!: User;
   comments!: Comment[];
   canModify!: boolean;
   commentFormErrors!: {};
@@ -39,10 +39,12 @@ export class DetailsPage implements OnInit {
   logged!: boolean;
   NoComments!: boolean;
   isDeleting!: boolean;
-  user_image!: string | null; //SLUG del EVENTo
+  user_image!: string | null;
   isSubmitting!: boolean;
-  
+
   evento$: Observable<Evento>;
+  existingComment: Comment | null = null;
+  hasCommented: boolean = false;
 
   constructor(
     private CommentService: CommentsService,
@@ -83,6 +85,9 @@ export class DetailsPage implements OnInit {
       (userData: User) => {
         this.currentUser = userData;
         this.canModify = true;
+        if (this.comments) {
+          this.checkIfUserHasCommented();
+        }
       }
     );
   }
@@ -91,7 +96,11 @@ export class DetailsPage implements OnInit {
     if (product_slug) {
       this.CommentService.getAll(product_slug).subscribe((comments) => {
         this.comments = comments;
+
+        this.checkIfUserHasCommented();
+
         if (this.comments.length === 0) {
+          console.log("No comments");
           this.NoComments = true;
         } else {
           this.NoComments = false;
@@ -100,26 +109,55 @@ export class DetailsPage implements OnInit {
     }
   }
 
-  delete_comment(comment: Comment) {
-    if (!comment || !this.slug) return;
+  checkIfUserHasCommented() {
+    if (!this.currentUser || !this.comments || this.comments.length === 0) {
+      this.hasCommented = false;
+      this.existingComment = null;
+      return;
+    }
 
-    this.CommentService.destroy(this.slug, comment.id).subscribe(() => {
-      this.comments = this.comments.filter(c => c.id !== comment.id);
-    });
+    this.existingComment = this.comments.find(comment =>
+      comment.author && comment.author.username === this.currentUser.username
+    ) || null;
+
+    this.hasCommented = !!this.existingComment;
   }
 
-  create_comment() {
+  create_comment(event: Event) {
+    event.preventDefault();
     this.isSubmitting = true;
     this.commentFormErrors = {};
+
+    if (this.hasCommented) {
+      console.warn('El usuario ya tiene un comentario en este evento');
+      this.isSubmitting = false;
+      return;
+    }
+
+    const commentBody = this.commentControl.value?.trim();
+
+    if (!commentBody) {
+      this.isSubmitting = false;
+      return;
+    }
+
     if (this.slug) {
-      const commentBody = this.commentControl.value;
       this.CommentService.add(this.slug, { body: commentBody }).subscribe({
         next: (data: Comment) => {
           this.comments.unshift(data);
           this.commentControl.reset('');
           this.isSubmitting = false;
+          this.NoComments = false;
+          this.hasCommented = true;
+          this.existingComment = data;
+          console.log('Comentario creado exitosamente');
         },
         error: (err) => {
+          console.error('Error adding comment:', err);
+          if (err.status === 409) {
+            this.hasCommented = true;
+            this.get_comments(this.slug);
+          }
           this.isSubmitting = false;
         }
       });
