@@ -85,4 +85,16 @@ export class EventoService {
       map(res => res.data ?? { minPrice: 0, maxPrice: 0 })
     );
   }
+
+  favorite(slug: string): Observable<Evento> {
+    return this.apiService.post(`/evento/${slug}/favorite`, {}).pipe(
+      map(res => res.data)
+    );
+  }
+
+  unfavorite(slug: string): Observable<Evento> {
+    return this.apiService.delete(`/evento/${slug}/favorite`).pipe(
+      map(res => res.data)
+    );
+  }
 }
