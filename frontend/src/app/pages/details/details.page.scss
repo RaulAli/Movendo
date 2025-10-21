@@ -81,3 +81,26 @@
 .error {
     color: #d32f2f;
 }
+
+// details.page.scss
+.post-link,
+.cancel-link {
+    padding: 8px 16px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 4px;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.post-link {
+    background: #007bff;
+    color: white;
+}
+
+.cancel-link {
+    background: #6c757d;
+    color: white;
+}

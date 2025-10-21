@@ -3,6 +3,7 @@ const Comment = require('../models/comment.model');
 const Evento = require('../models/evento.model');
 const User = require('../models/user.model');
 
+// controllers/comment.controller.js
 exports.createCommentForEvento = asyncHandler(async (req, res) => {
     const userId = req.userId;
     const { slug } = req.params;
@@ -19,6 +20,17 @@ exports.createCommentForEvento = asyncHandler(async (req, res) => {
 
     if (!author) return res.status(401).json({ message: 'User Not Found' });
     if (!evento) return res.status(404).json({ message: 'Evento Not Found' });
+
+    const existingComment = await Comment.findOne({
+        author: author._id,
+        evento: evento._id
+    }).exec();
+
+    if (existingComment) {
+        return res.status(409).json({
+            message: 'Agradecemos sus intenciones pero por temas de seguridad solo se permite un commentario por usuario.'
+        });
+    }
 
     const comment = await Comment.create({
         body: body.trim(),
@@ -96,5 +108,51 @@ exports.deleteCommentFromEvento = asyncHandler(async (req, res) => {
             evento: evento._id,
             author: comment.author
         }
+    });
+});
+
+exports.updateComment = asyncHandler(async (req, res) => {
+    const userId = req.userId;
+    const { slug, id } = req.params;
+    const { body } = req.body?.comment || {};
+
+    if (!body || !body.trim()) {
+        return res.status(422).json({
+            message: 'El comentario no puede estar vacío'
+        });
+    }
+
+    const [evento, comment] = await Promise.all([
+        Evento.findOne({ slug }).select('_id').exec(),
+        Comment.findById(id).populate('author', 'username _id').exec()
+    ]);
+
+    if (!evento) {
+        return res.status(404).json({ message: 'Evento no encontrado' });
+    }
+
+    if (!comment) {
+        return res.status(404).json({ message: 'Comentario no encontrado' });
+    }
+
+    if (String(comment.evento) !== String(evento._id)) {
+        return res.status(400).json({
+            message: 'El comentario no pertenece a este evento'
+        });
+    }
+
+    if (String(comment.author._id) !== String(userId)) {
+        return res.status(403).json({
+            message: 'No estás autorizado para editar este comentario'
+        });
+    }
+
+    comment.body = body.trim();
+    comment.updatedAt = new Date();
+
+    await comment.save();
+
+    return res.status(200).json({
+        comment: await comment.toCommentResponse(comment.author)
     });
 });
