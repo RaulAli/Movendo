@@ -1,4 +1,3 @@
-<!-- pages/details/details.page.html -->
 <ng-container *ngIf="evento$ | async as evento; else loadingTpl">
     <article class="evento-details">
         <h1 class="title">{{ evento.nombre }}</h1>
@@ -26,50 +25,42 @@
         </app-carousel>
         <a routerLink="/" class="btn-back">← Volver</a>
     </article>
+
+    <hr>
+    <h3 class="product-info title">Comment Section</h3>
+    <br>
+
+    <div class="comments-section">
+
+        <app-comments *ngFor="let comment of comments" [comment]="comment" [slug]="evento.slug ?? ''">
+        </app-comments>
+
+        <div class=" comment" *ngIf="NoComments">
+            <p>Be the first to comment on this event.</p>
+        </div>
+
+        <div class="create-comment" *ngIf="logged === true && !hasCommented">
+            <form (ngSubmit)="create_comment($event)">
+                <div class="comment-new">
+                    <fieldset [disabled]="isSubmitting">
+                        <textarea class="comment-textarea" placeholder="Write a comment..."
+                            [formControl]="commentControl" rows="3"></textarea>
+                        <div class="comment-actions">
+                            <span class="post-link" (click)="create_comment($event)">Comment</span>
+                            <span class="cancel-link" (click)="empty_comment()">Cancel</span>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+
+        <div class="not-logged" *ngIf="logged === false">
+            <a [routerLink]="['/auth/login']">Sign in</a> or
+            <a [routerLink]="['/auth/register']">sign up</a>
+            to add comments on this event.
+        </div>
+    </div>
 </ng-container>
-
-<hr>
-<h3 class="product-info title">Comment Section</h3>
-<br>
-
-<div class="comments-section">
-
-    <!-- Mostrar lista de comentarios -->
-    <app-comments *ngFor="let comment of comments" [comment]="comment" (deleteComment)="delete_comment(comment)">
-    </app-comments>
-
-    <!-- Mostrar si no hay comentarios -->
-    <div class="comment" *ngIf="NoComments">
-        <p>Be the first to comment on this event.</p>
-    </div>
-
-    <!-- Crear comentario si está loggeado -->
-    <div class="create-comment" *ngIf="logged === true">
-        <form (ngSubmit)="create_comment()">
-            <div class="comment-new">
-
-                <fieldset [disabled]="isSubmitting">
-                    <textarea class="comment-textarea" placeholder="Write a comment..." [formControl]="commentControl"
-                        rows="3">
-          </textarea>
-
-                    <div class="comment-actions">
-                        <button class="post" type="submit">Comment</button>
-                        <button class="cancel" type="button" (click)="empty_comment()">Cancel</button>
-                    </div>
-                </fieldset>
-            </div>
-        </form>
-    </div>
-
-    <div class="not-logged" *ngIf="logged === false">
-        <a [routerLink]="['/login']">Sign in</a> or
-        <a [routerLink]="['/register']">sign up</a>
-        to add comments on this event.
-    </div>
-
-</div>
-
 
 <ng-template #loadingTpl>
     <div class="loading">Cargando…</div>
