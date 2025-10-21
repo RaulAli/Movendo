@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../../core/services/profile.service';
 import { Profile } from '../../core/models/profile.model';
 import { switchMap } from 'rxjs/operators';
@@ -36,7 +36,8 @@ export class ProfilePage implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private profileService: ProfileService,
-        private userService: UserService
+        private userService: UserService,
+        private router: Router // Inject Router
     ) { }
 
     ngOnInit() {
@@ -60,9 +61,29 @@ export class ProfilePage implements OnInit {
             });
             this.showFavorites();
         });
+
+        this.userService.actionTriggered.subscribe(action => {
+            if (action.type === 'follow') { // Only re-trigger if the action was to follow
+                if (action.username === this.profile.username && !this.profile.following) {
+                    // Directly call the follow method if not already following
+                    this.profileService.follow(action.username).subscribe(profile => {
+                        this.profile = profile; // Update the profile to reflect the change
+                    });
+                }
+            }
+        });
     }
 
     onToggleFollowing() {
+        if (!this.userService.getCurrentUser().token) {
+            // Store the action and redirect to login
+            this.userService.redirectToLoginWithAction(this.router.url, {
+                type: this.profile.following ? 'unfollow' : 'follow',
+                username: this.profile.username
+            });
+            return;
+        }
+
         if (this.profile.following) {
             this.profileService.unfollow(this.profile.username).subscribe(profile => this.profile = profile);
         } else {

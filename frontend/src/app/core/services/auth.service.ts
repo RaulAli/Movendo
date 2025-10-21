@@ -1,9 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject, Subject } from 'rxjs'; // Import Subject
 import { ApiService } from './api.service';
 import { JwtService } from './jwt.service';
 import { User } from '../models/auth.model';
 import { map, distinctUntilChanged, tap } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
+
+interface PendingAction {
+  type: 'favorite' | 'unfavorite' | 'follow' | 'unfollow';
+  slug?: string; // For favorite/unfavorite
+  username?: string; // For follow/unfollow
+  // Add other properties as needed for different actions
+}
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +25,15 @@ export class UserService {
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private apiService: ApiService, private jwtService: JwtService) { }
+  private pendingAction: PendingAction | null = null;
+  public actionTriggered = new Subject<PendingAction>(); // New Subject
+
+  constructor(
+    private apiService: ApiService,
+    private jwtService: JwtService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
   populate() {
     const token = this.jwtService.getToken();
@@ -38,12 +54,16 @@ export class UserService {
     }
   }
 
-
   setAuth(user: User) {
     console.log(user);
     this.jwtService.saveToken(user.token);
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
+
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.router.navigateByUrl(returnUrl).then(() => {
+      this.executePendingAction();
+    });
   }
 
   purgeAuth() {
@@ -75,12 +95,11 @@ export class UserService {
   getUserProfile(): Observable<User> {
     return this.apiService.get('/user/profile', undefined, 3000).pipe(
       map((data: any) => {
-        this.currentUserSubject.next(data.user);
         return data.user;
       })
     );
   }
-  //REVISAR
+
   update(credentials: any): Observable<User> {
     console.log('📦 Datos de actualización:', { user: credentials });
     return this.apiService.put('/user', { user: credentials }, 3000).pipe(
@@ -115,5 +134,17 @@ export class UserService {
         return data.user;
       })
     );
+  }
+
+  redirectToLoginWithAction(currentUrl: string, action: PendingAction): void {
+    this.pendingAction = action;
+    this.router.navigate(['/auth/login'], { queryParams: { returnUrl: currentUrl } });
+  }
+
+  private executePendingAction(): void {
+    if (this.pendingAction) {
+      this.actionTriggered.next(this.pendingAction);
+      this.pendingAction = null;
+    }
   }
 }

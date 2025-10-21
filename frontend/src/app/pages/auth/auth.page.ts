@@ -85,9 +85,7 @@ export class AuthPage implements OnInit {
           title: 'Éxito',
           text: this.authType === 'login' ? 'Inicio de sesión exitoso' : 'Registro exitoso'
         }).then(() => {
-          if (this.authType === 'login') {
-            this.router.navigateByUrl('/home');
-          } else {
+          if (this.authType !== 'login') {
             this.router.navigateByUrl('/auth/login');
           }
         });
