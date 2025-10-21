@@ -50,7 +50,9 @@ export class DetailsPage implements OnInit {
     // private ToastrService: ToastrService,
   ) { }
 
-  evento$ = this.route.paramMap.pipe(
+  evento$ = this.reload$.pipe(
+    startWith(undefined),
+    switchMap(() => this.route.paramMap),
     switchMap(params => this.svc.get(params.get('slug') ?? ''))
   );
 
@@ -128,13 +130,11 @@ export class DetailsPage implements OnInit {
   create_comment() {
     this.isSubmitting = true;
     this.commentFormErrors = {};
-    console.log(this.commentControl.value);
     // if (this.slug) {
-    // const commentBody = this.commentControl.value;
-    // console.log("Comentando:", commentBody);
+    //   const commentBody = this.commentControl.value;
     //   this.CommentService.add(this.slug, { body: commentBody }).subscribe({
     //     next: (data: Comment) => {
-    //       this.comments.push(data);
+    //       this.comments.unshift(data);
     //       this.commentControl.reset('');
     //       this.isSubmitting = false;
     //       console.log('Comment added successfully');
@@ -151,6 +151,24 @@ export class DetailsPage implements OnInit {
   empty_comment() {
     this.commentControl.reset('');
     this.isSubmitting = false;
+  }
+
+  toggleFavorite(evento: Evento) {
+    if (this.logged) {
+      if (evento.favorited) {
+        this.svc.unfavorite(evento.slug).subscribe(
+          () => {
+            this.reload$.next();
+          }
+        );
+      } else {
+        this.svc.favorite(evento.slug).subscribe(
+          () => {
+            this.reload$.next();
+          }
+        );
+      }
+    }
   }
 
 

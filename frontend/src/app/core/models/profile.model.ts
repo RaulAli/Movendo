@@ -4,4 +4,6 @@ export interface Profile {
     following: boolean;
     followersCount: number;
     followingCount: number;
+    favoritesCount: number;
+    commentsCount: number;
 }
