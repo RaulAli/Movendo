@@ -10,12 +10,12 @@
         </ul>
 
         @if (evento.favorited) {
-        <button class="btn btn-sm btn-outline-primary" (click)="toggleFavorite(evento)">
+        <button class="btn btn-sm btn-outline-primary" (click)="toggleFavorite()">
             <i class="ion-heart"></i>
             Unfavorite <span class="counter">({{ evento.favouritesCount }})</span>
         </button>
         } @else {
-        <button class="btn btn-sm btn-outline-primary" (click)="toggleFavorite(evento)">
+        <button class="btn btn-sm btn-outline-primary" (click)="toggleFavorite()">
             <i class="ion-heart"></i>
             Favorite <span class="counter">({{ evento.favouritesCount }})</span>
         </button>

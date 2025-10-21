@@ -1,7 +1,7 @@
 // pages/details/details.page.ts
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule, ParamMap } from '@angular/router';
+import { ActivatedRoute, RouterModule, ParamMap, Router } from '@angular/router';
 import { Subject, switchMap, startWith, Observable } from 'rxjs';
 import { Evento } from '../../core/models/evento.model';
 import { EventoService } from '../../core/services/evento.service';
@@ -45,10 +45,12 @@ export class DetailsPage implements OnInit {
   evento$: Observable<Evento>;
   existingComment: Comment | null = null;
   hasCommented: boolean = false;
+  evento!: Evento;
 
   constructor(
     private CommentService: CommentsService,
     private UserService: UserService,
+    private router: Router,
   ) {
     this.evento$ = this.reload$.pipe(
       startWith(undefined),
@@ -78,6 +80,24 @@ export class DetailsPage implements OnInit {
       }
     );
     this.get_user_author();
+
+    this.evento$.subscribe(evento => {
+      this.evento = evento; // Assign the emitted Evento to the component property
+    });
+
+    // Subscribe to pending actions from UserService
+    this.UserService.actionTriggered.subscribe(action => {
+      if (action.type === 'favorite') { // Only re-trigger if the action was to favorite
+        if (action.slug === this.slug && this.evento && !this.evento.favorited) {
+          // Directly call the favorite method if not already favorited
+          this.svc.favorite(action.slug).subscribe(
+            () => {
+              this.reload$.next(); // Refresh the event data
+            }
+          );
+        }
+      }
+    });
   }
 
   get_user_author() {
@@ -169,21 +189,37 @@ export class DetailsPage implements OnInit {
     this.isSubmitting = false;
   }
 
-  toggleFavorite(evento: Evento) {
-    if (this.logged) {
-      if (evento.favorited) {
-        this.svc.unfavorite(evento.slug!).subscribe(
-          () => {
-            this.reload$.next();
-          }
-        );
-      } else {
-        this.svc.favorite(evento.slug!).subscribe(
-          () => {
-            this.reload$.next();
-          }
-        );
-      }
+  toggleFavorite() { // Remove evento parameter
+    if (!this.evento) { // Ensure evento is loaded
+      console.error('Evento not loaded yet.');
+      return;
+    }
+
+    if (!this.UserService.getCurrentUser().token) {
+      this.UserService.redirectToLoginWithAction(this.router.url, {
+        type: this.evento.favorited ? 'unfavorite' : 'favorite',
+        slug: this.evento.slug
+      });
+      return;
+    }
+
+    if (!this.evento.slug) {
+      console.error('Evento slug is undefined, cannot favorite/unfavorite.');
+      return;
+    }
+
+    if (this.evento.favorited) {
+      this.svc.unfavorite(this.evento.slug).subscribe(
+        () => {
+          this.reload$.next();
+        }
+      );
+    } else {
+      this.svc.favorite(this.evento.slug).subscribe(
+        () => {
+          this.reload$.next();
+        }
+      );
     }
   }
 }
