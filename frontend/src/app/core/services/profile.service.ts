@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Profile } from '../models/profile.model';
+import { Comment } from '../models/comment.model';
 
 @Injectable({
     providedIn: 'root'
@@ -40,7 +41,7 @@ export class ProfileService {
             .pipe(map(data => data.eventos));
     }
 
-    getComments(username: string): Observable<any[]> {
+    getComments(username: string): Observable<Comment[]> {
         return this.apiService.get(`/profile/${username}/comments`)
             .pipe(map(data => data.comments));
     }

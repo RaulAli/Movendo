@@ -42,8 +42,8 @@
             </div>
 
             <div *ngIf="currentView === 'comments'" class="comments-list">
-                <app-comments *ngFor="let comment of comments" [comment]="comment"></app-comments>
-                <p *ngIf="comments.length === 0" class="no-items-message">No comments to display.</p>
+                <app-comments *ngFor="let comment of comments()" [comment]="comment"></app-comments>
+                <p *ngIf="comments().length === 0" class="no-items-message">No comments to display.</p>
             </div>
         </div>
     </div>

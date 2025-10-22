@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../../core/services/profile.service';
@@ -11,6 +11,7 @@ import { CardComponent } from '../../shared/card-evento/card-evento.component';
 import { CommentsComponent } from '../../shared/comments/comments.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { Evento } from '../../core/models/evento.model';
+import { Comment } from '../../core/models/comment.model';
 
 @Component({
     selector: 'app-profile-page',
@@ -31,7 +32,7 @@ export class ProfilePage implements OnInit {
     totalFavoriteEvents: number = 0;
     currentFavoritePage: number = 1;
     itemsPerPage: number = 4;
-    comments: any[] = [];
+    comments = signal<Comment[]>([]);
 
     constructor(
         private route: ActivatedRoute,
@@ -138,7 +139,7 @@ export class ProfilePage implements OnInit {
     showComments(): void {
         this.currentView = 'comments';
         this.profileService.getComments(this.profile.username).subscribe(comments => {
-            this.comments = comments;
+            this.comments.set(comments);
         });
     }
 
