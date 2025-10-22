@@ -23,15 +23,15 @@ const CommentSchema = new mongoose.Schema({
 CommentSchema.plugin(uniqueValidator, { message: '{PATH} already taken' });
 
 CommentSchema.methods.toCommentResponse = async function (user) {
-    const authorObj = await User.findById(this.author).exec();
     return {
         id: this._id,
         body: this.body,
-        author: authorObj ? {
-            id: authorObj._id,
-            username: authorObj.username,
-            image: authorObj.image
-        } : undefined
+        createdAt: this.createdAt,
+        author: {
+            id: user._id,
+            username: user.username,
+            image: user.image
+        }
     };
 };
 

@@ -16,7 +16,7 @@ export class CommentsService {
   add(slug: any, payload: any): Observable<Comment> {
     return this.apiService
       .post(`/evento/${slug}/comment`, { comment: payload }
-      ).pipe(map((data) => { return data })
+      ).pipe(map((data) => { return data.comment })
       );
   }
 

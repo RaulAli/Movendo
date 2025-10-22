@@ -1,4 +1,4 @@
-<ng-container *ngIf="evento$ | async as evento; else loadingTpl">
+<ng-container *ngIf="evento() as evento; else loadingTpl">
     <article class="evento-details">
         <h1 class="title">{{ evento.nombre }}</h1>
 
@@ -32,7 +32,8 @@
 
     <div class="comments-section">
 
-        <app-comments *ngFor="let comment of comments" [comment]="comment" [slug]="evento.slug ?? ''">
+        <app-comments *ngFor="let comment of comments()" [comment]="comment" [slug]="evento.slug ?? ''"
+            (deleteComment)="onDeleteComment($event)" (updateComment)="onUpdateComment($event)">
         </app-comments>
 
         <div class=" comment" *ngIf="NoComments">
