@@ -82,7 +82,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
         });
 
         this.routeSub = this.route.queryParamMap.subscribe(paramMap => {
-            this.applyParamsFromParamMap(paramMap);
+            this.applyParamsFromEncodedUrl(paramMap);
 
             if (this.initialFilters && paramMap.keys.length === 0) {
                 this.setInitialFilters();
@@ -143,7 +143,6 @@ export class FiltersComponent implements OnInit, OnDestroy {
 
         const { category, price_min, price_max, startDate, endDate, ciudad } = this.initialFilters;
 
-        // Clear existing FormArrays before patching
         this.getCiudadFormArray().clear();
         this.getCategoryFormArray().clear();
 
@@ -209,46 +208,102 @@ export class FiltersComponent implements OnInit, OnDestroy {
         });
     }
 
-    private applyParamsFromParamMap(paramMap: ParamMap) {
-        // Obtener los FormArrays
+    private applyParamsFromEncodedUrl(paramMap: ParamMap) {
+        const encodedFilters = paramMap.get('f');
+
+        if (encodedFilters) {
+            try {
+                const decodedString = decodeURIComponent(encodedFilters);
+                const filters: Filters = JSON.parse(decodedString);
+
+                this.applyDecodedFilters(filters);
+                return;
+            } catch (error) {
+                console.error('Error decodificando filtros de la URL:', error);
+                this.applyParamsFromParamMap(paramMap);
+                return;
+            }
+        }
+
+        this.applyParamsFromParamMap(paramMap);
+    }
+
+    private applyDecodedFilters(filters: Filters) {
         const ciudadFormArray = this.getCiudadFormArray();
         const categoryFormArray = this.getCategoryFormArray();
 
-        // Limpiar los FormArrays existentes
         ciudadFormArray.clear();
         categoryFormArray.clear();
 
-        // Establecer precio mínimo
+        if (filters.price_min !== undefined) {
+            this.filterForm.get('price_min')?.setValue(filters.price_min);
+        } else if (this.filterForm.get('price_min')?.value === null) {
+            this.filterForm.get('price_min')?.setValue(this.minAvailablePrice);
+        }
+
+        if (filters.price_max !== undefined) {
+            this.filterForm.get('price_max')?.setValue(filters.price_max);
+        } else if (this.filterForm.get('price_max')?.value === null) {
+            this.filterForm.get('price_max')?.setValue(this.maxAvailablePrice);
+        }
+
+        if (filters.startDate) {
+            this.filterForm.get('startDate')?.setValue(filters.startDate);
+        }
+
+        if (filters.endDate) {
+            this.filterForm.get('endDate')?.setValue(filters.endDate);
+        }
+
+        if (filters.showFavorites !== undefined) {
+            this.filterForm.get('showFavorites')?.setValue(filters.showFavorites);
+        }
+
+        if (filters.ciudad && filters.ciudad.length > 0) {
+            filters.ciudad.forEach(ciudad => {
+                ciudadFormArray.push(this.fb.control(ciudad));
+            });
+        }
+
+        if (filters.category && filters.category.length > 0) {
+            filters.category.forEach(categoria => {
+                categoryFormArray.push(this.fb.control(categoria));
+            });
+        }
+    }
+
+    private applyParamsFromParamMap(paramMap: ParamMap) {
+        const ciudadFormArray = this.getCiudadFormArray();
+        const categoryFormArray = this.getCategoryFormArray();
+
+        ciudadFormArray.clear();
+        categoryFormArray.clear();
+
         const priceMin = paramMap.get('price_min');
         if (priceMin) {
             this.filterForm.get('price_min')?.setValue(Number(priceMin));
         }
 
-        // Establecer precio máximo
         const priceMax = paramMap.get('price_max');
         if (priceMax) {
             this.filterForm.get('price_max')?.setValue(Number(priceMax));
         }
 
-        // Establecer fecha de inicio
         const startDate = paramMap.get('startDate');
         if (startDate) {
             this.filterForm.get('startDate')?.setValue(startDate);
         }
 
-        // Establecer fecha de fin
         const endDate = paramMap.get('endDate');
         if (endDate) {
             this.filterForm.get('endDate')?.setValue(endDate);
         }
 
-        // Establecer favoritos
         const showFavorites = paramMap.get('showFavorites');
         if (showFavorites !== null) {
             this.filterForm.get('showFavorites')?.setValue(showFavorites === 'true');
         }
 
-        // Establecer ciudades (pueden venir múltiples valores)
         const ciudades = paramMap.getAll('ciudad');
         if (ciudades.length > 0) {
             ciudades.forEach(ciudad => {
@@ -256,7 +311,6 @@ export class FiltersComponent implements OnInit, OnDestroy {
             });
         }
 
-        // Establecer categorías (pueden venir múltiples valores)
         const categorias = paramMap.getAll('category');
         if (categorias.length > 0) {
             categorias.forEach(categoria => {
@@ -264,7 +318,6 @@ export class FiltersComponent implements OnInit, OnDestroy {
             });
         }
 
-        // Si no hay parámetros de precio en la URL, usar los valores disponibles
         if (!priceMin && this.filterForm.get('price_min')?.value === null) {
             this.filterForm.get('price_min')?.setValue(this.minAvailablePrice);
         }
@@ -273,5 +326,4 @@ export class FiltersComponent implements OnInit, OnDestroy {
             this.filterForm.get('price_max')?.setValue(this.maxAvailablePrice);
         }
     }
-
 }
