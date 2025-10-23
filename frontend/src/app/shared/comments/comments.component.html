@@ -47,6 +47,11 @@
     <a [routerLink]="['/profile', comment.author.username]" class="username-link">
         {{ comment.author.username }}
     </a>
+    @if (isSpecificRoute && comment.evento) {
+    <span class="comment-event-link">
+        on <a [routerLink]="['/details', comment.evento.slug]">{{ comment.evento.nombre }}</a>
+    </span>
+    }
 
     <p class="comment-text">{{ comment.body }}</p>
 </div>
