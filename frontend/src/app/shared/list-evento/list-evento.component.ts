@@ -20,7 +20,6 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./list-evento.component.scss']
 })
 export class ListComponent implements OnInit {
-
   @Input() evento: Evento[] = [];
   listCategories: Category[] = [];
   loading = false;
@@ -51,16 +50,20 @@ export class ListComponent implements OnInit {
         const maxPrice = results.minMaxPrices.maxPrice;
 
         const qp = this.route.snapshot.queryParamMap;
+        const encodedFilters = qp.get('f');
 
-        const initialFilters: Filters = {
-          nombre: qp.get('nombre') || undefined,
-          category: qp.getAll('category').length > 0 ? qp.getAll('category') : undefined,
-          price_min: qp.get('price_min') ? Number(qp.get('price_min')) : minPrice,
-          price_max: qp.get('price_max') ? Number(qp.get('price_max')) : maxPrice,
-          limit: qp.get('limit') ? Number(qp.get('limit')) : this.DEFAULT_LIMIT,
-          offset: qp.get('offset') ? Number(qp.get('offset')) : this.DEFAULT_OFFSET,
-          ciudad: qp.getAll('ciudad').length > 0 ? qp.getAll('ciudad') : undefined,
-        };
+        let initialFilters: Filters;
+
+        if (encodedFilters) {
+          try {
+            const decodedString = decodeURIComponent(encodedFilters);
+            initialFilters = JSON.parse(decodedString);
+          } catch {
+            initialFilters = this.getDefaultFilters(minPrice, maxPrice);
+          }
+        } else {
+          initialFilters = this.getDefaultFilters(minPrice, maxPrice);
+        }
 
         this.get_list_filtered(initialFilters);
       },
@@ -69,6 +72,19 @@ export class ListComponent implements OnInit {
         this.error = 'Error al cargar datos iniciales';
       }
     });
+  }
+
+  private getDefaultFilters(minPrice: number, maxPrice: number): Filters {
+    const qp = this.route.snapshot.queryParamMap;
+    return {
+      nombre: qp.get('nombre') || undefined,
+      category: qp.getAll('category').length > 0 ? qp.getAll('category') : undefined,
+      price_min: qp.get('price_min') ? Number(qp.get('price_min')) : minPrice,
+      price_max: qp.get('price_max') ? Number(qp.get('price_max')) : maxPrice,
+      limit: qp.get('limit') ? Number(qp.get('limit')) : this.DEFAULT_LIMIT,
+      offset: qp.get('offset') ? Number(qp.get('offset')) : this.DEFAULT_OFFSET,
+      ciudad: qp.getAll('ciudad').length > 0 ? qp.getAll('ciudad') : undefined,
+    };
   }
 
   get_list_filtered(newFilters: Filters): void {
@@ -83,9 +99,11 @@ export class ListComponent implements OnInit {
 
     this.currentPage = (this.filters.offset ?? this.DEFAULT_OFFSET) / (this.filters.limit ?? this.DEFAULT_LIMIT) + 1;
 
+    const encodedFilters = encodeURIComponent(JSON.stringify(this.filters));
+
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: this.filters,
+      queryParams: { f: encodedFilters },
       queryParamsHandling: 'merge',
       replaceUrl: true
     });
