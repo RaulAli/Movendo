@@ -32,7 +32,10 @@ export class ProfilePage implements OnInit {
     totalFavoriteEvents: number = 0;
     currentFavoritePage: number = 1;
     itemsPerPage: number = 4;
-    comments = signal<Comment[]>([]);
+    allComments: Comment[] = [];
+    paginatedComments: Comment[] = [];
+    totalComments: number = 0;
+    currentCommentPage: number = 1;
 
     constructor(
         private route: ActivatedRoute,
@@ -139,7 +142,9 @@ export class ProfilePage implements OnInit {
     showComments(): void {
         this.currentView = 'comments';
         this.profileService.getComments(this.profile.username).subscribe(comments => {
-            this.comments.set(comments);
+            this.allComments = comments;
+            this.totalComments = comments.length;
+            this.paginateComments();
         });
     }
 
@@ -152,5 +157,16 @@ export class ProfilePage implements OnInit {
     onFavoritePageChange(page: number): void {
         this.currentFavoritePage = page;
         this.paginateFavoriteEvents();
+    }
+
+    paginateComments(): void {
+        const startIndex = (this.currentCommentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.paginatedComments = this.allComments.slice(startIndex, endIndex);
+    }
+
+    onCommentPageChange(page: number): void {
+        this.currentCommentPage = page;
+        this.paginateComments();
     }
 }
