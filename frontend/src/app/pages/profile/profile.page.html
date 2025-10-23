@@ -42,8 +42,12 @@
             </div>
 
             <div *ngIf="currentView === 'comments'" class="comments-list">
-                <app-comments *ngFor="let comment of comments()" [comment]="comment"></app-comments>
-                <p *ngIf="comments().length === 0" class="no-items-message">No comments to display.</p>
+                <app-comments *ngFor="let comment of paginatedComments" [comment]="comment"></app-comments>
+                <p *ngIf="allComments.length === 0" class="no-items-message">No comments to display.</p>
+                <app-pagination *ngIf="totalComments > itemsPerPage" [totalItems]="totalComments"
+                    [itemsPerPage]="itemsPerPage" [currentPage]="currentCommentPage"
+                    (pageChange)="onCommentPageChange($event)">
+                </app-pagination>
             </div>
         </div>
     </div>

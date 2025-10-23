@@ -140,7 +140,7 @@ exports.getComments = async (req, res, next) => {
 
         const commentsResponse = await Promise.all(
             comments.map(async (comment) => {
-                const base = await comment.toCommentResponse(); // resuelve author si es necesario
+                const base = await comment.toCommentResponse(user);
                 return {
                     ...base,
                     evento: comment.evento ? comment.evento.toEventoResponse() : undefined
