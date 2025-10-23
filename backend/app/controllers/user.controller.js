@@ -65,7 +65,6 @@ const updateUser = asyncHandler(async (req, res) => {
     if (user.email) updatedFields.email = user.email;
     if (user.username) updatedFields.username = user.username;
     if (typeof user.image !== 'undefined') updatedFields.image = user.image;
-    // if (typeof user.bio !== 'undefined') updatedFields.bio = user.bio;
     if (user.password) updatedFields.password = await argon2.hash(user.password);
 
     const updatedUser = await User.findOneAndUpdate(

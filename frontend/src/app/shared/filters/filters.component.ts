@@ -1,26 +1,33 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { Category } from '../../core/models/category.model';
 import { Filters } from '../../core/models/filters.model';
 import { EventoService } from '../../core/services/evento.service';
+import { UserService } from '../../core/services/auth.service';
+import { RouterLink } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-filters',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink],
     templateUrl: './filters.component.html',
     styleUrls: ['./filters.component.css']
 })
-export class FiltersComponent implements OnInit {
+export class FiltersComponent implements OnInit, OnDestroy {
 
     private _listCategories: Category[] = [];
     listCities: string[] = [];
     minAvailablePrice: number = 0;
     maxAvailablePrice: number = 0;
-
+    currentUser: any = null;
+    canlikes: boolean = false;
     showCitiesDropdown: boolean = false;
     showCategoriesDropdown: boolean = false;
+
+    private routeSub?: Subscription;
 
     @Input()
     set listCategories(value: Category[]) {
@@ -36,18 +43,29 @@ export class FiltersComponent implements OnInit {
 
     filterForm: FormGroup;
 
-    constructor(private fb: FormBuilder, private eventoService: EventoService) {
+    constructor(
+        private fb: FormBuilder,
+        private eventoService: EventoService,
+        private userService: UserService,
+        private route: ActivatedRoute
+    ) {
         this.filterForm = this.fb.group({
             price_min: [null],
             price_max: [null],
             startDate: [null],
             endDate: [null],
-            ciudad: this.fb.array([]), // Changed to FormArray
-            categories: this.fb.array([]) // Changed to FormArray
+            ciudad: this.fb.array([]),
+            categories: this.fb.array([]),
+            showFavorites: [false]
         });
     }
 
     ngOnInit(): void {
+        this.userService.currentUser.subscribe(user => {
+            this.currentUser = user;
+            this.canlikes = !!(user && (user.token || user.username || user.email));
+        });
+
         this.eventoService.getUniqueCities().subscribe(cities => {
             this.listCities = cities;
         });
@@ -63,9 +81,17 @@ export class FiltersComponent implements OnInit {
             }
         });
 
-        if (this.initialFilters) {
-            this.setInitialFilters();
-        }
+        this.routeSub = this.route.queryParamMap.subscribe(paramMap => {
+            this.applyParamsFromParamMap(paramMap);
+
+            if (this.initialFilters && paramMap.keys.length === 0) {
+                this.setInitialFilters();
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.routeSub?.unsubscribe();
     }
 
     getCiudadFormArray(): FormArray {
@@ -136,6 +162,11 @@ export class FiltersComponent implements OnInit {
         });
     }
 
+    onFavoritesChange(event: Event): void {
+        const checkbox = event.target as HTMLInputElement;
+        this.filterForm.get('showFavorites')?.setValue(checkbox.checked);
+    }
+
     applyFilters(): void {
         const formValue = this.filterForm.value;
 
@@ -145,9 +176,12 @@ export class FiltersComponent implements OnInit {
             price_max: formValue.price_max !== null ? formValue.price_max : this.maxAvailablePrice,
             startDate: formValue.startDate,
             endDate: formValue.endDate,
-            ciudad: formValue.ciudad.length > 0 ? formValue.ciudad : undefined
+            ciudad: formValue.ciudad.length > 0 ? formValue.ciudad : undefined,
+            showFavorites: formValue.showFavorites ? true : undefined,
+            username: formValue.showFavorites && this.currentUser ? this.currentUser.username : undefined
         };
 
+        console.log('Filters emitidos:', filters);
         this.eventofiltros.emit(filters);
     }
 
@@ -157,8 +191,8 @@ export class FiltersComponent implements OnInit {
             price_max: this.maxAvailablePrice,
             startDate: null,
             endDate: null,
+            showFavorites: false
         });
-        // Clear FormArrays
         this.getCiudadFormArray().clear();
         this.getCategoryFormArray().clear();
 
@@ -169,7 +203,75 @@ export class FiltersComponent implements OnInit {
             nombre: undefined,
             startDate: undefined,
             endDate: undefined,
-            ciudad: undefined
+            ciudad: undefined,
+            showFavorites: undefined,
+            username: undefined
         });
     }
+
+    private applyParamsFromParamMap(paramMap: ParamMap) {
+        // Obtener los FormArrays
+        const ciudadFormArray = this.getCiudadFormArray();
+        const categoryFormArray = this.getCategoryFormArray();
+
+        // Limpiar los FormArrays existentes
+        ciudadFormArray.clear();
+        categoryFormArray.clear();
+
+        // Establecer precio mínimo
+        const priceMin = paramMap.get('price_min');
+        if (priceMin) {
+            this.filterForm.get('price_min')?.setValue(Number(priceMin));
+        }
+
+        // Establecer precio máximo
+        const priceMax = paramMap.get('price_max');
+        if (priceMax) {
+            this.filterForm.get('price_max')?.setValue(Number(priceMax));
+        }
+
+        // Establecer fecha de inicio
+        const startDate = paramMap.get('startDate');
+        if (startDate) {
+            this.filterForm.get('startDate')?.setValue(startDate);
+        }
+
+        // Establecer fecha de fin
+        const endDate = paramMap.get('endDate');
+        if (endDate) {
+            this.filterForm.get('endDate')?.setValue(endDate);
+        }
+
+        // Establecer favoritos
+        const showFavorites = paramMap.get('showFavorites');
+        if (showFavorites !== null) {
+            this.filterForm.get('showFavorites')?.setValue(showFavorites === 'true');
+        }
+
+        // Establecer ciudades (pueden venir múltiples valores)
+        const ciudades = paramMap.getAll('ciudad');
+        if (ciudades.length > 0) {
+            ciudades.forEach(ciudad => {
+                ciudadFormArray.push(this.fb.control(ciudad));
+            });
+        }
+
+        // Establecer categorías (pueden venir múltiples valores)
+        const categorias = paramMap.getAll('category');
+        if (categorias.length > 0) {
+            categorias.forEach(categoria => {
+                categoryFormArray.push(this.fb.control(categoria));
+            });
+        }
+
+        // Si no hay parámetros de precio en la URL, usar los valores disponibles
+        if (!priceMin && this.filterForm.get('price_min')?.value === null) {
+            this.filterForm.get('price_min')?.setValue(this.minAvailablePrice);
+        }
+
+        if (!priceMax && this.filterForm.get('price_max')?.value === null) {
+            this.filterForm.get('price_max')?.setValue(this.maxAvailablePrice);
+        }
+    }
+
 }

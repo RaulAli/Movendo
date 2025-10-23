@@ -1,32 +1,44 @@
 /* General Filter Container */
 .filters-container {
-  padding: 20px; /* Increased padding */
-  border: 1px solid #d1d5db; /* Lighter border */
-  border-radius: 10px; /* More rounded corners */
-  background-color: #ffffff; /* White background */
-  margin-bottom: 25px; /* Increased margin */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Subtle shadow */
+  padding: 20px;
+  /* Increased padding */
+  border: 1px solid #d1d5db;
+  /* Lighter border */
+  border-radius: 10px;
+  /* More rounded corners */
+  background-color: #ffffff;
+  /* White background */
+  margin-bottom: 25px;
+  /* Increased margin */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* Subtle shadow */
 }
 
 /* Grouping of Filter Items */
 .filters-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px; /* Increased gap */
+  gap: 24px;
+  /* Increased gap */
   align-items: flex-end;
 }
 
 /* Individual Filter Item */
 .filter-item {
   flex: 1;
-  min-width: 180px; /* Slightly wider min-width */
+  min-width: 180px;
+  /* Slightly wider min-width */
 }
 
 .filter-item legend {
-  font-weight: 600; /* Slightly bolder */
-  margin-bottom: 12px; /* Increased margin */
-  color: #1f2937; /* Darker text */
-  font-size: 0.95rem; /* Slightly smaller font */
+  font-weight: 600;
+  /* Slightly bolder */
+  margin-bottom: 12px;
+  /* Increased margin */
+  color: #1f2937;
+  /* Darker text */
+  font-size: 0.95rem;
+  /* Slightly smaller font */
 }
 
 /* Price and Date Range Inputs */
@@ -34,13 +46,16 @@
 .date-range-compact {
   display: flex;
   align-items: center;
-  gap: 8px; /* Increased gap */
+  gap: 8px;
+  /* Increased gap */
 }
 
 .price-range-compact .form-input-compact,
 .date-range-compact .form-input-compact {
-  flex: 1; /* Allow inputs to grow and shrink */
-  min-width: 0; /* Allow shrinking below content size if necessary */
+  flex: 1;
+  /* Allow inputs to grow and shrink */
+  min-width: 0;
+  /* Allow shrinking below content size if necessary */
   padding: 9px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -50,7 +65,8 @@
 }
 
 .form-input-compact {
-  width: auto; /* Ensure it doesn't force a small width elsewhere */
+  width: auto;
+  /* Ensure it doesn't force a small width elsewhere */
   padding: 9px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -60,60 +76,74 @@
 }
 
 .form-input-compact:focus {
-  border-color: #3b82f6; /* Blue focus border */
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Blue focus shadow */
+  border-color: #3b82f6;
+  /* Blue focus border */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  /* Blue focus shadow */
   outline: none;
 }
 
 /* Action Buttons */
 .action-buttons {
   display: flex;
-  gap: 12px; /* Increased gap */
+  gap: 12px;
+  /* Increased gap */
 }
 
 .btn {
-  padding: 10px 18px; /* Adjusted padding */
+  padding: 10px 18px;
+  /* Adjusted padding */
   border: none;
-  border-radius: 6px; /* More rounded */
+  border-radius: 6px;
+  /* More rounded */
   cursor: pointer;
-  font-weight: 600; /* Slightly bolder */
+  font-weight: 600;
+  /* Slightly bolder */
   font-size: 0.9rem;
   transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .btn-primary {
-  background-color: #3b82f6; /* Blue primary */
+  background-color: #3b82f6;
+  /* Blue primary */
   color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: #2563eb; /* Darker blue on hover */
+  background-color: #2563eb;
+  /* Darker blue on hover */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
-  background-color: #6b7280; /* Gray secondary */
+  background-color: #6b7280;
+  /* Gray secondary */
   color: #fff;
 }
 
 .btn-secondary:hover {
-  background-color: #4b5563; /* Darker gray on hover */
+  background-color: #4b5563;
+  /* Darker gray on hover */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Dropdown Specific Styles */
 .dropdown {
   position: relative;
-  display: block; /* Make it block level to take full width of filter-item */
+  display: block;
+  /* Make it block level to take full width of filter-item */
 }
 
 .dropdown-toggle {
-  display: flex; /* Use flex for content and arrow */
-  justify-content: space-between; /* Space between text and arrow */
+  display: flex;
+  /* Use flex for content and arrow */
+  justify-content: space-between;
+  /* Space between text and arrow */
   align-items: center;
   padding: 9px 12px;
   border: 1px solid #d1d5db;
-  background-color: #f9fafb; /* Lighter background */
+  background-color: #f9fafb;
+  /* Lighter background */
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -124,34 +154,41 @@
 }
 
 .dropdown-toggle:hover {
-  background-color: #eff6ff; /* Light blue on hover */
+  background-color: #eff6ff;
+  /* Light blue on hover */
   border-color: #93c5fd;
 }
 
 .dropdown-toggle::after {
-  content: '▼'; /* Unicode down arrow */
+  content: '▼';
+  /* Unicode down arrow */
   font-size: 0.7em;
   margin-left: 8px;
   transition: transform 0.2s ease-in-out;
 }
 
 .dropdown-toggle[aria-expanded="true"]::after {
-  transform: rotate(180deg); /* Rotate arrow when open */
+  transform: rotate(180deg);
+  /* Rotate arrow when open */
 }
 
 .dropdown-menu {
   display: none;
   position: absolute;
   background-color: #ffffff;
-  min-width: 180px; /* Slightly wider */
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1000; /* Higher z-index */
+  min-width: 180px;
+  /* Slightly wider */
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  /* Higher z-index */
   padding: 10px 0;
   border-radius: 6px;
-  max-height: 250px; /* Increased max height */
+  max-height: 250px;
+  /* Increased max height */
   overflow-y: auto;
   left: 0;
-  top: calc(100% + 5px); /* Position slightly below the button */
+  top: calc(100% + 5px);
+  /* Position slightly below the button */
   border: 1px solid #d1d5db;
 }
 

@@ -8,4 +8,6 @@ export class Filters {
     startDate?: string;
     endDate?: string;
     ciudad?: string[];
+    showFavorites?: boolean;
+    username?: string;
 }
