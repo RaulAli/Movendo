@@ -1,35 +1,63 @@
 const Evento = require('../models/evento.model');
 const User = require('../models/user.model');
+const { getCurrentUser } = require('./user.controller');
 
 exports.listar = async (req, res, next) => {
   try {
-    // Helper function to safely get query parameters, handling arrays
     const getQueryParam = (paramName, defaultValue) => {
       const param = req.query[paramName];
       if (param === undefined || param === "undefined" || param === null || param === "") {
         return defaultValue;
       }
-      // If it's an array, return it as is
       if (Array.isArray(param)) {
         return param;
       }
-      // If it's a string, return it as is
       return param;
     };
 
     const limit = Number(getQueryParam('limit', 3));
     const offset = Number(getQueryParam('offset', 0));
-    const category = getQueryParam('category', []); // Default to empty array
+    const category = getQueryParam('category', []);
     const nombre = getQueryParam('nombre', "");
     const price_min = Number(getQueryParam('price_min', 0));
     const price_max = Number(getQueryParam('price_max', Number.MAX_SAFE_INTEGER));
     const startDate = getQueryParam('startDate', "");
     const endDate = getQueryParam('endDate', "");
-    const ciudad = getQueryParam('ciudad', []); // Default to empty array
+    const ciudad = getQueryParam('ciudad', []);
+    const showFavorites = getQueryParam('showFavorites', false);
+    const username = getQueryParam('username', "");
+    // console.log('Parámetros recibidos:', showFavorites, username);
 
     const query = {
       $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }],
     };
+
+    if (showFavorites && username) {
+      try {
+        const user = await User.findOne({ username: username }).exec();
+        if (user && user.favouriteEvento && user.favouriteEvento.length > 0) {
+          query._id = { $in: user.favouriteEvento };
+        } else {
+          return res.status(200).json({
+            success: true,
+            message: "No tienes eventos favoritos",
+            data: [],
+            meta: {
+              total: 0,
+              limit,
+              offset,
+            },
+          });
+        }
+      } catch (userErr) {
+        console.error('Error al obtener usuario:', userErr);
+        return res.status(500).json({
+          success: false,
+          message: "Error al obtener información del usuario"
+        });
+      }
+    }
+    // console.log('Query de eventos:', query);
 
     let validDateRange = true;
     if (startDate !== "" && endDate !== "") {
@@ -56,17 +84,16 @@ exports.listar = async (req, res, next) => {
     }
 
     if (ciudad.length > 0) {
-      query.ciudad = { $in: ciudad }; // Use $in for multiple cities
+      query.ciudad = { $in: ciudad };
     }
 
     if (category.length > 0) {
-      query.slug_category = { $in: category }; // Use $in for multiple categories
+      query.slug_category = { $in: category };
     }
 
     if (nombre !== "") {
       query.nombre = { $regex: nombre, $options: 'i' };
     }
-
 
     const eventos = await Evento.find(query).limit(limit).skip(offset);
     const evento_count = await Evento.countDocuments(query);
@@ -99,6 +126,7 @@ exports.listar = async (req, res, next) => {
           startDate,
           endDate,
           ciudad,
+          showFavorites
         },
       },
     });

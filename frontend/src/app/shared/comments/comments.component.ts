@@ -27,12 +27,12 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
     isEditing = false;
     editedBody = '';
-    isSpecificRoute = false; // Nueva variable para detectar la ruta
+    isSpecificRoute = false;
 
     constructor(
         private userService: UserService,
         private commentService: CommentsService,
-        private router: Router, // Inyectar Router
+        private router: Router,
         private cd: ChangeDetectorRef
     ) { }
 
@@ -51,7 +51,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
         );
     }
 
-    // El resto de métodos permanecen igual...
     ngOnDestroy() {
         this.subscription?.unsubscribe();
         this.deleteSub?.unsubscribe();

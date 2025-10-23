@@ -32,6 +32,8 @@ export class EventoService {
     if (filters.offset) params.append('offset', String(filters.offset));
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.showFavorites) params.append('showFavorites', filters.showFavorites ? 'true' : 'false');
+    if (filters.username) params.append('username', String(filters.username));
 
     // Handle ciudad as string[]
     if (filters.ciudad && filters.ciudad.length > 0) {
