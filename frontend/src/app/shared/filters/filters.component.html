@@ -4,33 +4,52 @@
             <fieldset class="filter-item">
                 <legend>Precio</legend>
                 <div class="price-range-compact">
-                    <input type="number" placeholder="Min" formControlName="price_min" [min]="minAvailablePrice" [max]="maxAvailablePrice" class="form-input-compact"
-                        aria-label="Precio mínimo">
+                    <input type="number" placeholder="Min" formControlName="price_min" [min]="minAvailablePrice"
+                        [max]="maxAvailablePrice" class="form-input-compact" aria-label="Precio mínimo">
                     <span>-</span>
-                    <input type="number" placeholder="Max" formControlName="price_max" [min]="minAvailablePrice" [max]="maxAvailablePrice" class="form-input-compact"
-                        aria-label="Precio máximo">
+                    <input type="number" placeholder="Max" formControlName="price_max" [min]="minAvailablePrice"
+                        [max]="maxAvailablePrice" class="form-input-compact" aria-label="Precio máximo">
                 </div>
             </fieldset>
 
             <fieldset class="filter-item">
                 <legend>Fechas</legend>
                 <div class="date-range-compact">
-                    <input type="date" formControlName="startDate" class="form-input-compact" aria-label="Fecha de inicio">
+                    <input type="date" formControlName="startDate" class="form-input-compact"
+                        aria-label="Fecha de inicio">
                     <span>-</span>
                     <input type="date" formControlName="endDate" class="form-input-compact" aria-label="Fecha de fin">
                 </div>
             </fieldset>
 
+            <!-- ============================================================================== -->
+            @if (canlikes === true) {
+            <fieldset class="filter-item">
+                <legend>Favoritos</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="showFavorites"
+                        [disabled]="!currentUser" id="showFavoritesCheckbox">
+                    <label class="form-check-label" for="showFavoritesCheckbox">
+                        Solo Eventos Que Me Gustan
+                        <span *ngIf="!currentUser" class="login-hint">(Inicia sesión para usar este filtro)</span>
+                    </label>
+                </div>
+            </fieldset>
+            }
+
             <!-- Multi-select dropdown for Ciudad -->
             <fieldset class="filter-item">
                 <legend>Ciudad</legend>
                 <div class="dropdown">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" (click)="showCitiesDropdown = !showCitiesDropdown">
+                    <button type="button" class="btn btn-secondary dropdown-toggle"
+                        (click)="showCitiesDropdown = !showCitiesDropdown">
                         Seleccionar ciudades
                     </button>
                     <div class="dropdown-menu" [class.show]="showCitiesDropdown">
                         <div class="form-check" *ngFor="let city of listCities">
-                            <input class="form-check-input" type="checkbox" [value]="city" [checked]="isCiudadSelected(city)" (change)="onCiudadChange($event)" [id]="'city-' + city">
+                            <input class="form-check-input" type="checkbox" [value]="city"
+                                [checked]="isCiudadSelected(city)" (change)="onCiudadChange($event)"
+                                [id]="'city-' + city">
                             <label class="form-check-label" [for]="'city-' + city">
                                 {{ city }}
                             </label>
@@ -43,12 +62,15 @@
             <fieldset class="filter-item" *ngIf="listCategories?.length">
                 <legend>Categorías</legend>
                 <div class="dropdown">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" (click)="showCategoriesDropdown = !showCategoriesDropdown">
+                    <button type="button" class="btn btn-secondary dropdown-toggle"
+                        (click)="showCategoriesDropdown = !showCategoriesDropdown">
                         Seleccionar categorías
                     </button>
                     <div class="dropdown-menu" [class.show]="showCategoriesDropdown">
                         <div class="form-check" *ngFor="let category of listCategories">
-                            <input class="form-check-input" type="checkbox" [value]="category.slug" [checked]="category.slug && isCategorySelected(category.slug)" (change)="onCategoryChange($event)" [id]="'category-' + category.slug">
+                            <input class="form-check-input" type="checkbox" [value]="category.slug"
+                                [checked]="category.slug && isCategorySelected(category.slug)"
+                                (change)="onCategoryChange($event)" [id]="'category-' + category.slug">
                             <label class="form-check-label" [for]="'category-' + category.slug">
                                 {{ category.nombre }}
                             </label>
