@@ -63,9 +63,6 @@ export class AuthPage implements OnInit {
     this.errors = [];
     const credentials = this.authForm.value;
 
-    console.log('🔍 authType:', this.authType);
-    console.log('🔍 Form credentials:', credentials);
-
     this.userService.attemptAuth(this.authType, credentials).subscribe({
       next: (response) => {
 
@@ -76,7 +73,6 @@ export class AuthPage implements OnInit {
           try {
             const decodedToken: any = jwtDecode(token);
           } catch (error) {
-            console.error('❌ Error decodificando token:', error);
           }
         }
 
@@ -85,7 +81,10 @@ export class AuthPage implements OnInit {
           title: 'Éxito',
           text: this.authType === 'login' ? 'Inicio de sesión exitoso' : 'Registro exitoso'
         }).then(() => {
-          if (this.authType !== 'login') {
+          if (this.authType === 'login') {
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            this.router.navigateByUrl(returnUrl);
+          } else {
             this.router.navigateByUrl('/auth/login');
           }
         });
