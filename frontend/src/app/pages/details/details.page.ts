@@ -91,6 +91,7 @@ export class DetailsPage implements OnInit {
 
     // Subscribe to pending actions from UserService
     this.UserService.actionTriggered.subscribe(action => {
+      console.log(action.type);
       if (action.slug === this.slug) {
         if (action.type === 'favorite') {
           this.svc.favorite(action.slug!).subscribe({
@@ -103,6 +104,9 @@ export class DetailsPage implements OnInit {
           });
         } else if (action.type === 'unfavorite') {
           console.log('Unfavorite action skipped after login redirection.');
+        } else if (action.type === 'comment') {
+          var currentEVET: Evento | undefined = this.evento();
+          this.create_comment(currentEVET ? new Event('submit') : new Event('submit'), action.body);
         }
       }
     });
@@ -153,18 +157,34 @@ export class DetailsPage implements OnInit {
     this.hasCommented = !!this.existingComment;
   }
 
-  create_comment(event: Event) {
+  create_comment(event: Event, data?: string) {
+    console.log('Creating comment REDIRECTION');
     event.preventDefault();
     this.isSubmitting = true;
     this.commentFormErrors = {};
+    var commentBody = '';
+
+    if (data !== undefined) {
+      commentBody = data;
+    } else {
+      commentBody = this.commentControl.value?.trim();
+    }
+
+
+    if (!this.UserService.getCurrentUser().token) {
+      this.UserService.redirectToLoginWithAction(this.router.url, {
+        type: commentBody ? 'comment' : 'comment',
+        slug: this.evento()!.slug,
+        body: commentBody
+      });
+      return;
+    }
 
     if (this.hasCommented) {
       console.warn('El usuario ya tiene un comentario en este evento');
       this.isSubmitting = false;
       return;
     }
-
-    const commentBody = this.commentControl.value?.trim();
 
     if (!commentBody) {
       this.isSubmitting = false;
@@ -254,4 +274,5 @@ export class DetailsPage implements OnInit {
       });
     }
   }
+
 }

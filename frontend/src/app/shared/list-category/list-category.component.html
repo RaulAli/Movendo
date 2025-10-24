@@ -1,20 +1,27 @@
-<div *ngIf="loading" class="loading">
+<div *ngIf="loading()" class="loading">
   Cargando categorías...
 </div>
 
-<div *ngIf="error" class="error">
-  {{ error }}
+<div *ngIf="error()" class="error">
+  {{ error() }}
 </div>
 
-<div *ngIf="!loading && category?.length; else empty" class="list-container" infinite-scroll
-  [infiniteScrollDistance]="2" [infiniteScrollThrottle]="500" (scrolled)="scroll()">
-  <div class="list">
-    <div class="list-item" *ngFor="let c of category; trackBy: trackByCategory">
-      <card-category [category]="c"></card-category>
+<div class="page-container" style="min-height: 100vh;">
+  <div *ngIf="!loading() && categories().length; else empty" class="list-container" infinite-scroll
+    [infiniteScrollDistance]="1" [infiniteScrollThrottle]="1000" [infiniteScrollDisabled]="loading() || finished()"
+    (scrolled)="scroll()">
+    <div class="list">
+      <div class="list-item" *ngFor="let c of categories(); trackBy: trackByCategory">
+        <card-category [category]="c"></card-category>
+      </div>
+    </div>
+
+    <div *ngIf="loading() && categories().length > 0" class="loading-more">
+      Cargando más categorías...
     </div>
   </div>
 </div>
 
 <ng-template #empty>
-  <p class="empty-message">No hay categorías disponibles.</p>
+  <p class="empty-message" *ngIf="!loading() && !error()">No hay categorías disponibles.</p>
 </ng-template>
