@@ -55,6 +55,7 @@
     </settings-component>
 
     <list-user *ngIf="showUserListModal" [users]="listUsers"
-        [listType]="userListType" (closeList)="closeUserListModal()">
+        [listType]="userListType" (closeList)="closeUserListModal()"
+        (followChange)="onFollowChange()">
     </list-user>
 </div>

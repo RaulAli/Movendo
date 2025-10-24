@@ -67,22 +67,39 @@ export class ProfilePage implements OnInit {
         });
 
         this.userService.actionTriggered.subscribe(action => {
-            if (action.type === 'follow') { // Only re-trigger if the action was to follow
-                if (action.username === this.profile.username && !this.profile.following) {
-                    if (action.username === this.userService.getCurrentUser().username) {
-                        console.log('Cannot follow your own account.');
-                        return;
-                    }
-                    // Directly call the follow method if not already following
-                    this.profileService.follow(action.username).subscribe(profile => {
-                        this.profile = profile; // Update the profile to reflect the change
-                    });
-                }
+            if (action.type === 'follow' && action.username === this.profile.username && !this.profile.following) {
+                this.profileService.follow(action.username).subscribe(profile => {
+                    this.profile = profile;
+                });
+            } else if (action.type === 'unfollow' && action.username === this.profile.username && this.profile.following) {
+                this.profileService.unfollow(action.username).subscribe(profile => {
+                    this.profile = profile;
+                });
+            }
+        });
+    }
+
+    onFollowChange(): void {
+        this.profileService.get(this.profile.username).subscribe(profile => {
+            this.profile = profile;
+            if (this.userListType === 'followers') {
+                this.profileService.getFollowers(this.profile.username).subscribe(users => {
+                    this.listUsers = users;
+                });
+            } else if (this.userListType === 'following') {
+                this.profileService.getFollowing(this.profile.username).subscribe(users => {
+                    this.listUsers = users;
+                });
             }
         });
     }
 
     onToggleFollowing() {
+        if (this.profile.username === this.userService.getCurrentUser().username) {
+            console.log('You cannot follow your own account.');
+            return;
+        }
+
         if (!this.userService.getCurrentUser().token) {
             // Store the action and redirect to login
             this.userService.redirectToLoginWithAction(this.router.url, {
