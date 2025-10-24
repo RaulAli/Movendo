@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Profile } from '../../core/models/profile.model';
 import { ProfileService } from '../../core/services/profile.service';
 import { UserService } from '../../core/services/auth.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
     selector: 'list-user',
@@ -16,12 +16,14 @@ export class UserListComponent {
     @Input() users: Profile[] = [];
     @Input() listType: 'followers' | 'following' | null = null;
     @Output() closeList = new EventEmitter<void>();
+    @Output() followChange = new EventEmitter<void>();
 
     currentUsername: string | undefined;
 
     constructor(
         private profileService: ProfileService,
-        private userService: UserService
+        private userService: UserService,
+        private router: Router
     ) {
         this.userService.currentUser.subscribe(user => {
             this.currentUsername = user?.username;
@@ -29,8 +31,16 @@ export class UserListComponent {
     }
 
     onToggleFollowing(user: Profile) {
+        if (user.username === this.currentUsername) {
+            console.log('You cannot follow your own account.');
+            return;
+        }
+
         if (!this.currentUsername) {
-            // Handle case where no user is logged in, maybe redirect to login
+            this.userService.redirectToLoginWithAction(this.router.url, {
+                type: user.following ? 'unfollow' : 'follow',
+                username: user.username
+            });
             return;
         }
 
@@ -40,6 +50,7 @@ export class UserListComponent {
                 const index = this.users.findIndex(u => u.username === profile.username);
                 if (index !== -1) {
                     this.users[index] = profile;
+                    this.followChange.emit();
                 }
             });
         } else {
@@ -48,6 +59,7 @@ export class UserListComponent {
                 const index = this.users.findIndex(u => u.username === profile.username);
                 if (index !== -1) {
                     this.users[index] = profile;
+                    this.followChange.emit();
                 }
             });
         }
