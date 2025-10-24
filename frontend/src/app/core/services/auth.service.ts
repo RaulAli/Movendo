@@ -120,7 +120,7 @@ export class UserService {
   }
 
   logout(): Observable<void> {
-    return this.apiService.post('/users/logout', {}, 3000).pipe(
+    return this.apiService.get('/logout', undefined, 3000).pipe(
       map(() => {
         this.purgeAuth();
       })
