@@ -40,7 +40,7 @@
             <p>Be the first to comment on this event.</p>
         </div>
 
-        <div class="create-comment">
+        <div class="create-comment" *ngIf="!hasCommented">
             <form (ngSubmit)="create_comment($event)">
                 <div class="comment-new">
                     <fieldset [disabled]="isSubmitting">
@@ -55,11 +55,7 @@
             </form>
         </div>
 
-        <!-- <div class="not-logged" *ngIf="logged === false">
-            <a [routerLink]="['/auth/login']">Sign in</a> or
-            <a [routerLink]="['/auth/register']">sign up</a>
-            to add comments on this event.
-        </div> -->
+
     </div>
 </ng-container>
 
