@@ -37,7 +37,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit() {
-        this.isSpecificRoute = this.router.url === '/profile';
+        this.isSpecificRoute = this.router.url.startsWith('/profile');
 
         this.subscription = this.userService.currentUser.subscribe(
             (userData: User) => {
