@@ -3,6 +3,7 @@ const User = require('../models/user.model');
 const asyncHandler = require('express-async-handler');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const BlacklistedToken = require('../models/blacklistedToken.model');
 
 // Registro
 const registerUser = asyncHandler(async (req, res) => {
@@ -139,8 +140,42 @@ const logout = asyncHandler(async (req, res) => {
         await foundUser.removeRefreshToken(refreshToken);
     }
 
+    // Blacklist the access token if present
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    console.log('Logout: Received authHeader:', authHeader);
+
+    if (authHeader) {
+        const parts = authHeader.split(' ');
+        console.log('Logout: Header parts:', parts);
+
+        if (parts.length === 2 && (/^Bearer$/i.test(parts[0]) || /^Token$/i.test(parts[0]))) {
+            const accessToken = parts[1];
+            console.log('Logout: Extracted accessToken:', accessToken);
+
+            try {
+                const decoded = jwt.decode(accessToken); // Decode without verification to get expiry
+                console.log('Logout: Decoded accessToken (payload):', decoded);
+
+                if (decoded && decoded.exp) {
+                    const expiresAt = new Date(decoded.exp * 1000); // exp is in seconds, convert to ms
+                    console.log('Logout: Token expiresAt:', expiresAt);
+
+                    await BlacklistedToken.create({ token: accessToken, expiresAt });
+                    console.log('Logout: Access token successfully blacklisted.');
+                } else {
+                    console.log('Logout: Decoded token has no exp claim or is invalid.');
+                }
+            } catch (error) {
+                console.error('Logout: Error decoding access token for blacklisting:', error);
+            }
+        } else {
+            console.log('Logout: Authorization header format invalid.');
+        }
+    } else {
+        console.log('Logout: No Authorization header present.');
+    }
+
     res.clearCookie('jwt', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-    res.sendStatus(204);
 });
 
 module.exports = {
