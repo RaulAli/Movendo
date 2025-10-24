@@ -7,9 +7,10 @@ import { map, distinctUntilChanged, tap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 
 interface PendingAction {
-  type: 'favorite' | 'unfavorite' | 'follow' | 'unfollow';
+  type: 'favorite' | 'unfavorite' | 'follow' | 'unfollow' | 'comment';
   slug?: string; // For favorite/unfavorite
   username?: string; // For follow/unfollow
+  body?: string;
   // Add other properties as needed for different actions
 }
 

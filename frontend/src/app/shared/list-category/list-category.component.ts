@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { CategoryService } from '../../core/services/category.service';
 import { Category } from '../../core/models/category.model';
 import { CardCategory } from '../card-category/card-category.component';
@@ -14,67 +16,87 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     styleUrls: ['./list-category.component.scss']
 })
 export class ListCategoryComponent implements OnInit {
-    offset = 0;
-    limit = 9;
-    category: Category[] = [];
-    loading = false;
-    finished = false;
-    error: string | null = null;
-    editing: Category | null = null;
+    private categoryService = inject(CategoryService);
+    private router = inject(Router);
 
-    constructor(
-        private categoryService: CategoryService,
-        private router: Router // <- lo mantengo para respetar tu código original
-    ) { }
+    // Subject para el debounce del scroll
+    private scrollSubject = new Subject<void>();
+
+    // Usamos signals para el estado reactivo
+    categories = signal<Category[]>([]);
+    loading = signal(false);
+    finished = signal(false);
+    error = signal<string | null>(null);
+
+    // Variables de paginación
+    private offset = 0;
+    private limit = 9;
+
+    constructor() {
+        // Configuramos el debounce para el scroll
+        this.scrollSubject.pipe(
+            debounceTime(500)
+        ).subscribe(() => this.loadCategories());
+    }
 
     ngOnInit(): void {
-        this.loadCategory();
+        this.loadCategories();
     }
 
-    loadCategory(): void {
-        // if (this.loading || this.finished) return;
+    async loadCategories(): Promise<void> {
+        if (this.loading() || this.finished()) return;
 
-        const params = this.getRequestParams(this.offset, this.limit);
-        this.loading = true;
-        this.error = null;
+        this.loading.set(true);
+        this.error.set(null);
 
-        this.categoryService.list(params).subscribe({
-            next: data => {
-                // console.log(data);
-                var sizeCategory = data.length;
-                this.category = data;
+        try {
+            const params = this.getRequestParams(this.offset, this.limit);
+            const newCategories = await this.categoryService.list(params).toPromise();
 
-                if (sizeCategory < this.limit) {
-                    this.finished = true;
-                } else {
-                    this.limit = this.limit + 3;
+            if (newCategories && newCategories.length > 0) {
+                // Agregamos las nuevas categorías al array existente
+                this.categories.update(current => [...current, ...newCategories]);
+
+                // Preparamos para la siguiente carga
+                this.offset += this.limit;
+
+                // Verificamos si hemos llegado al final
+                if (newCategories.length < this.limit) {
+                    this.finished.set(true);
                 }
-                this.loading = false;
-            },
-            error: () => {
-                this.error = 'Error cargando categorías';
-                this.loading = false;
+            } else {
+                this.finished.set(true);
             }
-        });
+        } catch (err) {
+            this.error.set('Error cargando categorías');
+        } finally {
+            this.loading.set(false);
+        }
     }
 
-    getRequestParams(offset: number, limit: number): any {
-        let params: any = {};
-
-        params[`offset`] = offset;
-        params[`limit`] = limit;
-
-        return params;
+    private getRequestParams(offset: number, limit: number): any {
+        return { offset, limit };
     }
 
     scroll() {
-        if (this.finished !== true) {
-            this.loadCategory();
+        if (!this.finished()) {
+            this.scrollSubject.next();
         }
+    }
 
+    resetCategories() {
+        this.categories.set([]);
+        this.offset = 0;
+        this.finished.set(false);
+        this.loadCategories();
     }
 
     trackByCategory(index: number, category: Category): string {
         return category.slug ?? index.toString();
+    }
+
+    // Importante: limpiar la suscripción al destruir el componente
+    ngOnDestroy() {
+        this.scrollSubject.complete();
     }
 }
