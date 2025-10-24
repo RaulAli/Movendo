@@ -1,8 +1,9 @@
 // middleware/verifyJWT.js
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const BlacklistedToken = require('../models/blacklistedToken.model');
 
-const verifyJWT = (req, res, next) => {
+const verifyJWT = async (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
     if (!authHeader) {
         return res.status(401).json({ message: 'No Authorization header' });
@@ -16,6 +17,12 @@ const verifyJWT = (req, res, next) => {
     const [scheme, token] = parts;
     if (!/^Bearer$/i.test(scheme) && !/^Token$/i.test(scheme)) {
         return res.status(401).json({ message: 'Authorization scheme no soportado' });
+    }
+
+    // Check if token is blacklisted
+    const isBlacklisted = await BlacklistedToken.findOne({ token });
+    if (isBlacklisted) {
+        return res.status(401).json({ message: 'Token revocado' });
     }
 
     try {
