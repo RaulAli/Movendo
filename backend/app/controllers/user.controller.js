@@ -2,6 +2,7 @@
 const User = require('../models/user.model');
 const asyncHandler = require('express-async-handler');
 const argon2 = require('argon2');
+const jwt = require('jsonwebtoken');
 
 // Registro
 const registerUser = asyncHandler(async (req, res) => {
@@ -53,7 +54,19 @@ const userLogin = asyncHandler(async (req, res) => {
     const match = await argon2.verify(loginUser.password, user.password);
     if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' });
 
-    return res.status(200).json({ user: loginUser.toUserResponse() });
+    const accessToken = loginUser.generateAccessToken();
+
+    const refreshToken = loginUser.generateRefreshToken();
+
+    await loginUser.addRefreshToken(refreshToken);
+
+    res.cookie('jwt', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json({ user: { ...loginUser.toUserResponse(), token: accessToken } });
 });
 
 const updateUser = asyncHandler(async (req, res) => {
@@ -80,9 +93,61 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(200).json({ user: updatedUser.toUserResponse() });
 });
 
+const handleRefreshToken = asyncHandler(async (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.sendStatus(401); // Unauthorized
+
+    const refreshToken = cookies.jwt;
+
+    const foundUser = await User.findOne({ refreshTokens: refreshToken }).exec();
+    if (!foundUser) return res.sendStatus(403); // Forbidden
+
+    // Evaluate jwt
+    jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET,
+        async (err, decoded) => {
+            if (err || foundUser._id !== decoded.id) return res.sendStatus(403); // Forbidden
+
+            // Refresh token was valid
+            const accessToken = foundUser.generateAccessToken();
+            const newRefreshToken = foundUser.generateRefreshToken();
+
+            // Update refresh token in DB
+            await foundUser.removeRefreshToken(refreshToken);
+            await foundUser.addRefreshToken(newRefreshToken);
+
+            res.cookie('jwt', newRefreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
+
+            res.json({ user: { ...foundUser.toUserResponse(), token: accessToken } });
+        }
+    );
+});
+
+const logout = asyncHandler(async (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.sendStatus(204);
+
+    const refreshToken = cookies.jwt;
+
+    const foundUser = await User.findOne({ refreshTokens: refreshToken }).exec();
+    if (foundUser) {
+        await foundUser.removeRefreshToken(refreshToken);
+    }
+
+    res.clearCookie('jwt', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    res.sendStatus(204);
+});
+
 module.exports = {
     registerUser,
     getCurrentUser,
     userLogin,
-    updateUser
+    updateUser,
+    handleRefreshToken,
+    logout
 };

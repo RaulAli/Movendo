@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const eventoRoutes = require('./app/routes/evento.routes');
 const categoryRoutes = require('./app/routes/category.routes');
 const carouselRoutes = require('./app/routes/carousel.routes');
@@ -26,6 +27,7 @@ app.use(
 
 // Middleware para parsear JSON
 app.use(express.json());
+app.use(cookieParser());
 
 const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000'];
 app.use(
