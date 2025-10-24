@@ -43,9 +43,14 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.JwtService.destroyToken();
-    this.userService.logout()
-    this.router.navigate(['/login']);
-    window.location.reload();
+    this.userService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Error during logout API call, but client-side logged out:', err);
+        this.router.navigate(['/login']);
+      }
+    });
   }
 }
