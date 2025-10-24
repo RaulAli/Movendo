@@ -15,4 +15,10 @@ router.get('/user', verifyJWT, controller.getCurrentUser);
 // Update User (protegida)
 router.put('/user', verifyJWT, controller.updateUser);
 
+// Refresh Token
+router.get('/refresh', controller.handleRefreshToken);
+
+// Logout
+router.get('/logout', controller.logout);
+
 module.exports = router;

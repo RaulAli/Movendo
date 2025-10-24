@@ -45,7 +45,10 @@ const userSchema = new mongoose.Schema({
     followingCount: {
         type: Number,
         default: 0
-    }
+    },
+    refreshTokens: [{
+        type: String
+    }]
 }, { timestamps: true, id: false });
 
 userSchema.plugin(uniqueValidator);
@@ -65,12 +68,22 @@ userSchema.methods.generateAccessToken = function () {
     return jwt.sign(payload, secret, { expiresIn });
 };
 
+userSchema.methods.generateRefreshToken = function () {
+    const payload = {
+        id: this._id,
+    };
+    const expiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d'; // Example: 7 days
+    const secret = process.env.REFRESH_TOKEN_SECRET;
+    if (!secret) throw new Error('REFRESH_TOKEN_SECRET no definido en .env');
+
+    return jwt.sign(payload, secret, { expiresIn });
+};
+
 userSchema.methods.toUserResponse = function () {
     return {
         username: this.username,
         email: this.email,
         image: this.image,
-        token: this.generateAccessToken()
     };
 };
 
@@ -133,6 +146,16 @@ userSchema.methods.updateFollowersCount = async function (user) {
     this.followersCount = await mongoose.model('User').countDocuments({ followingUsers: this._id });
     const b = await this.save();
     return { a, b };
+};
+
+userSchema.methods.addRefreshToken = async function (token) {
+    this.refreshTokens.push(token);
+    await this.save();
+};
+
+userSchema.methods.removeRefreshToken = async function (token) {
+    this.refreshTokens = this.refreshTokens.filter(t => t !== token);
+    await this.save();
 };
 
 module.exports = mongoose.model('User', userSchema);
