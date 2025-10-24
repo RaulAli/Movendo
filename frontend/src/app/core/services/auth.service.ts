@@ -71,6 +71,7 @@ export class UserService {
 
   purgeAuth() {
     this.jwtService.destroyToken();
+    window.localStorage.removeItem('accessToken');
     this.currentUserSubject.next({} as User);
     this.isAuthenticatedSubject.next(false);
   }
@@ -121,7 +122,8 @@ export class UserService {
 
   logout(): Observable<void> {
     return this.apiService.get('/logout', undefined, 3000).pipe(
-      map(() => {
+      tap(() => {
+        console.log('UserService: purgeAuth() called via tap operator.');
         this.purgeAuth();
       })
     );
