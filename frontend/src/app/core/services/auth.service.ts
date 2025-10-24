@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, ReplaySubject, Subject } from 'rxjs'; // Import Subject
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { ApiService } from './api.service';
 import { JwtService } from './jwt.service';
 import { User } from '../models/auth.model';
@@ -8,10 +8,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 interface PendingAction {
   type: 'favorite' | 'unfavorite' | 'follow' | 'unfollow' | 'comment';
-  slug?: string; // For favorite/unfavorite
-  username?: string; // For follow/unfollow
+  slug?: string;
+  username?: string;
   body?: string;
-  // Add other properties as needed for different actions
 }
 
 @Injectable({
@@ -27,7 +26,8 @@ export class UserService {
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   private pendingAction: PendingAction | null = null;
-  public actionTriggered = new Subject<PendingAction>(); // New Subject
+
+  public actionTriggered = new ReplaySubject<PendingAction>(1);
 
   constructor(
     private apiService: ApiService,
@@ -60,12 +60,11 @@ export class UserService {
     this.jwtService.saveToken(user.token);
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
+    this.executePendingAction();
 
     const returnUrl = this.route.snapshot.queryParams['returnUrl'];
     if (returnUrl) {
-      this.router.navigateByUrl(returnUrl).then(() => {
-        this.executePendingAction();
-      });
+      this.router.navigateByUrl(returnUrl);
     }
   }
 
