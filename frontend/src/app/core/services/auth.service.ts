@@ -39,14 +39,11 @@ export class UserService {
   populate() {
     const token = this.jwtService.getToken();
     if (token) {
-      console.log('Token encontrado:', token);
       this.apiService.get('/user', undefined, 3000).subscribe({
         next: (data) => {
-          console.log('Datos del usuario:', data);
           this.setAuth({ ...data.user, token });
         },
         error: (err) => {
-          console.error('Error al cargar usuario:', err);
           this.purgeAuth();
         }
       });
@@ -56,16 +53,11 @@ export class UserService {
   }
 
   setAuth(user: User) {
-    console.log(user);
+
     this.jwtService.saveToken(user.token);
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
     this.executePendingAction();
-
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-    if (returnUrl) {
-      this.router.navigateByUrl(returnUrl);
-    }
   }
 
   purgeAuth() {
@@ -77,9 +69,6 @@ export class UserService {
 
   attemptAuth(type: string, credentials: any): Observable<User> {
     const route = type === 'login' ? '/users/login' : '/users';
-
-    console.log('🌐 Enviando a:', route);
-    console.log('📦 Datos:', { user: credentials });
 
     return this.apiService.post(route, { user: credentials }, 3000).pipe(
       map((data: any) => {
@@ -104,7 +93,6 @@ export class UserService {
   }
 
   update(credentials: any): Observable<User> {
-    console.log('📦 Datos de actualización:', { user: credentials });
     return this.apiService.put('/user', { user: credentials }, 3000).pipe(
       tap((data: any) => {
         if (data.user && data.user.token) {
@@ -122,7 +110,6 @@ export class UserService {
   logout(): Observable<void> {
     return this.apiService.get('/logout', undefined, 3000).pipe(
       tap(() => {
-        console.log('UserService: purgeAuth() called via tap operator.');
         this.purgeAuth();
       })
     );
