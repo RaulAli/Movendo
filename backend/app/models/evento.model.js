@@ -56,6 +56,15 @@ const EventoSchema = new mongoose.Schema({
     type: String,
     ref: 'User',
     required: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  status: {
+    type: String,
+    enum: ["PUBLISHED", "UNPUBLISHED"],
+    default: "PUBLISHED"
   }
 
 }, { timestamps: true });

@@ -23,6 +23,15 @@ const CategorySchema = new mongoose.Schema({
   image: {
     type: [String],
     required: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  status: {
+    type: String,
+    enum: ["PUBLISHED", "UNPUBLISHED"],
+    default: "PUBLISHED"
   }
 
 }, { timestamps: true });
