@@ -16,10 +16,18 @@ const CommentSchema = new mongoose.Schema({
     evento: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Evento',
-        required: true
-    }
-}, { timestamps: true });
-
+            required: true
+          },
+          isActive: {
+            type: Boolean,
+            default: true
+          },
+          status: {
+            type: String,
+            enum: ["PUBLISHED", "UNPUBLISHED"],
+            default: "PUBLISHED"
+          }
+        }, { timestamps: true });
 CommentSchema.plugin(uniqueValidator, { message: '{PATH} already taken' });
 
 CommentSchema.methods.toCommentResponse = async function (user) {

@@ -48,7 +48,16 @@ const userSchema = new mongoose.Schema({
     },
     refreshTokens: [{
         type: String
-    }]
+    }],
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    status: {
+        type: String,
+        enum: ["PUBLISHED", "UNPUBLISHED"],
+        default: "PUBLISHED"
+    }
 }, { timestamps: true, id: false });
 
 userSchema.plugin(uniqueValidator);
