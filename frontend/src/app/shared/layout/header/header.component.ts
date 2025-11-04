@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { UserService } from '../../../core/services/auth.service';
 import { JwtService } from '../../../core/services/jwt.service';
+import { RoleService, UserRole } from '../../../core/services/role.service';
 import { Subscription } from 'rxjs';
 import { NgIf } from '@angular/common';
 
@@ -12,45 +13,45 @@ import { NgIf } from '@angular/common';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements OnInit {
-  logged = false;
+export class HeaderComponent implements OnInit, OnDestroy {
+  role: UserRole = 'guest';
   user: any;
   private subscription!: Subscription;
 
   constructor(
     private userService: UserService,
-    private JwtService: JwtService,
-    private router: Router) { }
+    private jwtService: JwtService,
+    private roleService: RoleService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
-    this.subscription = this.userService.isAuthenticated.subscribe((auth) => {
-      this.logged = auth;
-      if (auth) {
-        this.loadDataUser();
+    this.subscription = this.roleService.role$.subscribe((newRole) => {
+      this.role = newRole;
+
+      if (newRole === 'client') {
+        this.user = this.userService.getCurrentUser();
       } else {
         this.user = null;
       }
-      console.log(auth);
+
+      console.log('🧭 Rol actualizado:', newRole);
+      this.cdr.detectChanges();
     });
   }
 
-  loadDataUser() {
-    this.user = this.userService.getCurrentUser();
+  ngOnDestroy() {
+    if (this.subscription) this.subscription.unsubscribe();
+  }
+
+  logout() {
+    this.jwtService.destroyToken();
+    this.roleService.checkRole();
+    this.router.navigate(['/login']);
   }
 
   onProfileClick(): void {
     this.router.navigate(['/profile']);
-  }
-
-  logout() {
-    this.userService.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('Error during logout API call, but client-side logged out:', err);
-        this.router.navigate(['/login']);
-      }
-    });
   }
 }
