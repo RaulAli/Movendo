@@ -5,6 +5,7 @@ import { JwtService } from './jwt.service';
 import { User } from '../models/auth.model';
 import { map, distinctUntilChanged, tap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
+import { RoleService } from './role.service';
 
 interface PendingAction {
   type: 'favorite' | 'unfavorite' | 'follow' | 'unfollow' | 'comment';
@@ -33,20 +34,24 @@ export class UserService {
     private apiService: ApiService,
     private jwtService: JwtService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private roleService: RoleService
   ) { }
 
   populate() {
     const token = this.jwtService.getToken();
     if (token) {
-      this.apiService.get('/user', undefined, 3000).subscribe({
-        next: (data) => {
-          this.setAuth({ ...data.user, token });
-        },
-        error: (err) => {
-          this.purgeAuth();
-        }
-      });
+      const decodedToken = this.jwtService.getDecodedToken();
+      if (decodedToken && !decodedToken.isAdmin) {
+        this.apiService.get('/user', undefined, 3000).subscribe({
+          next: (data) => {
+            this.setAuth({ ...data.user, token });
+          },
+          error: (err) => {
+            this.purgeAuth();
+          }
+        });
+      }
     } else {
       this.purgeAuth();
     }
@@ -57,6 +62,7 @@ export class UserService {
     this.jwtService.saveToken(user.token);
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
+    this.roleService.checkRole();
     this.executePendingAction();
   }
 
@@ -65,6 +71,7 @@ export class UserService {
     window.localStorage.removeItem('accessToken');
     this.currentUserSubject.next({} as User);
     this.isAuthenticatedSubject.next(false);
+    this.roleService.checkRole();
   }
 
   attemptAuth(type: string, credentials: any): Observable<User> {
