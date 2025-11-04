@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,107 +7,100 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Status {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-model User {
-  id              String   @id @map("_id") @default(uuid())
-  username        String   @unique
-  email           String   @unique
-  password        String
-  image           String?
-  followersCount  Int      @default(0)
-  followingCount  Int      @default(0)
-  followingUsers  String[] @default([])
-  favouriteEvento String[] @default([])
-  refreshTokens   String[] @default([])
-  isActive        Boolean  @default(true)
-  status          Status   @default(PUBLISHED)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  comments        Comment[]
-  eventos         Evento[] @relation("EventosDelAutor")
-
-  @@map("users")
-}
-
-model Admin {
-  id            String   @id @map("_id") @default(uuid())
-  username      String   @unique
+model admin {
+  id            String   @id @map("_id")
+  createdAt     DateTime @db.Date
   email         String   @unique
+  isActive      Boolean
   password      String
-  image         String?
-  refreshTokens String[] @default([])
-  isActive      Boolean  @default(true)
-  status        Status   @default(PUBLISHED)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@map("admin")
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  refreshTokens Json?
+  status        String
+  updatedAt     DateTime @db.Date
+  username      String   @unique
 }
 
-model Category {
-  id          String   @id @map("_id") @default(uuid())
+model blacklistedtokens {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  /// Field referred in an index, but found no data to define the type.
+  expiresAt Json?
+  /// Field referred in an index, but found no data to define the type.
+  token     Json?  @unique(map: "token_1")
+
+  @@index([expiresAt], map: "expiresAt_1")
+}
+
+model categories {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  v           Int      @map("__v")
+  createdAt   DateTime @db.Date
+  descripcion String
+  eventos     String[]
+  image       String[]
+  isActive    Boolean
   nombre      String
-  descripcion String?
   slug        String   @unique
-  image       String?
-  isActive    Boolean  @default(true)
-  status      Status   @default(PUBLISHED)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  eventos     EventoCategory[]
-
-  @@map("categories")
+  status      String
+  updatedAt   DateTime @db.Date
 }
 
-model Evento {
-  id         String         @id @map("_id") @default(uuid())
-  nombre     String
-  ciudad     String?
-  slug       String         @unique
-  image      String[]
-  category   String?
-  price      Int?
-  startDate  DateTime?
-  endDate    DateTime?
-  authorId   String?
-  author     User?          @relation("EventosDelAutor", fields: [authorId], references: [id])
-  isActive   Boolean        @default(true)
-  status     Status         @default(PUBLISHED)
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  comments   Comment[]
-  categories EventoCategory[]
-
-  @@map("eventos")
+model comments {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  v         Int      @map("__v")
+  author    String
+  body      String
+  createdAt DateTime @db.Date
+  evento    String   @db.ObjectId
+  isActive  Boolean
+  status    String
+  updatedAt DateTime @db.Date
 }
 
-model EventoCategory {
-  id         String   @id @map("_id") @default(uuid())
-  eventoId   String
-  categoryId String
-  evento     Evento   @relation(fields: [eventoId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+model eventocategory {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  /// Field referred in an index, but found no data to define the type.
+  categoryId Json?
+  /// Field referred in an index, but found no data to define the type.
+  eventoId   Json?
 
   @@unique([eventoId, categoryId])
-  @@map("eventocategory")
 }
 
-model Comment {
-  id        String   @id @map("_id") @default(uuid())
-  body      String
-  authorId  String
-  eventoId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  evento    Evento   @relation(fields: [eventoId], references: [id])
-  isActive  Boolean  @default(true)
-  status    Status   @default(PUBLISHED)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model eventos {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  author          String
+  category        String
+  ciudad          String
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  comments        Json?
+  createdAt       DateTime @db.Date
+  endDate         DateTime @db.Date
+  favouritesCount Int
+  image           String[]
+  isActive        Boolean
+  nombre          String
+  price           Int
+  slug            String   @unique
+  slug_category   String[]
+  startDate       DateTime @db.Date
+  status          String
+  updatedAt       DateTime @db.Date
+}
 
-  @@map("comments")
+model users {
+  id              String   @id @map("_id")
+  v               Int      @map("__v")
+  createdAt       DateTime @db.Date
+  email           String   @unique
+  favouriteEvento String[]
+  followersCount  Int
+  followingCount  Int
+  followingUsers  String[]
+  image           String
+  isActive        Boolean
+  password        String
+  refreshTokens   String[]
+  status          String
+  updatedAt       DateTime @db.Date
+  username        String   @unique
 }
