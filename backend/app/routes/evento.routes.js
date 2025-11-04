@@ -7,6 +7,8 @@ const optionalVerifyJWT = require('../middlewares/optionalVerifyJWT');
 
 router.get('/evento', controller.listar);
 
+router.get('/evento/admin', controller.listar); //Temporal
+
 router.post('/evento', controller.crear);
 
 router.get('/evento/:slug', optionalVerifyJWT, controller.obtener);
