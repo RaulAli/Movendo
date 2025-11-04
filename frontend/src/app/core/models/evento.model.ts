@@ -11,6 +11,8 @@ export interface Evento {
   favouritesCount?: number;
   startDate?: string;
   endDate?: string;
+  isActive: boolean;
+  status: "PUBLISHED" | "DRAFT" | "ARCHIVED";
 }
 
 export interface EventosResponse {

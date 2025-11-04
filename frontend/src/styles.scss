@@ -1,1 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
+/* === Reset y estilos base globales === */
+
+/* Reset básico */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Elimina el margen por defecto del body */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* mismo fondo que tu dashboard */
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Asegura que el root (app-root) llene toda la pantalla */
+app-root {
+    display: block;
+    min-height: 100vh;
+}
+
+/* 🔹 Cuando estés en el dashboard, asegúrate de que el layout ocupa toda la pantalla */
+app-root .dashboard-container {
+    min-height: 100vh;
+}
+
+/* 🔹 Oculta el footer y header dentro del dashboard */
+app-root.dashboard-active app-header,
+app-root.dashboard-active app-footer {
+    display: none !important;
+}
+
+/* (Opcional) Evita scroll extra si no es necesario */
+html,
+body {
+    overflow-x: hidden;
+}

@@ -1,284 +1,282 @@
-/* === Ajustes globales para el dashboard === */
-html,
-body {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    /* evita scroll innecesario si no lo necesitas */
+:root {
+    --primary-color: #4a90e2;
+    --success-color: #50e3c2;
+    --danger-color: #e35050;
+    --background-color: #2c3e50;
+    --sidebar-bg: #34495e;
+    --content-bg: #2c3c50;
+    /* ojo: tu valor era #2c3e50, usa el que quieras */
+    --card-bg: #34495e;
+    --text-color: #ecf0f1;
+    --text-muted-color: #bdc3c7;
+    --border-color: #46627f;
+    --font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
 }
 
+/* Host del componente a pantalla completa */
 :host,
-.dashboard-container {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100%;
+list-dashboard {
+    display: block;
     min-height: 100vh;
-    /* ocupa toda la altura visible */
-    display: flex;
-    background-color: #f1f1f1;
+    /* 👈 evita huecos arriba/abajo */
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
 }
 
-/* Corrige posibles herencias de AppComponent */
-main.dashboard-main,
-main.container {
-    margin: 0 !important;
-    padding: 0 !important;
-    max-width: none !important;
-}
-
+/* Layout principal */
 .dashboard-container {
     display: flex;
     min-height: 100vh;
-    width: 100%;
-    background-color: #f1f1f1;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    font-size: 13px;
-    line-height: 1.4;
-    margin: 0 !important;
-    padding: 0 !important;
+    /* 👈 asegura que llene todo */
 }
 
-/* Sidebar Styles */
+/* Sidebar */
 .sidebar {
-    width: 160px;
-    background: #23282d;
-    color: #eee;
-    flex-shrink: 0;
+    width: 240px;
+    background-color: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
 }
 
 .sidebar-header {
-    padding: 20px 10px;
-    border-bottom: 1px solid #333;
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+}
 
-    h2 {
-        color: #fff;
-        font-size: 14px;
-        font-weight: 600;
-        margin: 0;
-        text-align: center;
-    }
+.sidebar-header h2 {
+    margin: 0;
+    color: var(--text-color);
+    font-weight: 600;
 }
 
 .nav-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 20px 0;
 }
 
 .nav-item {
-    padding: 10px 12px;
+    padding: 15px 24px;
     cursor: pointer;
+    transition: background-color .3s ease, border-left .3s ease;
     border-left: 4px solid transparent;
-    transition: all 0.2s ease;
-
-    &:hover {
-        background: #32373c;
-        color: #00b9eb;
-    }
-
-    &.active {
-        background: #32373c;
-        border-left-color: #00b9eb;
-        color: #00b9eb;
-    }
+    font-weight: 500;
 }
 
-/* Main Content Styles */
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, .05);
+}
+
+.nav-item.active {
+    background-color: rgba(0, 0, 0, .2);
+    border-left: 4px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Main */
 .main-content {
     flex: 1;
-    padding: 20px;
+    padding: 24px;
+    /* si quieres cero margen visual, baja esto */
+    overflow: auto;
+    background-color: var(--content-bg);
 }
 
-.content-header {
-    margin-bottom: 20px;
-
-    h1 {
-        color: #23282d;
-        font-size: 21px;
-        font-weight: 400;
-        margin: 0;
-        padding: 9px 0 4px;
-        line-height: 1.2;
-    }
+.content-header h1 {
+    margin: 0 0 24px 0;
+    /* ya evita margen superior colapsado */
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
 }
 
-/* Dashboard Grid - Similar to "At a Glance" */
+/* Grid de tarjetas */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
 }
 
 .card {
-    background: #fff;
-    border: 1px solid #ccd0d4;
-    border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
-
-    .card-header {
-        display: flex;
-        justify-content: between;
-        align-items: center;
-        padding: 12px 15px;
-        border-bottom: 1px solid #eee;
-
-        h3 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: #23282d;
-            flex: 1;
-        }
-
-        .card-badge {
-            background: #00a0d2;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-        }
-    }
-
-    p {
-        padding: 15px;
-        margin: 0;
-        color: #444;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-
-    .card-footer {
-        padding: 12px 15px;
-        border-top: 1px solid #eee;
-        background: #f9f9f9;
-    }
-
-    .card-btn {
-        background: #0073aa;
-        color: white;
-        border: none;
-        border-radius: 3px;
-        padding: 6px 12px;
-        font-size: 13px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-
-        &:hover {
-            background: #005a87;
-        }
-    }
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform .2s ease, box-shadow .2s ease;
 }
 
-/* Events Grid - Similar to WordPress tables */
-.event-grid {
-    background: #fff;
-    border: 1px solid #ccd0d4;
-    border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .2);
+}
 
-    h2 {
-        padding: 15px;
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #23282d;
-        border-bottom: 1px solid #eee;
-        background: #f9f9f9;
-    }
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.card p {
+    flex-grow: 1;
+    color: var(--text-muted-color);
+    line-height: 1.6;
+}
+
+.card-footer {
+    margin-top: 20px;
+}
+
+.card-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: 0;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: filter .3s ease;
+}
+
+/* Alternativa a darken() si no usas SCSS */
+.card-btn:hover {
+    filter: brightness(.9);
+}
+
+/* Tabla/lista de eventos */
+.event-grid {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.event-grid-header,
+.event-grid-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 16px;
+    padding: 16px 24px;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .event-grid-header {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
-    padding: 12px 15px;
-    background: #f9f9f9;
-    border-bottom: 1px solid #eee;
+    font-weight: 700;
+    color: var(--text-muted-color);
+    background-color: rgba(0, 0, 0, .15);
+}
+
+.event-grid-row:last-child {
+    border-bottom: none;
+}
+
+.event-grid-row:hover {
+    background-color: rgba(255, 255, 255, .03);
+}
+
+.category-badge {
+    background-color: #27ae60;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: .8em;
     font-weight: 600;
-    color: #23282d;
+    text-align: center;
+    display: inline-block;
 }
 
-.event-grid-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
-    padding: 12px 15px;
-    border-bottom: 1px solid #eee;
+.event-price {
+    font-weight: 500;
+}
+
+/* Toggle */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #7f8c8d;
+    transition: .4s;
+    border-radius: 28px;
+}
+
+.toggle-switch .slider::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #fff;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked+.slider {
+    background-color: var(--success-color);
+}
+
+.toggle-switch input:checked+.slider::before {
+    transform: translateX(22px);
+}
+
+/* Acciones */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
-
-    &:last-child {
-        border-bottom: none;
-    }
-
-    &:hover {
-        background: #f9f9f9;
-    }
-
-    span {
-        color: #444;
-    }
+    justify-content: center;
+    transition: background-color .2s ease, color .2s ease;
 }
 
-/* WordPress-like buttons */
-.btn-delete {
-    background: #dc3232;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 4px 8px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-right: 5px;
-
-    &:hover {
-        background: #b32d2d;
-    }
+.btn-icon svg {
+    stroke: var(--text-muted-color);
+    transition: stroke .2s ease;
 }
 
-.btn-edit {
-    background: #0073aa;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 4px 8px;
-    font-size: 12px;
-    cursor: pointer;
-
-    &:hover {
-        background: #005a87;
-    }
+.btn-icon.btn-edit:hover {
+    background-color: rgba(74, 144, 226, .2);
 }
 
-/* Empty state styling */
-p {
-    color: #666;
-    font-size: 13px;
-    padding: 15px;
+.btn-icon.btn-edit:hover svg {
+    stroke: var(--primary-color);
 }
 
-/* WordPress-like responsive adjustments */
-@media screen and (max-width: 782px) {
-    .dashboard-container {
-        flex-direction: column;
-    }
+.btn-icon.btn-delete:hover {
+    background-color: rgba(227, 80, 80, .2);
+}
 
-    .sidebar {
-        width: 100%;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .event-grid-header,
-    .event-grid-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
+.btn-icon.btn-delete:hover svg {
+    stroke: var(--danger-color);
 }

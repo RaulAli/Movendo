@@ -12,13 +12,54 @@
         </ul>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main class="main-content">
         <header class="content-header">
             <h1>{{ selectedMenuItem }}</h1>
         </header>
 
-        <!-- 🔹 Contenido dinámico -->
-        <div [innerHTML]="contenidoHTML"></div>
+        <!-- Main -->
+        <div *ngIf="selectedMenuItem === 'Main'" class="dashboard-grid">
+            <div *ngFor="let card of cards" class="card">
+                <div class="card-header">
+                    <h3>{{ card.title }}</h3>
+                </div>
+                <p>{{ card.content }}</p>
+                <div class="card-footer">
+                    <button class="card-btn" (click)="onVerMas(card)">Ver más</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events -->
+        <div *ngIf="selectedMenuItem === 'Events'" class="event-grid">
+            <div class="event-grid-header">
+                <span>Nombre</span>
+                <span>Ciudad</span>
+                <span>Categoría</span>
+                <span>Precio</span>
+                <span>Estado</span>
+                <span>Acciones</span>
+            </div>
+
+            <div *ngFor="let e of eventos" class="event-grid-row">
+                <span>{{ e.nombre }}</span>
+                <span>{{ e.ciudad }}</span>
+                <span><span class="category-badge">{{ e.category }}</span></span>
+                <span class="event-price">{{ e.price | currency:'USD' }}</span>
+                <span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" [checked]="e.isActive" disabled>
+                        <span class="slider"></span>
+                    </label>
+                </span>
+                <span class="action-buttons">
+                    <button class="btn-icon btn-edit" (click)="onEdit(e)" title="Editar Estado">✏️ EDIT</button>
+                    <button class="btn-icon btn-delete" (click)="onDelete(e)" title="Eliminar">🗑️ DELETE </button>
+                </span>
+            </div>
+
+            <p *ngIf="eventos.length === 0" class="empty-state">No hay eventos disponibles.</p>
+        </div>
     </main>
 </div>
