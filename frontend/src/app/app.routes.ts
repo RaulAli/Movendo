@@ -7,6 +7,7 @@ export const routes: Routes = [
     { path: 'shop', loadChildren: () => import('./pages/shop/shop.routes') },
     { path: 'details', loadChildren: () => import('./pages/details/details-routing').then(m => m.DETAILS_ROUTES) },
     { path: 'auth', loadChildren: () => import('./pages/auth/auth-routing').then(m => m.AUTH_ROUTES) },
+    { path: 'admin', loadChildren: () => import('./pages/admin_auth/admin_auth.routing').then(m => m.AdminAuthRoutes) },
     { path: 'profile', loadChildren: () => import('./pages/profile/profile-routing').then(m => m.PROFILE_ROUTES) },
     { path: '**', redirectTo: 'home' }
 ];
