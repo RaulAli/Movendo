@@ -15,7 +15,7 @@ exports.listar = async (req, res, next) => {
       return param;
     };
 
-    const limit = Number(getQueryParam('limit', 3));
+    const limit = Number(getQueryParam('limit', 10));
     const offset = Number(getQueryParam('offset', 0));
     const category = getQueryParam('category', []);
     const nombre = getQueryParam('nombre', "");
@@ -348,29 +348,30 @@ exports.unfavoriteEvento = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+
+  exports.GetAllEventos = async (req, res, next) => {
+    try {
+      const offset = parseInt(req.query.offset) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+
+      const [eventos, total] = await Promise.all([
+        Evento.find({})
+          .skip(offset)
+          .limit(limit)
+          .exec(),
+        Evento.countDocuments({})
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        eventos,
+        evento_count: total
+      });
+
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  };
+
 };
-
-
-// #region OLD OBTENER METHOD
-// exports.obtener = async (req, res, next) => {
-//   try {
-//     const id = req.userId;
-//     const user = id ? await User.findById(id).exec() : null;
-//     const evento = await Evento.findOne({ slug: req.params.slug })
-//       .populate({
-//         path: 'comments',
-//         populate: {
-//           path: 'author',
-//           select: 'username image'
-//         }
-//       });
-
-//     if (!evento) {
-//       return res.status(404).json({ success: false, message: 'Evento no encontrado' });
-//     }
-
-//     return res.json({ success: true, data: await evento.toEventoResponse(user) });
-//   } catch (err) {
-//     next(err);
-//   }
-// };

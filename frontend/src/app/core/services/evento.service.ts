@@ -12,7 +12,7 @@ export class EventoService {
   constructor(private apiService: ApiService) { }
 
   list(): Observable<Evento[]> {
-    return this.apiService.get(`/evento`).pipe(
+    return this.apiService.get(`/evento/admin`).pipe(
       map(res => res.data ?? res)
     );
   }

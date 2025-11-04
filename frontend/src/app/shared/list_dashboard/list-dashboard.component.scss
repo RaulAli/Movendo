@@ -1,0 +1,251 @@
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f1f1f1;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 160px;
+    background: #23282d;
+    color: #eee;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 20px 10px;
+    border-bottom: 1px solid #333;
+
+    h2 {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+        text-align: center;
+    }
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #32373c;
+        color: #00b9eb;
+    }
+
+    &.active {
+        background: #32373c;
+        border-left-color: #00b9eb;
+        color: #00b9eb;
+    }
+}
+
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+.content-header {
+    margin-bottom: 20px;
+
+    h1 {
+        color: #23282d;
+        font-size: 21px;
+        font-weight: 400;
+        margin: 0;
+        padding: 9px 0 4px;
+        line-height: 1.2;
+    }
+}
+
+/* Dashboard Grid - Similar to "At a Glance" */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+
+    .card-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+
+        h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #23282d;
+            flex: 1;
+        }
+
+        .card-badge {
+            background: #00a0d2;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    }
+
+    p {
+        padding: 15px;
+        margin: 0;
+        color: #444;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .card-footer {
+        padding: 12px 15px;
+        border-top: 1px solid #eee;
+        background: #f9f9f9;
+    }
+
+    .card-btn {
+        background: #0073aa;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 6px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: #005a87;
+        }
+    }
+}
+
+/* Events Grid - Similar to WordPress tables */
+.event-grid {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+
+    h2 {
+        padding: 15px;
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #23282d;
+        border-bottom: 1px solid #eee;
+        background: #f9f9f9;
+    }
+}
+
+.event-grid-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    padding: 12px 15px;
+    background: #f9f9f9;
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+    color: #23282d;
+}
+
+.event-grid-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: #f9f9f9;
+    }
+
+    span {
+        color: #444;
+    }
+}
+
+/* WordPress-like buttons */
+.btn-delete {
+    background: #dc3232;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-right: 5px;
+
+    &:hover {
+        background: #b32d2d;
+    }
+}
+
+.btn-edit {
+    background: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+        background: #005a87;
+    }
+}
+
+/* Empty state styling */
+p {
+    color: #666;
+    font-size: 13px;
+    padding: 15px;
+}
+
+/* WordPress-like responsive adjustments */
+@media screen and (max-width: 782px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .event-grid-header,
+    .event-grid-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}

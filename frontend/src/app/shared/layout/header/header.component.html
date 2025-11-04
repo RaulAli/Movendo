@@ -13,8 +13,9 @@
             <a class="nav-link" routerLink="shop">
                 Shop
             </a>
-        </nav>
-        <nav aria-label="Principal" class="nav">
+            <a [routerLink]="'/admin/register'" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                Raul diu que si eres un client no entres
+            </a>
             <a [routerLink]="'/auth'" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                 Login
             </a>
