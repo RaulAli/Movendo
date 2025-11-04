@@ -1,10 +1,43 @@
+/* === Ajustes globales para el dashboard === */
+html,
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    /* evita scroll innecesario si no lo necesitas */
+}
+
+:host,
+.dashboard-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    min-height: 100vh;
+    /* ocupa toda la altura visible */
+    display: flex;
+    background-color: #f1f1f1;
+}
+
+/* Corrige posibles herencias de AppComponent */
+main.dashboard-main,
+main.container {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    width: 100%;
     background-color: #f1f1f1;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
     font-size: 13px;
     line-height: 1.4;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* Sidebar Styles */
