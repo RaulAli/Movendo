@@ -3,6 +3,7 @@ import { Observable, map } from 'rxjs';
 import { Evento, EventosResponse } from '../models/evento.model';
 import { ApiService } from './api.service';
 import { Filters } from '../models/filters.model';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class EventoService {
   constructor(private apiService: ApiService) { }
 
   list(): Observable<Evento[]> {
-    return this.apiService.get(`/evento/admin`).pipe(
+    return this.apiService.get(`/eventos`, new HttpParams(), 3002).pipe(
       map(res => res.data ?? res)
     );
   }
