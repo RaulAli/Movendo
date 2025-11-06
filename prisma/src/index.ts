@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import adminRoutes from './routes/admin.routes';
 import userRoutes from './routes/users.routes';
+import categoriesRoutes from './routes/categories.routes';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import cors from '@fastify/cors';
@@ -69,6 +70,7 @@ fastify.register(swaggerUi, {
 
 fastify.register(adminRoutes);
 fastify.register(userRoutes);
+fastify.register(categoriesRoutes);
 
 // Centralized Error Handler
 fastify.setErrorHandler((error, request, reply) => {
