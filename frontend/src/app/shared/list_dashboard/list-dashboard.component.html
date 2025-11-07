@@ -32,7 +32,7 @@
         </div>
 
         <!-- Events -->
-        <div *ngIf="selectedMenuItem === 'Events'" class="event-grid">
+        <div *ngIf="selectedMenuItem === 'Events' && !editingEvento" class="event-grid">
             <div class="event-grid-header">
                 <span>Nombre</span>
                 <span>Ciudad</span>
@@ -60,6 +60,37 @@
             </div>
 
             <p *ngIf="eventos.length === 0" class="empty-state">No hay eventos disponibles.</p>
+        </div>
+
+        <!-- Edit Form -->
+        <div *ngIf="editingEvento" class="edit-form">
+            <h2>Editando Evento</h2>
+            <form (ngSubmit)="onSave(editingEvento!)">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" [(ngModel)]="editingEvento.nombre" name="nombre">
+                </div>
+                <div class="form-group">
+                    <label for="ciudad">Ciudad</label>
+                    <input type="text" id="ciudad" [(ngModel)]="editingEvento.ciudad" name="ciudad">
+                </div>
+                <div class="form-group">
+                    <label for="category">Categoría</label>
+                    <input type="text" id="category" [(ngModel)]="editingEvento.category" name="category">
+                </div>
+                <div class="form-group">
+                    <label for="price">Precio</label>
+                    <input type="number" id="price" [(ngModel)]="editingEvento.price" name="price">
+                </div>
+                <div class="form-group">
+                    <label for="isActive">Activo</label>
+                    <input type="checkbox" id="isActive" [(ngModel)]="editingEvento.isActive" name="isActive">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
+                </div>
+            </form>
         </div>
     </main>
 </div>

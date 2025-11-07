@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Evento } from '../../core/models/evento.model';
 import { EventoService } from '../../core/services/evento.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'list-dashboard',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, FormsModule],
     templateUrl: './list-dashboard.component.html',
     styleUrls: ['./list-dashboard.component.scss'],
     encapsulation: ViewEncapsulation.None
@@ -22,6 +23,7 @@ export class ListDashboardComponent implements OnInit {
     cards: any[] = [];
     eventos: Evento[] = [];
     contenidoDB: any = {};
+    editingEvento: Evento | null = null;
 
     ngOnInit(): void {
         this.loadContentFromDB();
@@ -75,10 +77,41 @@ export class ListDashboardComponent implements OnInit {
     }
 
     onEdit(evento: Evento) {
-        console.log('Editar evento:', evento);
+        this.editingEvento = { ...evento };
+    }
+
+    onSave(evento: Evento) {
+        console.log("hola");
+        if (evento.slug) {
+            console.log(evento.slug);
+            const { nombre, ciudad, category, price, isActive } = evento;
+            const updatedData = { nombre, ciudad, category, price, isActive };
+
+            this.eventoService.update(evento.slug, updatedData).subscribe({
+                next: (data) => {
+                    const index = this.eventos.findIndex(e => e.slug === evento.slug);
+                    if (index !== -1) {
+                        this.eventos[index] = data;
+                    }
+                    this.editingEvento = null;
+                },
+                error: (err) => console.error('Error actualizando evento', err)
+            });
+        }
+    }
+
+    onCancel() {
+        this.editingEvento = null;
     }
 
     onDelete(evento: Evento) {
-        console.log('Eliminar evento:', evento);
+        if (evento.slug && confirm(`¿Estás seguro de que quieres eliminar el evento "${evento.nombre}"?`)) {
+            this.eventoService.delete(evento.slug).subscribe({
+                next: () => {
+                    this.eventos = this.eventos.filter(e => e.slug !== evento.slug);
+                },
+                error: (err) => console.error('Error eliminando evento', err)
+            });
+        }
     }
 }
