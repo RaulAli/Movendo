@@ -32,11 +32,11 @@ model blacklistedtokens {
 
 model categories {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  v           Int      @map("__v")
+  v           Int?     @map("__v")
   createdAt   DateTime @db.Date
   descripcion String
   eventos     String[]
-  image       String[]
+  image       String?
   isActive    Boolean
   nombre      String
   slug        String   @unique
@@ -91,14 +91,14 @@ model eventos {
 
 model users {
   id              String    @id @map("_id") @default(uuid())
-  v               Int       @map("__v")
+  v               Int?      @map("__v")
   createdAt       DateTime  @db.Date
   email           String    @unique
   favouriteEvento String[]
   followersCount  Int
   followingCount  Int
   followingUsers  String[]
-  image           String
+  image           String?
   isActive        Boolean
   password        String
   refreshTokens   String[]
