@@ -61,14 +61,14 @@ export class EventoService {
     );
   }
 
-  update(slug: string, evento: Evento): Observable<Evento> {
-    return this.apiService.put(`/evento/${slug}`, evento).pipe(
+  update(slug: string, evento: Partial<Evento>): Observable<Evento> {
+    return this.apiService.put(`/eventos/${slug}`, evento, 3002).pipe(
       map(res => res.data ?? res)
     );
   }
 
   delete(slug: string): Observable<any> {
-    return this.apiService.delete(`/evento/${slug}`).pipe(
+    return this.apiService.delete(`/eventos/${slug}`, 3002).pipe(
       map(res => res.data ?? res)
     );
   }
