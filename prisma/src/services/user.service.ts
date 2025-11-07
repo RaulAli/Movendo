@@ -58,27 +58,19 @@ export const getUsers = async (options: {
   return { items, meta: { page, perPage, total } };
 };
 
-// Actualizar usuario
-export const updateUser = async (id: string, data: any) => {
-  const updateData = { ...data };
-  if (data.password) {
-    updateData.password = await bcrypt.hash(data.password, 10);
-  }
+export const getUserByUsername = async (username: string) => {
+  return prisma.users.findUnique({ where: { username } });
+};
+
+export const updateUserByUsername = async (username: string, data: any) => {
   return prisma.users.update({
-    where: { id },
-    data: updateData,
+    where: { username },
+    data,
   });
 };
 
-// Desactivar usuario (soft delete)
-export const deactivateUser = async (id: string) => {
-  return prisma.users.update({
-    where: { id },
-    data: { isActive: false },
+export const deleteUserByUsername = async (username: string) => {
+  return prisma.users.delete({
+    where: { username },
   });
-};
-
-// Eliminar usuario definitivamente (hard delete)
-export const deleteUser = async (id: string) => {
-  return prisma.users.delete({ where: { id } });
 };

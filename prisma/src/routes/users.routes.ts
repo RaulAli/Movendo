@@ -50,44 +50,35 @@ async function userRoutes(fastify: FastifyInstance) {
         userController.listUsers
     );
 
-    // Obtener un usuario por ID (solo admin)
+    // Obtener un usuario por username
     fastify.get(
-        '/users/:id',
+        '/users/:username',
         {
             preHandler: [adminAuthMiddleware],
-            schema: {
-                summary: 'Obtener usuario por ID (solo admin)',
-                tags: ['users'],
-            },
+            schema: { summary: 'Obtener usuario por username (solo admin)', tags: ['users'] },
         },
         userController.getUser
     );
 
-    // Actualizar usuario (solo admin)
+    // Actualizar usuario
     fastify.put(
-        '/users/:id',
+        '/users/:username',
         {
             preHandler: [adminAuthMiddleware],
-            schema: {
-                ...updateUserSchema,
-                summary: 'Actualizar usuario (solo admin)',
-                tags: ['users'],
-            },
+            schema: { summary: 'Actualizar usuario (solo admin)', tags: ['users'] },
         },
         userController.updateUser
     );
 
-    // Desactivar usuario (solo admin)
-    fastify.delete(
-        '/users/:id',
+    // Desactivar usuario
+    fastify.put(
+        '/users/:username/toggle',
         {
             preHandler: [adminAuthMiddleware],
-            schema: {
-                summary: 'Desactivar usuario (solo admin)',
-                tags: ['users'],
-            },
+            schema: { summary: 'Desactivar usuario (solo admin)', tags: ['users'] },
         },
-        userController.deactivateUser
+        userController.deleteUser
     );
+
 }
 export default userRoutes;

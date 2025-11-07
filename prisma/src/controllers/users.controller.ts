@@ -1,4 +1,3 @@
-// src/controllers/user.controller.ts
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as userService from '../services/user.service';
 import * as jwt from 'jsonwebtoken';
@@ -31,11 +30,13 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
         const secret = process.env.JWT_SECRET || 'SUPER_SECRET';
         const expiresIn = (process.env.JWT_EXPIRES_IN || '15m') as any;
         const options: jwt.SignOptions = { expiresIn };
-        const token = jwt.sign({ id: user.id, email: user.email, isAdmin: false }, secret, options);
+        const token = jwt.sign(
+            { username: user.username, email: user.email, isAdmin: false },
+            secret,
+            options
+        );
 
-        // opcional: si quieres devolver user sin password
         const { password: _p, refreshTokens, ...publicUser } = user as any;
-
         reply.send({ token, user: publicUser });
     } catch (error) {
         console.error('login error:', error);
@@ -60,8 +61,8 @@ export const listUsers = async (request: FastifyRequest, reply: FastifyReply) =>
 
 export const getUser = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const id = (request.params as any).id;
-        const user = await userService.getUserById(id);
+        const username = (request.params as any).username;
+        const user = await userService.getUserByUsername(username);
         if (!user) return reply.code(404).send({ message: 'Usuario no encontrado' });
         reply.send(user);
     } catch (error) {
@@ -72,8 +73,8 @@ export const getUser = async (request: FastifyRequest, reply: FastifyReply) => {
 
 export const updateUser = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const id = (request.params as any).id;
-        const updated = await userService.updateUser(id, request.body);
+        const username = (request.params as any).username;
+        const updated = await userService.updateUserByUsername(username, request.body);
         reply.send(updated);
     } catch (error) {
         console.error('updateUser error:', error);
@@ -81,21 +82,10 @@ export const updateUser = async (request: FastifyRequest, reply: FastifyReply) =
     }
 };
 
-export const deactivateUser = async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-        const id = (request.params as any).id;
-        await userService.deactivateUser(id);
-        reply.code(204).send();
-    } catch (error) {
-        console.error('deactivateUser error:', error);
-        reply.code(500).send({ error: 'Error al desactivar el usuario' });
-    }
-};
-
 export const deleteUser = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const id = (request.params as any).id;
-        await userService.deleteUser(id);
+        const username = (request.params as any).username;
+        await userService.deleteUserByUsername(username);
         reply.code(204).send();
     } catch (error) {
         console.error('deleteUser error:', error);

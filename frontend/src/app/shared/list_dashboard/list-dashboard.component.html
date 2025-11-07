@@ -93,4 +93,67 @@
             </form>
         </div>
     </main>
+    <div *ngIf="selectedMenuItem === 'Categories'" class="event-grid">
+        <div class="event-grid-header">
+            <span>Nombre</span>
+            <!-- <span>Descripción</span> -->
+            <span>Estado</span>
+            <span>Acciones</span>
+        </div>
+
+        <div *ngFor="let c of categories" class="event-grid-row">
+            <span>{{ c.nombre }}</span>
+            <!-- <span>
+                        <span class="category-description">
+                            {{ (c.descripcion && c.descripcion.length > 120) ? (c.descripcion | slice:0:117) + '…' :
+                            (c.descripcion
+                            || '—') }}
+                        </span>
+                    </span> -->
+            <span>
+                <label class="toggle-switch">
+                    <input type="checkbox" [checked]="c.isActive" disabled>
+                    <span class="slider"></span>
+                </label>
+            </span>
+            <span class="action-buttons">
+                <button class="btn-icon btn-edit" (click)="onEditCategory(c)" title="Editar categoría">✏️
+                    EDIT</button>
+                <button class="btn-icon btn-delete" (click)="onDeleteCategory(c)" title="Eliminar categoría">🗑️
+                    DELETE</button>
+            </span>
+        </div>
+        <p *ngIf="categories.length === 0" class="empty-state">No hay categorías disponibles.</p>
+    </div>
+
+    <div *ngIf="selectedMenuItem === 'Clients'" class="event-grid">
+        <div class="event-grid-header">
+            <span>Usuario</span>
+            <span>Email</span>
+            <span>Estado</span>
+            <span>Activo</span>
+            <span>Acciones</span>
+        </div>
+
+        <div *ngFor="let u of users" class="event-grid-row">
+            <span>{{ u.username }}</span>
+            <span>{{ u.email }}</span>
+
+            <span>
+                <label class="toggle-switch">
+                    <input type="checkbox" [checked]="u.isActive" disabled>
+                    <span class="slider"></span>
+                </label>
+            </span>
+
+
+            <span class="action-buttons">
+                <button class="btn-icon btn-edit" (click)="onEditUser(u)" title="Editar usuario">✏️ EDIT</button>
+                <button class="btn-icon btn-delete" (click)="onDeleteUser(u)" title="Eliminar usuario">🗑️
+                    DELETE</button>
+            </span>
+        </div>
+
+        <p *ngIf="users.length === 0" class="empty-state">No hay usuarios disponibles.</p>
+    </div>
 </div>
