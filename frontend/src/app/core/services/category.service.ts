@@ -17,7 +17,6 @@ export class CategoryService {
     );
   }
 
-
   get(slug: string): Observable<Category> {
     return this.apiService.get(`/category/${slug}`);
   }
@@ -33,4 +32,16 @@ export class CategoryService {
   delete(slug: string): Observable<any> {
     return this.apiService.delete(`/category/${slug}`);
   }
+
+  // #region Admins
+  list_adm(): Observable<Category[]> {
+    return this.apiService.get_admin('/categories').pipe(
+      map((res: any) => {
+        if (Array.isArray(res)) return res as Category[];
+        // Prioriza distintas posibles propiedades del backend
+        return (res?.items ?? res?.category ?? res?.data ?? []) as Category[];
+      })
+    );
+  }
+
 }

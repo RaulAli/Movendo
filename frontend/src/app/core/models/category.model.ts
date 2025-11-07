@@ -4,4 +4,6 @@ export interface Category {
   descripcion?: string;
   slug?: string;
   image?: string[];
+  isActive: boolean;
+  status: "PUBLISHED" | "DRAFT" | "ARCHIVED";
 }
