@@ -8,7 +8,7 @@ datasource db {
 }
 
 model admin {
-  id            String   @id @map("_id")
+  id            String   @id @map("_id") @default(uuid())
   createdAt     DateTime @db.Date
   email         String   @unique
   isActive      Boolean
@@ -47,10 +47,12 @@ model categories {
 model comments {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   v         Int      @map("__v")
-  author    String
+  authorId  String
+  author    users    @relation(fields: [authorId], references: [id])
   body      String
   createdAt DateTime @db.Date
-  evento    String   @db.ObjectId
+  eventoId  String
+  evento    eventos  @relation(fields: [eventoId], references: [id])
   isActive  Boolean
   status    String
   updatedAt DateTime @db.Date
@@ -67,31 +69,31 @@ model eventocategory {
 }
 
 model eventos {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  author          String
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  authorId        String?
+  author          users?    @relation("EventosDelAutor", fields: [authorId], references: [id])
   category        String
   ciudad          String
-  /// Could not determine type: the field only had null or empty values in the sample set.
-  comments        Json?
-  createdAt       DateTime @db.Date
-  endDate         DateTime @db.Date
+  comments        comments[]
+  createdAt       DateTime  @db.Date
+  endDate         DateTime  @db.Date
   favouritesCount Int
   image           String[]
   isActive        Boolean
   nombre          String
   price           Int
-  slug            String   @unique
+  slug            String    @unique
   slug_category   String[]
-  startDate       DateTime @db.Date
+  startDate       DateTime  @db.Date
   status          String
-  updatedAt       DateTime @db.Date
+  updatedAt       DateTime  @db.Date
 }
 
 model users {
-  id              String   @id @map("_id")
-  v               Int      @map("__v")
-  createdAt       DateTime @db.Date
-  email           String   @unique
+  id              String    @id @map("_id") @default(uuid())
+  v               Int       @map("__v")
+  createdAt       DateTime  @db.Date
+  email           String    @unique
   favouriteEvento String[]
   followersCount  Int
   followingCount  Int
@@ -101,6 +103,8 @@ model users {
   password        String
   refreshTokens   String[]
   status          String
-  updatedAt       DateTime @db.Date
-  username        String   @unique
+  updatedAt       DateTime  @db.Date
+  username        String    @unique
+  eventos         eventos[] @relation("EventosDelAutor")
+  comments        comments[]
 }
