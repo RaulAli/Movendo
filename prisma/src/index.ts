@@ -15,7 +15,8 @@ const fastify = Fastify({
 
 // Register CORS
 fastify.register(cors, {
-  origin: '*' // For development, allow all origins. Restrict in production.
+  origin: '*', // For development, allow all origins. Restrict in production.
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS']
 });
 
 // Register Rate Limit
