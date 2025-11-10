@@ -36,6 +36,8 @@ export class ListDashboardComponent implements OnInit {
 
     contenidoDB: any = {};
     editingEvento: Evento | null = null;
+    creatingEvento: boolean = false;
+    newEvento: Partial<Evento> = {};
 
     // Edición
     editingUser: string | null = null; // username en edición
@@ -220,6 +222,27 @@ export class ListDashboardComponent implements OnInit {
     onVerMas(card: any) {
         console.log('Ver más de:', card);
     }
+
+    onCreateEvento() {
+        this.creatingEvento = true;
+    }
+
+    onCancelNewEvento() {
+        this.creatingEvento = false;
+    }
+
+    onSaveNewEvento() {
+        this.eventoService.create(this.newEvento as Evento).subscribe({
+            next: (newEvent) => {
+                this.eventos.push(newEvent);
+                this.creatingEvento = false;
+                this.newEvento = {};
+            },
+            error: (err) => console.error('Error creating evento', err)
+        });
+    }
+
+
 
     onEdit(evento: Evento) {
         this.editingEvento = { ...evento };

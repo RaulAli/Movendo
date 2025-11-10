@@ -56,7 +56,7 @@ export class EventoService {
   }
 
   create(evento: Evento): Observable<Evento> {
-    return this.apiService.post(`/evento`, evento).pipe(
+    return this.apiService.post(`/eventos`, evento, 3002).pipe(
       map(res => res.data ?? res)
     );
   }
