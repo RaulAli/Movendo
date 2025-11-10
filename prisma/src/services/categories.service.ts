@@ -2,6 +2,46 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const normalizeImage = (img: any): string | null => {
+  if (img == null) return null;
+
+  // Si es array de strings (URLs), devolver la primera
+  if (Array.isArray(img)) return img.length ? String(img[0]) : null;
+
+  // Si es string (URL o data URL)
+  if (typeof img === 'string') return img;
+
+  // Si es objeto con url
+  if (typeof img === 'object') {
+    if (typeof img.url === 'string') return img.url;
+
+    // Si tiene data (ej: { type: 'Buffer', data: [...] } o { data: [...] })
+    if (Array.isArray((img as any).data)) {
+      try {
+        // En Node.js usamos Buffer para convertir a base64
+        return Buffer.from((img as any).data).toString('base64');
+      } catch {
+        // fallback a stringify
+        try {
+          return JSON.stringify(img);
+        } catch {
+          return null;
+        }
+      }
+    }
+
+    // fallback: stringify
+    try {
+      return JSON.stringify(img);
+    } catch {
+      return null;
+    }
+  }
+
+  // cualquier otro tipo
+  return String(img);
+};
+
 export const createCategory = async (data: any) => {
   return prisma.categories.create({
     data: {
@@ -43,18 +83,29 @@ export const getAllCategories = async (query: {
     }),
   ]);
 
-  return { total, items, page, limit };
+  const normalizedItems = items.map(i => ({
+    ...i,
+    image: normalizeImage((i as any).image),
+  }));
+
+  return { total, items: normalizedItems, page, limit };
 };
 
 export const getCategoryById = async (id: string) => {
   return prisma.categories.findUnique({ where: { id } });
 };
 
-export const updateCategory = async (id: string, data: any) => {
-  return prisma.categories.update({
-    where: { id },
+export const updateCategoryBySlug = async (slug: string, data: any) => {
+  const updated = await prisma.categories.update({
+    where: { slug },
     data: { ...data, updatedAt: new Date() },
   });
+
+  // Normalizamos image antes de devolver (coherente con getAllCategories)
+  return {
+    ...updated,
+    image: normalizeImage((updated as any).image),
+  };
 };
 
 export const softDeleteCategory = async (id: string) => {
