@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { Evento } from '../../core/models/evento.model';
-import { EventoService } from '../../core/services/evento.service';
+import { AdminDashboardService } from '../../core/services/admin_dashboard.service';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../core/models/auth.model';
 import { UserService } from '../../core/services/auth.service';
@@ -20,7 +20,7 @@ import { CategoryService } from '../../core/services/category.service';
 })
 export class ListDashboardComponent implements OnInit {
     constructor(
-        private eventoService: EventoService,
+        private adminDashboardService: AdminDashboardService,
         private userService: UserService,
         private categoriesService: CategoryService,
         private fb: FormBuilder
@@ -137,7 +137,7 @@ export class ListDashboardComponent implements OnInit {
 
             case 'Events':
                 this.eventos = [];
-                this.eventoService.list().subscribe({
+                this.adminDashboardService.list().subscribe({
                     next: (data) => {
                         this.eventos = data ?? [];
                         this.filteredEventos = this.eventos;
@@ -145,7 +145,7 @@ export class ListDashboardComponent implements OnInit {
                     },
                     error: (err) => console.error('Error cargando eventos', err)
                 });
-                this.eventoService.getUniqueCities().subscribe({
+                this.adminDashboardService.getUniqueCities().subscribe({
                     next: (data) => (this.cities = data ?? []),
                     error: (err) => console.error('Error cargando ciudades', err)
                 });
@@ -300,7 +300,7 @@ export class ListDashboardComponent implements OnInit {
     }
 
     onSaveNewEvento() {
-        this.eventoService.create(this.newEvento as Evento).subscribe({
+        this.adminDashboardService.create(this.newEvento as Evento).subscribe({
             next: (newEvent) => {
                 this.eventos.push(newEvent);
                 this.creatingEvento = false;
@@ -323,7 +323,7 @@ export class ListDashboardComponent implements OnInit {
             const { nombre, ciudad, category, price, isActive } = evento;
             const updatedData = { nombre, ciudad, category, price, isActive };
 
-            this.eventoService.update(evento.slug, updatedData).subscribe({
+            this.adminDashboardService.update(evento.slug, updatedData).subscribe({
                 next: (data) => {
                     const index = this.eventos.findIndex(e => e.slug === evento.slug);
                     if (index !== -1) {
@@ -342,7 +342,7 @@ export class ListDashboardComponent implements OnInit {
 
     onDelete(evento: Evento) {
         if (evento.slug && confirm(`¿Estás seguro de que quieres eliminar el evento "${evento.nombre}"?`)) {
-            this.eventoService.delete(evento.slug).subscribe({
+            this.adminDashboardService.delete(evento.slug).subscribe({
                 next: () => {
                     this.eventos = this.eventos.filter(e => e.slug !== evento.slug);
                 },
