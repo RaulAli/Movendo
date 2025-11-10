@@ -32,18 +32,46 @@
         </div>
 
         <!-- Events -->
-        <div *ngIf="selectedMenuItem === 'Events' && !editingEvento" class="event-grid">
-            <div class="event-grid-header">
-                <span>Nombre</span>
-                <span>Ciudad</span>
-                <span>Categoría</span>
-                <span>Precio</span>
-                <span>Estado</span>
-                <span>Acciones</span>
+        <div *ngIf="selectedMenuItem === 'Events' && !editingEvento && !creatingEvento">
+            <div class="action-bar" [formGroup]="filterForm">
+                <div class="filters">
+                    <input type="text" placeholder="Buscar por nombre..." formControlName="nombre" />
+                    <div class="filter-group">
+                        <button (click)="showCityFilters = !showCityFilters">Ciudad</button>
+                        <div class="checkbox-group" *ngIf="showCityFilters">
+                            <div *ngFor="let city of cities">
+                                <input type="checkbox" [value]="city" (change)="onCheckboxChange($event, 'ciudad')" /> {{ city }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <button (click)="showCategoryFilters = !showCategoryFilters">Categoría</button>
+                        <div class="checkbox-group" *ngIf="showCategoryFilters">
+                            <div *ngFor="let category of categories">
+                                <input type="checkbox" [value]="category.nombre" (change)="onCheckboxChange($event, 'categoria')" /> {{ category.nombre }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <h5>Estado</h5>
+                        <div>
+                            <input type="checkbox" formControlName="isActive" /> Activo
+                        </div>
+                    </div>
+                </div>
                 <button class="btn-icon btn-add" (click)="onCreateEvento()" title="Crear Evento">➕ CREATE</button>
             </div>
-
-            <div *ngFor="let e of eventos" class="event-grid-row">
+            <div class="event-grid">
+                <div class="event-grid-header">
+                    <span>Nombre</span>
+                    <span>Ciudad</span>
+                    <span>Categoría</span>
+                    <span>Precio</span>
+                    <span>Estado</span>
+                    <span>Acciones</span>
+                </div>
+            </div>
+            <div *ngFor="let e of filteredEventos" class="event-grid-row">
                 <span>{{ e.nombre }}</span>
                 <span>{{ e.ciudad }}</span>
                 <span><span class="category-badge">{{ e.category }}</span></span>
@@ -124,68 +152,69 @@
                 </div>
             </form>
         </div>
+
+        <div *ngIf="selectedMenuItem === 'Categories'" class="event-grid">
+            <div class="event-grid-header">
+                <span>Nombre</span>
+                <!-- <span>Descripción</span> -->
+                <span>Estado</span>
+                <span>Acciones</span>
+            </div>
+
+            <div *ngFor="let c of categories" class="event-grid-row">
+                <span>{{ c.nombre }}</span>
+                <!-- <span>
+                                <span class="category-description">
+                                    {{ (c.descripcion && c.descripcion.length > 120) ? (c.descripcion | slice:0:117) + '…' :
+                                    (c.descripcion
+                                    || '—') }}
+                                </span>
+                            </span> -->
+                <span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" [checked]="c.isActive" disabled>
+                        <span class="slider"></span>
+                    </label>
+                </span>
+                <span class="action-buttons">
+                    <button class="btn-icon btn-edit" (click)="onEditCategory(c)" title="Editar categoría">✏️
+                        EDIT</button>
+                    <button class="btn-icon btn-delete" (click)="onDeleteCategory(c)" title="Eliminar categoría">🗑️
+                        DELETE</button>
+                </span>
+            </div>
+            <p *ngIf="categories.length === 0" class="empty-state">No hay categorías disponibles.</p>
+        </div>
+
+        <div *ngIf="selectedMenuItem === 'Clients'" class="event-grid">
+            <div class="event-grid-header">
+                <span>Usuario</span>
+                <span>Email</span>
+                <span>Estado</span>
+                <span>Activo</span>
+                <span>Acciones</span>
+            </div>
+
+            <div *ngFor="let u of users" class="event-grid-row">
+                <span>{{ u.username }}</span>
+                <span>{{ u.email }}</span>
+
+                <span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" [checked]="u.isActive" disabled>
+                        <span class="slider"></span>
+                    </label>
+                </span>
+
+
+                <span class="action-buttons">
+                    <button class="btn-icon btn-edit" (click)="onEditUser(u)" title="Editar usuario">✏️ EDIT</button>
+                    <button class="btn-icon btn-delete" (click)="onDeleteUser(u)" title="Eliminar usuario">🗑️
+                        DELETE</button>
+                </span>
+            </div>
+
+            <p *ngIf="users.length === 0" class="empty-state">No hay usuarios disponibles.</p>
+        </div>
     </main>
-    <div *ngIf="selectedMenuItem === 'Categories'" class="event-grid">
-        <div class="event-grid-header">
-            <span>Nombre</span>
-            <!-- <span>Descripción</span> -->
-            <span>Estado</span>
-            <span>Acciones</span>
-        </div>
-
-        <div *ngFor="let c of categories" class="event-grid-row">
-            <span>{{ c.nombre }}</span>
-            <!-- <span>
-                        <span class="category-description">
-                            {{ (c.descripcion && c.descripcion.length > 120) ? (c.descripcion | slice:0:117) + '…' :
-                            (c.descripcion
-                            || '—') }}
-                        </span>
-                    </span> -->
-            <span>
-                <label class="toggle-switch">
-                    <input type="checkbox" [checked]="c.isActive" disabled>
-                    <span class="slider"></span>
-                </label>
-            </span>
-            <span class="action-buttons">
-                <button class="btn-icon btn-edit" (click)="onEditCategory(c)" title="Editar categoría">✏️
-                    EDIT</button>
-                <button class="btn-icon btn-delete" (click)="onDeleteCategory(c)" title="Eliminar categoría">🗑️
-                    DELETE</button>
-            </span>
-        </div>
-        <p *ngIf="categories.length === 0" class="empty-state">No hay categorías disponibles.</p>
-    </div>
-
-    <div *ngIf="selectedMenuItem === 'Clients'" class="event-grid">
-        <div class="event-grid-header">
-            <span>Usuario</span>
-            <span>Email</span>
-            <span>Estado</span>
-            <span>Activo</span>
-            <span>Acciones</span>
-        </div>
-
-        <div *ngFor="let u of users" class="event-grid-row">
-            <span>{{ u.username }}</span>
-            <span>{{ u.email }}</span>
-
-            <span>
-                <label class="toggle-switch">
-                    <input type="checkbox" [checked]="u.isActive" disabled>
-                    <span class="slider"></span>
-                </label>
-            </span>
-
-
-            <span class="action-buttons">
-                <button class="btn-icon btn-edit" (click)="onEditUser(u)" title="Editar usuario">✏️ EDIT</button>
-                <button class="btn-icon btn-delete" (click)="onDeleteUser(u)" title="Eliminar usuario">🗑️
-                    DELETE</button>
-            </span>
-        </div>
-
-        <p *ngIf="users.length === 0" class="empty-state">No hay usuarios disponibles.</p>
-    </div>
 </div>
