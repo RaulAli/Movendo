@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Evento } from '../models/evento.model';
 import { Category } from '../models/category.model';
+import { User } from '../models/auth.model';
 import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
 
@@ -62,6 +63,30 @@ export class AdminDashboardService {
             map((res: any) => {
                 if (Array.isArray(res)) return res as Category[];
                 return (res?.items ?? res?.category ?? res?.data ?? []) as Category[];
+            })
+        );
+    }
+
+    //Usuarios
+    list_usr(): Observable<User[]> {
+        return this.apiService.get_admin('/users').pipe(
+            map((res: any) => {
+                if (Array.isArray(res)) return res as User[];
+                return (res?.items ?? res?.category ?? res?.data ?? []) as User[];
+            })
+        );
+    }
+
+    delete_usr(username: string): Observable<void> {
+        return this.apiService.delete_admin(`/users/${username}`);
+    }
+
+    update_usr(id: string, userPartial: Partial<User>): Observable<User> {
+        return this.apiService.put_admin(`/users/${id}`, userPartial).pipe(
+            map((res: any) => {
+                if (res?.user) return res.user as User;
+                if (res?.data) return res.data as User;
+                return res as User;
             })
         );
     }
