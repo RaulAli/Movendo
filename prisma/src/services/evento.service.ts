@@ -27,6 +27,15 @@ export const createEvento = async (data: any, user: any) => {
 
 
 export const updateEvento = async (slug: string, data: any) => {
+  const existingEvento = await prisma.eventos.findUnique({
+    where: { slug },
+    select: { nombre: true }
+  });
+
+  if (data.nombre && existingEvento && data.nombre !== existingEvento.nombre) {
+    const newSlug = data.nombre.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    data.slug = newSlug;
+  }
   return prisma.eventos.update({
     where: { slug },
     data,

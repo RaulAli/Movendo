@@ -362,12 +362,13 @@ export class ListDashboardComponent implements OnInit {
         console.log("hola");
         if (evento.slug) {
             console.log(evento.slug);
+            const originalSlug = evento.slug;
             const { nombre, ciudad, category, price, isActive } = evento;
             const updatedData = { nombre, ciudad, category, price, isActive };
 
-            this.adminDashboardService.update(evento.slug, updatedData).subscribe({
+            this.adminDashboardService.update(originalSlug, updatedData).subscribe({
                 next: (data) => {
-                    const index = this.eventos.findIndex(e => e.slug === evento.slug);
+                    const index = this.eventos.findIndex(e => e.slug === originalSlug);
                     if (index !== -1) {
                         this.eventos[index] = data;
                     }
