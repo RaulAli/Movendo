@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { Evento } from '../../core/models/evento.model';
 import { EventoService } from '../../core/services/evento.service';
 import { FormsModule } from '@angular/forms';
@@ -9,10 +9,11 @@ import { User } from '../../core/models/auth.model';
 import { UserService } from '../../core/services/auth.service';
 import { Category } from '../../core/models/category.model';
 import { CategoryService } from '../../core/services/category.service';
+
 @Component({
     selector: 'list-dashboard',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule],
+    imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule],
     templateUrl: './list-dashboard.component.html',
     styleUrls: ['./list-dashboard.component.scss'],
     encapsulation: ViewEncapsulation.None
@@ -31,6 +32,7 @@ export class ListDashboardComponent implements OnInit {
     // Datos dinámicos
     cards: any[] = [];
     eventos: Evento[] = [];
+    filteredEventos: Evento[] = [];
     users: User[] = [];
     categories: Category[] = [];
 
@@ -50,9 +52,60 @@ export class ListDashboardComponent implements OnInit {
     loadingUsers: Set<string> = new Set();
     loadingCategories: Set<string> = new Set();
 
+    // Filtros
+    filterForm!: FormGroup;
+    cities: string[] = [];
+    statuses: string[] = ['PUBLISHED', 'DRAFT'];
+    showCityFilters = false;
+    showCategoryFilters = false;
+
     ngOnInit(): void {
         this.loadContentFromDB();
+        this.filterForm = this.fb.group({
+            nombre: [''],
+            ciudad: this.fb.array([]),
+            categoria: this.fb.array([]),
+            isActive: [null]
+        });
+
+        this.filterForm.valueChanges.subscribe(() => {
+            this.filterEvents();
+        });
     }
+
+    filterEvents() {
+        const { nombre, ciudad, categoria, isActive } = this.filterForm.value;
+        this.filteredEventos = this.eventos.filter(evento => {
+            const ciudadMatch = ciudad.length > 0 ? ciudad.includes(evento.ciudad) : true;
+            const categoriaMatch = categoria.length > 0 ? categoria.includes(evento.category) : true;
+            const isActiveMatch = typeof isActive === 'boolean' ? evento.isActive === isActive : true;
+
+            return (
+                (nombre ? evento.nombre.toLowerCase().includes(nombre.toLowerCase()) : true) &&
+                ciudadMatch &&
+                categoriaMatch &&
+                isActiveMatch
+            );
+        });
+    }
+
+    onCheckboxChange(event: any, formArrayName: string) {
+        const formArray: FormArray = this.filterForm.get(formArrayName) as FormArray;
+
+        if (event.target.checked) {
+            formArray.push(new FormControl(event.target.value));
+        } else {
+            let i: number = 0;
+            formArray.controls.forEach((ctrl: any) => {
+                if (ctrl.value == event.target.value) {
+                    formArray.removeAt(i);
+                    return;
+                }
+                i++;
+            });
+        }
+    }
+
 
     loadContentFromDB() {
         this.contenidoDB = {
@@ -85,8 +138,23 @@ export class ListDashboardComponent implements OnInit {
             case 'Events':
                 this.eventos = [];
                 this.eventoService.list().subscribe({
-                    next: (data) => (this.eventos = data ?? [], console.log(this.eventos)),
+                    next: (data) => {
+                        this.eventos = data ?? [];
+                        this.filteredEventos = this.eventos;
+                        console.log(this.eventos);
+                    },
                     error: (err) => console.error('Error cargando eventos', err)
+                });
+                this.eventoService.getUniqueCities().subscribe({
+                    next: (data) => (this.cities = data ?? []),
+                    error: (err) => console.error('Error cargando ciudades', err)
+                });
+                this.categoriesService.list_adm().subscribe({
+                    next: (data) => {
+                        this.categories = data ?? [];
+                        console.log('Categorías cargadas:', this.categories);
+                    },
+                    error: (err) => console.error('Error cargando categorías', err)
                 });
                 break;
 
