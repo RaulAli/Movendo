@@ -40,7 +40,8 @@
                         <button (click)="showCityFilters = !showCityFilters">Ciudad</button>
                         <div class="checkbox-group" *ngIf="showCityFilters">
                             <div *ngFor="let city of cities">
-                                <input type="checkbox" [value]="city" (change)="onCheckboxChange($event, 'ciudad')" /> {{ city }}
+                                <input type="checkbox" [value]="city" (change)="onCheckboxChange($event, 'ciudad')" />
+                                {{ city }}
                             </div>
                         </div>
                     </div>
@@ -48,7 +49,8 @@
                         <button (click)="showCategoryFilters = !showCategoryFilters">Categoría</button>
                         <div class="checkbox-group" *ngIf="showCategoryFilters">
                             <div *ngFor="let category of categories">
-                                <input type="checkbox" [value]="category.nombre" (change)="onCheckboxChange($event, 'categoria')" /> {{ category.nombre }}
+                                <input type="checkbox" [value]="category.nombre"
+                                    (change)="onCheckboxChange($event, 'categoria')" /> {{ category.nombre }}
                             </div>
                         </div>
                     </div>
@@ -152,30 +154,24 @@
                 </div>
             </form>
         </div>
-
-        <div *ngIf="selectedMenuItem === 'Categories'" class="event-grid">
+        <!-- Categories -->
+        <div *ngIf="selectedMenuItem === 'Categories' && !editingCategory" class="event-grid">
             <div class="event-grid-header">
                 <span>Nombre</span>
-                <!-- <span>Descripción</span> -->
                 <span>Estado</span>
                 <span>Acciones</span>
             </div>
 
             <div *ngFor="let c of categories" class="event-grid-row">
                 <span>{{ c.nombre }}</span>
-                <!-- <span>
-                                <span class="category-description">
-                                    {{ (c.descripcion && c.descripcion.length > 120) ? (c.descripcion | slice:0:117) + '…' :
-                                    (c.descripcion
-                                    || '—') }}
-                                </span>
-                            </span> -->
+
                 <span>
                     <label class="toggle-switch">
                         <input type="checkbox" [checked]="c.isActive" disabled>
                         <span class="slider"></span>
                     </label>
                 </span>
+
                 <span class="action-buttons">
                     <button class="btn-icon btn-edit" (click)="onEditCategory(c)" title="Editar categoría">✏️
                         EDIT</button>
@@ -183,9 +179,38 @@
                         DELETE</button>
                 </span>
             </div>
+
             <p *ngIf="categories.length === 0" class="empty-state">No hay categorías disponibles.</p>
         </div>
 
+        <!-- Edit Category Form -->
+        <div *ngIf="editingCategory" class="edit-form">
+            <h2>Editando Categoría</h2>
+            <form (ngSubmit)="onSaveCategory(editingCategory!)">
+                <div class="form-group">
+                    <label for="cat-nombre">Nombre</label>
+                    <input type="text" id="cat-nombre" [(ngModel)]="editingCategory.nombre" name="catNombre">
+                </div>
+
+                <div class="form-group">
+                    <label for="cat-descripcion">Descripción</label>
+                    <textarea id="cat-descripcion" [(ngModel)]="editingCategory.descripcion" name="catDescripcion"
+                        rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="cat-isActive">Activo</label>
+                    <input type="checkbox" id="cat-isActive" [(ngModel)]="editingCategory.isActive" name="catIsActive">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="button" class="btn-cancel" (click)="onCancelCategory()">Cancelar</button> -->
+                </div>
+            </form>
+        </div>
+
+        <!-- Clients -->
         <div *ngIf="selectedMenuItem === 'Clients'" class="event-grid">
             <div class="event-grid-header">
                 <span>Usuario</span>
@@ -215,6 +240,35 @@
             </div>
 
             <p *ngIf="users.length === 0" class="empty-state">No hay usuarios disponibles.</p>
+        </div>
+
+        <!-- Edit User Form -->
+        <div *ngIf="editingUser" class="edit-form">
+            <h3>Editar Usuario: {{ editingUser?.username }}</h3>
+            <form (ngSubmit)="onSaveUser(editingUser!)">
+                <label>Email</label>
+                <input type="email" [(ngModel)]="editingUser.email" name="email" required />
+
+                <label>Imagen (URL)</label>
+                <input type="text" [(ngModel)]="editingUser.image" name="image" />
+
+                <label>Estado</label>
+                <select [(ngModel)]="editingUser.status" name="status">
+                    <option value="PUBLISHED">PUBLISHED</option>
+                    <option value="DRAFT">DRAFT</option>
+                    <option value="ARCHIVED">ARCHIVED</option>
+                </select>
+
+                <label>
+                    <input type="checkbox" [(ngModel)]="editingUser.isActive" name="isActive" />
+                    Activo
+                </label>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="button" class="btn-cancel" (click)="onCancelUser()">Cancelar</button>
+                </div>
+            </form>
         </div>
     </main>
 </div>

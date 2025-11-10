@@ -46,16 +46,14 @@ async function categoriesRoutes(fastify: FastifyInstance) {
     );
 
     fastify.put(
-        '/categories/:id',
+        '/categories/:slug', // antes: :id
         {
-            schema: {
-                ...updateCategorySchema,
-                summary: 'Update category by ID (admin)',
-                tags: ['categories'],
-            },
+            preHandler: [adminAuthMiddleware],
+            schema: { ...updateCategorySchema, summary: 'Update category by slug (admin)', tags: ['categories'] },
         },
-        categoriesController.updateCategory
+        categoriesController.updateCategoryBySlug
     );
+
 
     fastify.delete(
         '/categories/:id',

@@ -42,11 +42,11 @@ export class ListDashboardComponent implements OnInit {
     newEvento: Partial<Evento> = {};
 
     // Edición
-    editingUser: string | null = null; // username en edición
     userForm!: FormGroup;
+    editingUser: User | null = null;
 
-    editingCategoryId: string | null = null; // _id en edición
     categoryForm!: FormGroup;
+    editingCategory: Category | null = null;
 
     // loading guard para evitar clicks múltiples
     loadingUsers: Set<string> = new Set();
@@ -106,6 +106,79 @@ export class ListDashboardComponent implements OnInit {
         }
     }
 
+    // ---------------------------
+    // Helpers para categories
+    // ---------------------------
+    private bytesToBase64(bytes: Uint8Array): string {
+        // chunking para no crear strings gigantes de golpe
+        const chunkSize = 0x8000; // 32768
+        let result = '';
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+            const slice = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+            let chunk = '';
+            for (let j = 0; j < slice.length; j++) {
+                chunk += String.fromCharCode(slice[j]);
+            }
+            result += chunk;
+        }
+        return btoa(result);
+    }
+
+    private normalizeImage(img: any): string | null {
+        if (img == null) return null;
+
+        // Si ya es string (URL o data URL), devolver tal cual
+        if (typeof img === 'string') {
+            return img;
+        }
+
+        // Si es un array (ej. string[] de URLs) -> tomar primera
+        if (Array.isArray(img)) {
+            return img.length ? String(img[0]) : null;
+        }
+
+        // Si es objeto
+        if (typeof img === 'object') {
+            // Si viene { url: '...' }
+            if (typeof img.url === 'string') return img.url;
+
+            // Si viene { data: [...] } (bytes serializados)
+            if (Array.isArray((img as any).data) || (img.data && typeof img.data === 'object' && (img.data as any).length !== undefined)) {
+                try {
+                    const arr = Array.isArray((img as any).data) ? (img as any).data : Array.from((img as any).data);
+                    const u8 = new Uint8Array(arr);
+                    const base64 = this.bytesToBase64(u8);
+
+                    // intentar coger mime/type si viene
+                    const mime = (img.mime || img.type || (img as any).mimetype) || 'application/octet-stream';
+                    return `data:${mime};base64,${base64}`;
+                } catch {
+                    return null;
+                }
+            }
+
+            // fallback: intentar stringify (útil para debugging, no ideal en prod)
+            try {
+                return JSON.stringify(img);
+            } catch {
+                return null;
+            }
+        }
+
+        // cualquier otro tipo, convertir a string
+        return String(img);
+    }
+
+
+    private normalizeCategories(raw: any): Category[] {
+        const arr = raw?.items ?? raw ?? [];
+        const list = Array.isArray(arr) ? arr : Object.values(arr);
+        return (list as any[]).filter(Boolean).map(c => ({
+            ...c,
+            // forzamos image a string|null para que el template y validaciones no peten
+            image: this.normalizeImage((c as any).image),
+        })) as Category[];
+    }
 
     loadContentFromDB() {
         this.contenidoDB = {
@@ -129,6 +202,22 @@ export class ListDashboardComponent implements OnInit {
         this.Cargar_MenuItem();
     }
 
+    private loadCategoriesFromBackend() {
+        // centralizado para reutilizar en Events y en Categories
+        this.categories = [];
+        this.adminDashboardService.list_cat().subscribe({
+            next: (data) => {
+                const normalized = this.normalizeCategories(data);
+                this.categories = normalized;
+                console.log('Categorías cargadas (normalizadas):', this.categories);
+            },
+            error: (err) => {
+                console.error('Error cargando categorías', err);
+                this.categories = [];
+            }
+        });
+    }
+
     Cargar_MenuItem() {
         switch (this.selectedMenuItem) {
             case 'Main':
@@ -149,13 +238,8 @@ export class ListDashboardComponent implements OnInit {
                     next: (data) => (this.cities = data ?? []),
                     error: (err) => console.error('Error cargando ciudades', err)
                 });
-                this.categoriesService.list_adm().subscribe({
-                    next: (data) => {
-                        this.categories = data ?? [];
-                        console.log('Categorías cargadas:', this.categories);
-                    },
-                    error: (err) => console.error('Error cargando categorías', err)
-                });
+                // cargamos categorías para filtros (normalizadas)
+                this.loadCategoriesFromBackend();
                 break;
 
             case 'Clients':
@@ -167,11 +251,8 @@ export class ListDashboardComponent implements OnInit {
                 break;
 
             case 'Categories':
-                this.categories = [];
-                this.categoriesService.list_adm().subscribe({
-                    next: (data) => (this.categories = data ?? [], console.log(this.categories)),
-                    error: (err) => console.error('Error cargando categorías', err)
-                });
+                // carga las categorías (normalizadas)
+                this.loadCategoriesFromBackend();
                 break;
 
             case 'Merchan':
@@ -184,51 +265,31 @@ export class ListDashboardComponent implements OnInit {
     // ---------------------------
 
     onEditUser(user: User) {
-        this.editingUser = user.username;
-        // crear form con valores actuales
-        this.userForm = this.fb.group({
-            username: [user.username, [Validators.required, Validators.minLength(3)]],
-            email: [user.email, [Validators.required, Validators.email]],
-            status: [user.status, [Validators.required]],
-            isActive: [user.isActive]
-        });
+        this.editingUser = { ...user };
     }
 
-    cancelEditUser() {
-        this.editingUser = null;
-    }
+    onSaveUser(user: User) {
+        console.log("hola");
+        if (user.username) {
+            console.log(user.username);
+            const { email, image, isActive } = user;
+            const updatedData = { email, image, isActive };
 
-    saveUser(user: User) {
-        if (!this.userForm) return;
-        if (this.userForm.invalid) {
-            this.userForm.markAllAsTouched();
-            return;
+            this.userService.update_adm(user.username, updatedData).subscribe({
+                next: (data) => {
+                    const index = this.users.findIndex(e => e.username === user.username);
+                    if (index !== -1) {
+                        this.users[index] = data;
+                    }
+                    this.editingUser = null;
+                },
+                error: (err) => console.error('Error actualizando evento', err)
+            });
         }
-        const username = user.username;
-        this.loadingUsers.add(username);
+    }
 
-        const payload = this.userForm.value as Partial<User>;
-
-        // Llamada al servidor (descomenta y adapta según tu servicio)
-        /*
-        this.userService.update_adm(username, payload).subscribe({
-          next: (updatedUser) => {
-            // sincroniza UI con lo devuelto
-            this.users = this.users.map(u => u.username === username ? { ...u, ...updatedUser } : u);
-            this.editingUser = null;
-            this.loadingUsers.delete(username);
-          },
-          error: (err) => {
-            console.error('Error guardando usuario:', err);
-            this.loadingUsers.delete(username);
-          }
-        });
-        */
-
-        // Versión sin servidor (para pruebas locales): actualiza UI localmente
-        this.users = this.users.map(u => u.username === username ? ({ ...u, ...payload }) : u);
+    onCancelUser() {
         this.editingUser = null;
-        this.loadingUsers.delete(username);
     }
 
     // ---------------------------
@@ -236,51 +297,34 @@ export class ListDashboardComponent implements OnInit {
     // ---------------------------
 
     onEditCategory(category: Category) {
-        this.editingCategoryId = category._id ?? null;
-        this.categoryForm = this.fb.group({
-            nombre: [category.nombre, [Validators.required, Validators.minLength(2)]],
-            descripcion: [category.descripcion ?? ''],
-            status: [category.status ?? 'PUBLISHED', [Validators.required]],
-            isActive: [category.isActive ?? true]
-        });
+        this.editingCategory = { ...category };
     }
 
-    cancelEditCategory() {
-        this.editingCategoryId = null;
-    }
+    onSaveCategory(category: Category) {
+        if (category.slug) {
+            console.log('Saving category:', category.slug);
+            const { nombre, descripcion, image, isActive } = category;
+            const updatedData = { nombre, descripcion, image, isActive };
 
-    saveCategory(category: Category) {
-        if (!this.categoryForm) return;
-        if (this.categoryForm.invalid) {
-            this.categoryForm.markAllAsTouched();
-            return;
+            this.adminDashboardService.update_cat(category.slug, updatedData).subscribe({
+                next: (data) => {
+                    // corregido: buscar en this.categories (no en eventos)
+                    const index = this.categories.findIndex(e => e.slug === category.slug);
+                    if (index !== -1) {
+                        // normalizar la respuesta del backend antes de insertar
+                        const normalized = this.normalizeCategories(data);
+                        // si normalized devuelve array (por la forma {items: [...]}) usamos el primer elemento
+                        this.categories[index] = Array.isArray(normalized) ? (normalized[0] ?? data) : (normalized as any);
+                    }
+                    this.editingCategory = null;
+                },
+                error: (err) => console.error('Error actualizando categoría', err)
+            });
         }
-        const id = category._id;
-        if (!id) return;
+    }
 
-        this.loadingCategories.add(id);
-
-        const payload = this.categoryForm.value as Partial<Category>;
-
-        // Llamada al servidor (descomenta y adapta según tu servicio)
-        /*
-        this.categoriesService.update_adm(id, payload).subscribe({
-          next: (updatedCategory) => {
-            this.categories = this.categories.map(c => c._id === id ? { ...c, ...updatedCategory } : c);
-            this.editingCategoryId = null;
-            this.loadingCategories.delete(id);
-          },
-          error: (err) => {
-            console.error('Error guardando categoría:', err);
-            this.loadingCategories.delete(id);
-          }
-        });
-        */
-
-        // Versión sin servidor: actualiza UI localmente
-        this.categories = this.categories.map(c => c._id === id ? ({ ...c, ...payload }) : c);
-        this.editingCategoryId = null;
-        this.loadingCategories.delete(id);
+    onCancelCategory() {
+        this.editingCategory = null;
     }
 
     // ---------------------------
@@ -309,8 +353,6 @@ export class ListDashboardComponent implements OnInit {
             error: (err) => console.error('Error creating evento', err)
         });
     }
-
-
 
     onEdit(evento: Evento) {
         this.editingEvento = { ...evento };
@@ -377,7 +419,7 @@ export class ListDashboardComponent implements OnInit {
               next: () => {
                 this.users = this.users.filter(u => u.username !== user.username);
               },
-              error: (err) => console.error('Error eliminando usuario:', err)
+              error: (err) => console.error('Error eliminando usuario', err)
             });
             */
             // versión local:

@@ -49,11 +49,11 @@ export const createCategory = async (request: FastifyRequest, reply: FastifyRepl
     }
 };
 
-export const updateCategory = async (request: FastifyRequest, reply: FastifyReply) => {
+export const updateCategoryBySlug = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const { id } = request.params as any;
+        const { slug } = request.params as any;
         const payload = request.body as any;
-        const updated = await categoriesService.updateCategory(String(id), payload);
+        const updated = await categoriesService.updateCategoryBySlug(String(slug), payload);
         return reply.code(200).send(updated);
     } catch (err: any) {
         request.log?.error(err);
@@ -66,6 +66,7 @@ export const updateCategory = async (request: FastifyRequest, reply: FastifyRepl
         return reply.code(500).send({ error: 'Error al actualizar la categoría' });
     }
 };
+
 
 export const softDeleteCategory = async (request: FastifyRequest, reply: FastifyReply) => {
     try {

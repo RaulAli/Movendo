@@ -25,23 +25,14 @@ export class CategoryService {
     return this.apiService.post(`/category/`, category);
   }
 
-  update(slug: string, category: Category): Observable<Category> {
-    return this.apiService.put(`/category/${slug}`, category);
-  }
+  // update(slug: string, category: Partial<Category>): Observable<Category> {
+  //   return this.apiService.put(`/categories/${slug}`, category, 3002).pipe(
+  //     map((res: any) => res?.data ?? res)
+  //   );
+  // }
 
   delete(slug: string): Observable<any> {
     return this.apiService.delete(`/category/${slug}`);
-  }
-
-  // #region Admins
-  list_adm(): Observable<Category[]> {
-    return this.apiService.get_admin('/categories').pipe(
-      map((res: any) => {
-        if (Array.isArray(res)) return res as Category[];
-        // Prioriza distintas posibles propiedades del backend
-        return (res?.items ?? res?.category ?? res?.data ?? []) as Category[];
-      })
-    );
   }
 
 }
