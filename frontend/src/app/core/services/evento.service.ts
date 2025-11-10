@@ -3,7 +3,6 @@ import { Observable, map } from 'rxjs';
 import { Evento, EventosResponse } from '../models/evento.model';
 import { ApiService } from './api.service';
 import { Filters } from '../models/filters.model';
-import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +10,6 @@ import { HttpParams } from '@angular/common/http';
 export class EventoService {
 
   constructor(private apiService: ApiService) { }
-
-  list(): Observable<Evento[]> {
-    return this.apiService.get(`/eventos`, new HttpParams(), 3002).pipe(
-      map(res => res.data ?? res)
-    );
-  }
 
   list_filters(filters: Filters): Observable<EventosResponse> {
     const params = new URLSearchParams();
@@ -51,24 +44,6 @@ export class EventoService {
 
   get(slug: string): Observable<Evento> {
     return this.apiService.get(`/evento/${slug}`).pipe(
-      map(res => res.data ?? res)
-    );
-  }
-
-  create(evento: Evento): Observable<Evento> {
-    return this.apiService.post(`/eventos`, evento, 3002).pipe(
-      map(res => res.data ?? res)
-    );
-  }
-
-  update(slug: string, evento: Partial<Evento>): Observable<Evento> {
-    return this.apiService.put(`/eventos/${slug}`, evento, 3002).pipe(
-      map(res => res.data ?? res)
-    );
-  }
-
-  delete(slug: string): Observable<any> {
-    return this.apiService.delete(`/eventos/${slug}`, 3002).pipe(
       map(res => res.data ?? res)
     );
   }
