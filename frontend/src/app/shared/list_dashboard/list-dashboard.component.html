@@ -103,11 +103,15 @@
                 </div>
                 <div class="form-group">
                     <label for="ciudad">Ciudad</label>
-                    <input type="text" id="ciudad" [(ngModel)]="editingEvento.ciudad" name="ciudad">
+                    <select id="ciudad" [(ngModel)]="editingEvento.ciudad" name="ciudad">
+                        <option *ngFor="let city of cities" [ngValue]="city">{{ city }}</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="category">Categoría</label>
-                    <input type="text" id="category" [(ngModel)]="editingEvento.category" name="category">
+                    <select id="category" [(ngModel)]="editingEvento.category" name="category">
+                        <option *ngFor="let cat of categories" [ngValue]="cat.nombre">{{ cat.nombre }}</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="price">Precio</label>
@@ -134,11 +138,15 @@
                 </div>
                 <div class="form-group">
                     <label for="new-ciudad">Ciudad</label>
-                    <input type="text" id="new-ciudad" [(ngModel)]="newEvento.ciudad" name="new-ciudad">
+                    <select id="new-ciudad" [(ngModel)]="newEvento.ciudad" name="new-ciudad">
+                        <option *ngFor="let city of cities" [ngValue]="city">{{ city }}</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="new-category">Categoría</label>
-                    <input type="text" id="new-category" [(ngModel)]="newEvento.category" name="new-category">
+                    <select id="new-category" [(ngModel)]="newEvento.category" name="new-category">
+                        <option *ngFor="let cat of categories" [ngValue]="cat.nombre">{{ cat.nombre }}</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="new-price">Precio</label>
