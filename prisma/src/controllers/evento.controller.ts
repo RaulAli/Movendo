@@ -10,6 +10,17 @@ export const getAllEventos = async (request: FastifyRequest, reply: FastifyReply
   }
 };
 
+export const createEvento = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const user = (request as any).user;
+    const newEvento = await eventoService.createEvento(request.body, user);
+    reply.code(201).send(newEvento);
+  } catch (error) {
+    reply.code(500).send({ error: 'Error al crear el evento' });
+  }
+};
+
+
 export const updateEvento = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const { slug } = request.params as any;

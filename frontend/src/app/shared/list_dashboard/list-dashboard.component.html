@@ -40,6 +40,7 @@
                 <span>Precio</span>
                 <span>Estado</span>
                 <span>Acciones</span>
+                <button class="btn-icon btn-add" (click)="onCreateEvento()" title="Crear Evento">➕ CREATE</button>
             </div>
 
             <div *ngFor="let e of eventos" class="event-grid-row">
@@ -89,6 +90,37 @@
                 <div class="form-actions">
                     <button type="submit" class="btn-save">Guardar</button>
                     <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Create Form -->
+        <div *ngIf="creatingEvento" class="edit-form">
+            <h2>Creando Evento</h2>
+            <form (ngSubmit)="onSaveNewEvento()">
+                <div class="form-group">
+                    <label for="new-nombre">Nombre</label>
+                    <input type="text" id="new-nombre" [(ngModel)]="newEvento.nombre" name="new-nombre">
+                </div>
+                <div class="form-group">
+                    <label for="new-ciudad">Ciudad</label>
+                    <input type="text" id="new-ciudad" [(ngModel)]="newEvento.ciudad" name="new-ciudad">
+                </div>
+                <div class="form-group">
+                    <label for="new-category">Categoría</label>
+                    <input type="text" id="new-category" [(ngModel)]="newEvento.category" name="new-category">
+                </div>
+                <div class="form-group">
+                    <label for="new-price">Precio</label>
+                    <input type="number" id="new-price" [(ngModel)]="newEvento.price" name="new-price">
+                </div>
+                <div class="form-group">
+                    <label for="new-isActive">Activo</label>
+                    <input type="checkbox" id="new-isActive" [(ngModel)]="newEvento.isActive" name="new-isActive">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="button" class="btn-cancel" (click)="onCancelNewEvento()">Cancelar</button>
                 </div>
             </form>
         </div>
