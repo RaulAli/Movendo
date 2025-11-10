@@ -145,30 +145,4 @@ export class UserService {
       this.pendingAction = null;
     }
   }
-  // #region Admins
-
-  list_adm(): Observable<User[]> {
-    return this.apiService.get_admin('/users').pipe(
-      map((res: any) => {
-        if (Array.isArray(res)) return res as User[];
-        return (res?.items ?? res?.category ?? res?.data ?? []) as User[];
-      })
-    );
-  }
-
-  delete_adm(username: string): Observable<void> {
-    return this.apiService.delete_admin(`/users/${username}`);
-  }
-
-  update_adm(id: string, userPartial: Partial<User>): Observable<User> {
-    return this.apiService.put_admin(`/users/${id}`, userPartial).pipe(
-      map((res: any) => {
-        if (res?.user) return res.user as User;
-        if (res?.data) return res.data as User;
-        return res as User;
-      })
-    );
-  }
-
-
 }

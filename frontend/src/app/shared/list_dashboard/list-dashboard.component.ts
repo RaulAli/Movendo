@@ -244,7 +244,7 @@ export class ListDashboardComponent implements OnInit {
 
             case 'Clients':
                 this.users = [];
-                this.userService.list_adm().subscribe({
+                this.adminDashboardService.list_usr().subscribe({
                     next: (data) => (this.users = data ?? [], console.log(this.users)),
                     error: (err) => console.error('Error cargando usuarios', err)
                 });
@@ -275,7 +275,7 @@ export class ListDashboardComponent implements OnInit {
             const { email, image, isActive } = user;
             const updatedData = { email, image, isActive };
 
-            this.userService.update_adm(user.username, updatedData).subscribe({
+            this.adminDashboardService.update_usr(user.username, updatedData).subscribe({
                 next: (data) => {
                     const index = this.users.findIndex(e => e.username === user.username);
                     if (index !== -1) {
