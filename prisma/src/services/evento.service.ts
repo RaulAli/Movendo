@@ -2,6 +2,10 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+export const getAllCiudades = async () => {
+  return prisma.ciudades.findMany();
+};
+
 export const getAllEventos = async () => {
   return prisma.eventos.findMany();
 };

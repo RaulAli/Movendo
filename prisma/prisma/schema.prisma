@@ -108,3 +108,15 @@ model users {
   eventos         eventos[] @relation("EventosDelAutor")
   comments        comments[]
 }
+
+model ciudades {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre    String   @unique
+  slug      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime? @db.Date
+  updatedAt DateTime? @db.Date
+
+  @@map("ciudades")
+}
+
