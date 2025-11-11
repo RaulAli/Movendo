@@ -1,6 +1,15 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import * as eventoService from '../services/evento.service';
 
+export const getAllCiudades = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const ciudades = await eventoService.getAllCiudades();
+    reply.send(ciudades);
+  } catch (error) {
+    reply.code(500).send({ error: 'Error al obtener los eventos' });
+  }
+};
+
 export const getAllEventos = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const eventos = await eventoService.getAllEventos();
