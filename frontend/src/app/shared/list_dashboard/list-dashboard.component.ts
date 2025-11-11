@@ -54,7 +54,7 @@ export class ListDashboardComponent implements OnInit {
 
     // Filtros
     filterForm!: FormGroup;
-    cities: string[] = [];
+    cities: any[] = [];
     statuses: string[] = ['PUBLISHED', 'DRAFT'];
     showCityFilters = false;
     showCategoryFilters = false;
@@ -234,8 +234,10 @@ export class ListDashboardComponent implements OnInit {
                     },
                     error: (err) => console.error('Error cargando eventos', err)
                 });
-                this.adminDashboardService.getUniqueCities().subscribe({
-                    next: (data) => (this.cities = data ?? []),
+                this.adminDashboardService.getAllCiudades().subscribe({
+                    next: (data) => {
+                        this.cities = data ?? [];
+                    },
                     error: (err) => console.error('Error cargando ciudades', err)
                 });
                 // cargamos categorías para filtros (normalizadas)

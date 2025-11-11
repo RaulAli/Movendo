@@ -37,9 +37,9 @@ export class AdminDashboardService {
         );
     }
 
-    getUniqueCities(): Observable<string[]> {
-        return this.apiService.get(`/cities`).pipe(
-            map(res => res.data ?? [])
+    getAllCiudades(): Observable<any[]> {
+        return this.apiService.get(`/eventos/ciudad`, new HttpParams(), 3002).pipe(
+            map(res => res ?? [])
         );
     }
 
