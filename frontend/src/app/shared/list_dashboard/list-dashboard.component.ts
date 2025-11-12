@@ -201,6 +201,11 @@ export class ListDashboardComponent implements OnInit {
 
     selectMenuItem(item: string) {
         this.selectedMenuItem = item;
+        this.editingUser = null;
+        this.editingEvento = null;
+        this.creatingEvento = false;
+        this.editingCategory = null;
+        this.creatingCategory = false;
         this.Cargar_MenuItem();
     }
 

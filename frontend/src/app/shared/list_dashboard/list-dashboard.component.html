@@ -259,7 +259,7 @@
         </div>
 
         <!-- Clients -->
-        <div *ngIf="selectedMenuItem === 'Clients'" class="event-grid">
+        <div *ngIf="selectedMenuItem === 'Clients' && !editingUser" class="event-grid">
             <div class="event-grid-header">
                 <span>Usuario</span>
                 <span>Email</span>
@@ -294,25 +294,33 @@
         <div *ngIf="editingUser" class="edit-form">
             <h3>Editar Usuario: {{ editingUser?.username }}</h3>
             <form (ngSubmit)="onSaveUser(editingUser!)">
-                <label>Email</label>
-                <input type="email" [(ngModel)]="editingUser.email" name="email" required />
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" [(ngModel)]="editingUser.email" name="email" required />
+                </div>
 
-                <label>Imagen (URL)</label>
-                <input type="text" [(ngModel)]="editingUser.image" name="image" />
+                <div class="form-group">
+                    <label>Imagen (URL)</label>
+                    <input type="text" [(ngModel)]="editingUser.image" name="image" />
+                </div>
 
-                <label>Estado</label>
-                <select [(ngModel)]="editingUser.status" name="status">
-                    <option value="PUBLISHED">PUBLISHED</option>
-                    <option value="DRAFT">DRAFT</option>
-                    <option value="ARCHIVED">ARCHIVED</option>
-                </select>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select [(ngModel)]="editingUser.status" name="status">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                        <option value="ARCHIVED">ARCHIVED</option>
+                    </select>
+                </div>
 
-                <label>
-                    <input type="checkbox" [(ngModel)]="editingUser.isActive" name="isActive" />
-                    Activo
-                </label>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" [(ngModel)]="editingUser.isActive" name="isActive" />
+                        Activo
+                    </label>
+                </div>
 
-                <div class="modal-actions">
+                <div class="form-actions">
                     <button type="submit" class="btn-save">Guardar</button>
                     <button type="button" class="btn-cancel" (click)="onCancelUser()">Cancelar</button>
                 </div>
