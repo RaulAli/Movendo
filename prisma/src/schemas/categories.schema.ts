@@ -5,7 +5,7 @@ export const categorySchema = S.object()
     .prop('nombre', S.string())
     .prop('descripcion', S.anyOf([S.string(), S.null()]))
     .prop('slug', S.string())
-    .prop('image', S.anyOf([S.string().format('uri'), S.null()]))
+    .prop('image', S.string())
     .prop('isActive', S.boolean())
     .prop('status', S.string())
     .prop('v', S.integer())
@@ -17,7 +17,7 @@ export const createCategorySchema = {
         .prop('nombre', S.string().minLength(1).required())
         .prop('descripcion', S.string())
         .prop('slug', S.string().minLength(1).required())
-        .prop('image', S.string().format('uri')),
+        .prop('image', S.string()),
     response: {
         201: categorySchema,
     },
@@ -29,11 +29,12 @@ export const updateCategorySchema = {
         .prop('descripcion', S.string())
         .prop('slug', S.string())
         .prop('isActive', S.boolean())
-        .prop('image', S.array().items(S.string().format('uri'))),
+        .prop('image', S.string()),
     response: {
         200: categorySchema,
     },
 };
+
 
 export const listCategoriesSchema = {
     querystring: S.object()
