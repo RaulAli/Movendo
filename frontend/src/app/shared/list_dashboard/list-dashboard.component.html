@@ -165,24 +165,30 @@
                 </div>
             </form>
         </div>
-        <!-- Categories -->
-        <div *ngIf="selectedMenuItem === 'Categories' && !editingCategory" class="event-grid">
+
+        <!-- Categories List -->
+        <div *ngIf="selectedMenuItem === 'Categories' && !creatingCategory && !editingCategory" class="event-grid">
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <button class="btn-icon btn-add" (click)="onCreateCategory()" title="Crear Categoría">➕ CREATE</button>
+            </div>
+
+            <!-- Table Header -->
             <div class="event-grid-header">
                 <span>Nombre</span>
                 <span>Estado</span>
                 <span>Acciones</span>
             </div>
 
+            <!-- Categories Rows -->
             <div *ngFor="let c of categories" class="event-grid-row">
                 <span>{{ c.nombre }}</span>
-
                 <span>
                     <label class="toggle-switch">
                         <input type="checkbox" [checked]="c.isActive" disabled>
                         <span class="slider"></span>
                     </label>
                 </span>
-
                 <span class="action-buttons">
                     <button class="btn-icon btn-edit" (click)="onEditCategory(c)" title="Editar categoría">✏️
                         EDIT</button>
@@ -191,32 +197,63 @@
                 </span>
             </div>
 
+            <!-- Empty State -->
             <p *ngIf="categories.length === 0" class="empty-state">No hay categorías disponibles.</p>
+        </div>
+
+        <!-- Create Category Form -->
+        <div *ngIf="creatingCategory" class="edit-form">
+            <h2>Creando Categoría</h2>
+            <form (ngSubmit)="onSaveNewCategory()">
+
+                <div class="form-group">
+                    <label for="new-nombre">Nombre</label>
+                    <input type="text" id="new-nombre" [(ngModel)]="newCategory.nombre" name="newNombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-descripcion">Descripción</label>
+                    <textarea id="new-descripcion" [(ngModel)]="newCategory.descripcion" name="newDescripcion"
+                        rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-isActive">Activo</label>
+                    <input type="checkbox" id="new-isActive" [(ngModel)]="newCategory.isActive" name="newIsActive">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="button" class="btn-cancel" (click)="onCancelNewCategory()">Cancelar</button>
+                </div>
+            </form>
         </div>
 
         <!-- Edit Category Form -->
         <div *ngIf="editingCategory" class="edit-form">
             <h2>Editando Categoría</h2>
             <form (ngSubmit)="onSaveCategory(editingCategory!)">
+
                 <div class="form-group">
-                    <label for="cat-nombre">Nombre</label>
-                    <input type="text" id="cat-nombre" [(ngModel)]="editingCategory.nombre" name="catNombre">
+                    <label for="edit-nombre">Nombre</label>
+                    <input type="text" id="edit-nombre" [(ngModel)]="editingCategory.nombre" name="editNombre" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="cat-descripcion">Descripción</label>
-                    <textarea id="cat-descripcion" [(ngModel)]="editingCategory.descripcion" name="catDescripcion"
+                    <label for="edit-descripcion">Descripción</label>
+                    <textarea id="edit-descripcion" [(ngModel)]="editingCategory.descripcion" name="editDescripcion"
                         rows="4"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="cat-isActive">Activo</label>
-                    <input type="checkbox" id="cat-isActive" [(ngModel)]="editingCategory.isActive" name="catIsActive">
+                    <label for="edit-isActive">Activo</label>
+                    <input type="checkbox" id="edit-isActive" [(ngModel)]="editingCategory.isActive"
+                        name="editIsActive">
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn-save">Guardar</button>
-                    <button type="button" class="btn-cancel" (click)="onCancelCategory()">Cancelar</button> -->
+                    <button type="button" class="btn-cancel" (click)="onCancelCategory()">Cancelar</button>
                 </div>
             </form>
         </div>

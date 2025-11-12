@@ -43,9 +43,13 @@ const normalizeImage = (img: any): string | null => {
 };
 
 export const createCategory = async (data: any) => {
+  // Generar slug a partir del nombre
+  const slug = data.nombre.toLowerCase().trim();
+
   return prisma.categories.create({
     data: {
       ...data,
+      slug,           // <-- importante
       isActive: true,
       status: 'published',
       v: 0,
@@ -54,6 +58,7 @@ export const createCategory = async (data: any) => {
     },
   });
 };
+
 
 export const getAllCategories = async (query: {
   q?: string;
@@ -96,17 +101,34 @@ export const getCategoryById = async (id: string) => {
 };
 
 export const updateCategoryBySlug = async (slug: string, data: any) => {
+  // Normalizamos la imagen a string
+  const normalizedImage =
+    data.image != null
+      ? Array.isArray(data.image)
+        ? String(data.image[0])
+        : String(data.image)
+      : null;
+
+  // Si viene un nombre, generamos el nuevo slug en minúsculas
+  const updatedSlug = data.nombre ? data.nombre.toLowerCase() : undefined;
+
   const updated = await prisma.categories.update({
     where: { slug },
-    data: { ...data, updatedAt: new Date() },
+    data: {
+      ...data,
+      image: normalizedImage,
+      updatedAt: new Date(),
+      ...(updatedSlug ? { slug: updatedSlug } : {}), // solo actualizamos slug si hay nuevo nombre
+    },
   });
 
-  // Normalizamos image antes de devolver (coherente con getAllCategories)
+  // Normalizamos la imagen antes de devolver
   return {
     ...updated,
-    image: normalizeImage((updated as any).image),
+    image: normalizeImage(updated.image),
   };
 };
+
 
 export const softDeleteCategory = async (id: string) => {
   return prisma.categories.update({

@@ -47,6 +47,8 @@ export class ListDashboardComponent implements OnInit {
 
     categoryForm!: FormGroup;
     editingCategory: Category | null = null;
+    creatingCategory: boolean = false;
+    newCategory: Partial<Category> = {};
 
     // loading guard para evitar clicks múltiples
     loadingUsers: Set<string> = new Set();
@@ -203,7 +205,6 @@ export class ListDashboardComponent implements OnInit {
     }
 
     private loadCategoriesFromBackend() {
-        // centralizado para reutilizar en Events y en Categories
         this.categories = [];
         this.adminDashboardService.list_cat().subscribe({
             next: (data) => {
@@ -297,6 +298,36 @@ export class ListDashboardComponent implements OnInit {
     // ---------------------------
     // Categorías: editar inline
     // ---------------------------
+
+    onCreateCategory() {
+        this.creatingCategory = true;
+    }
+
+    onCancelNewCategory() {
+        this.creatingCategory = false;
+    }
+
+    onSaveNewCategory() {
+        if (!this.newCategory.nombre) return;
+
+        // Autogenerar slug
+        const slug = this.newCategory.nombre.trim().toLowerCase().replace(/\s+/g, '-');
+
+        const payload = {
+            ...this.newCategory,
+            slug
+        };
+
+        this.adminDashboardService.create_cat(payload as Category).subscribe({
+            next: (newCategory) => {
+                this.categories.push(newCategory);
+                this.creatingCategory = false;
+                this.newCategory = {};
+            },
+            error: (err) => console.error('Error creating categoria', err)
+        });
+    }
+
 
     onEditCategory(category: Category) {
         this.editingCategory = { ...category };
@@ -396,37 +427,37 @@ export class ListDashboardComponent implements OnInit {
         }
     }
 
+
     onDeleteCategory(category: Category) {
-        if (!category._id) return;
+        console.log('Deleting category:', category);
+        if (!category.slug) return;
         if (confirm(`¿Seguro que deseas eliminar la categoría "${category.nombre}"?`)) {
-            // descomenta la llamada real
-            /*
-            this.categoriesService.delete_adm(category._id).subscribe({
-              next: () => {
-                this.categories = this.categories.filter(c => c._id !== category._id);
-              },
-              error: (err) => console.error('Error eliminando categoría:', err)
+            this.adminDashboardService.delete_cat(category.slug).subscribe({
+                next: () => {
+                    this.categories = this.categories.filter(c => c.slug !== category.slug);
+                },
+                error: (err) => console.error('Error eliminando categoría:', err)
             });
-            */
-            // versión local:
-            this.categories = this.categories.filter(c => c._id !== category._id);
         }
     }
 
+
     onDeleteUser(user: User) {
         if (!user.username) return;
+
         if (confirm(`¿Seguro que deseas eliminar al usuario "${user.username}"?`)) {
-            // descomenta la llamada real
-            /*
-            this.userService.delete_adm(user.username).subscribe({
-              next: () => {
-                this.users = this.users.filter(u => u.username !== user.username);
-              },
-              error: (err) => console.error('Error eliminando usuario', err)
+            this.adminDashboardService.delete_usr(user.username).subscribe({
+                next: () => {
+                    this.users = this.users.filter(u => u.username !== user.username);
+                },
+                error: (err) => {
+                    console.error('Error eliminando usuario', err);
+                    alert(`No se pudo eliminar al usuario "${user.username}".`);
+                }
             });
-            */
-            // versión local:
-            this.users = this.users.filter(u => u.username !== user.username);
         }
     }
+
 }
+
+

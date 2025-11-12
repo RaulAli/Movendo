@@ -10,7 +10,7 @@ import { adminAuthMiddleware } from '../middlewares/adminAuth.middleware';
 
 async function categoriesRoutes(fastify: FastifyInstance) {
     fastify.get(
-        '/categories',
+        '/category',
         {
             preHandler: [adminAuthMiddleware],
             schema: {
@@ -23,7 +23,7 @@ async function categoriesRoutes(fastify: FastifyInstance) {
     );
 
     fastify.post(
-        '/categories',
+        '/category',
         {
             schema: {
                 ...createCategorySchema,
@@ -35,7 +35,7 @@ async function categoriesRoutes(fastify: FastifyInstance) {
     );
 
     fastify.get(
-        '/categories/:id',
+        '/category/:id',
         {
             schema: {
                 summary: 'Get category by ID (admin)',
@@ -46,7 +46,7 @@ async function categoriesRoutes(fastify: FastifyInstance) {
     );
 
     fastify.put(
-        '/categories/:slug', // antes: :id
+        '/category/:slug', // antes: :id
         {
             preHandler: [adminAuthMiddleware],
             schema: { ...updateCategorySchema, summary: 'Update category by slug (admin)', tags: ['categories'] },
@@ -56,7 +56,7 @@ async function categoriesRoutes(fastify: FastifyInstance) {
 
 
     fastify.delete(
-        '/categories/:id',
+        '/category/:id',
         {
             schema: {
                 summary: 'Soft delete category (set isActive=false)',
@@ -67,7 +67,7 @@ async function categoriesRoutes(fastify: FastifyInstance) {
     );
 
     fastify.patch(
-        '/categories/:id/restore',
+        '/category/:id/restore',
         {
             schema: {
                 summary: 'Restore a soft-deleted category',
@@ -78,7 +78,7 @@ async function categoriesRoutes(fastify: FastifyInstance) {
     );
 
     fastify.post(
-        '/categories/bulk',
+        '/category/bulk',
         {
             schema: {
                 ...bulkActionCategoriesSchema,

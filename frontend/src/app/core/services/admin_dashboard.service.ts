@@ -44,8 +44,14 @@ export class AdminDashboardService {
     }
 
     // Categories
+    create_cat(category: Category): Observable<Category> {
+        return this.apiService.post(`/category`, category, 3002).pipe(
+            map(res => res.data ?? res)
+        );
+    }
+
     update_cat(slug: string, category: Partial<Category>): Observable<Category> {
-        return this.apiService.put(`/categories/${slug}`, category, 3002).pipe(
+        return this.apiService.put(`/category/${slug}`, category, 3002).pipe(
             map((res: any) => res?.data ?? res)
         );
     }
@@ -56,7 +62,7 @@ export class AdminDashboardService {
     }
 
     list_cat(): Observable<Category[]> {
-        return this.apiService.get(`/categories`, new HttpParams(), 3002).pipe(
+        return this.apiService.get(`/category`, new HttpParams(), 3002).pipe(
             map(res => res.data ?? res)
         );
         return this.apiService.get_admin('/categories').pipe(
@@ -78,8 +84,9 @@ export class AdminDashboardService {
     }
 
     delete_usr(username: string): Observable<void> {
-        return this.apiService.delete_admin(`/users/${username}`);
+        return this.apiService.delete(`/users/${username}`, 3002);
     }
+
 
     update_usr(id: string, userPartial: Partial<User>): Observable<User> {
         return this.apiService.put_admin(`/users/${id}`, userPartial).pipe(

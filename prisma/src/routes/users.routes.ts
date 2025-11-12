@@ -80,5 +80,24 @@ async function userRoutes(fastify: FastifyInstance) {
         userController.deleteUser
     );
 
+    fastify.delete<{ Params: { username: string } }>(
+        '/users/:username',
+        {
+            preHandler: [adminAuthMiddleware],
+            schema: {
+                summary: 'Eliminar usuario permanentemente (solo admin)',
+                tags: ['users'],
+                params: {
+                    type: 'object',
+                    properties: { username: { type: 'string' } },
+                    required: ['username'],
+                },
+            },
+        },
+        userController.deleteUserPermanent
+    );
+
 }
+
+
 export default userRoutes;

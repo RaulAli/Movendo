@@ -69,8 +69,20 @@ export const updateUserByUsername = async (username: string, data: any) => {
   });
 };
 
+// export const deleteUserByUsername = async (username: string) => {
+//   return prisma.users.delete({
+//     where: { username },
+//   });
+// };
+
 export const deleteUserByUsername = async (username: string) => {
-  return prisma.users.delete({
-    where: { username },
-  });
+  try {
+    const deletedUser = await prisma.users.delete({
+      where: { username },
+    });
+    return deletedUser;
+  } catch (err: any) {
+    // Podemos diferenciar errores si se quiere
+    throw new Error(err.message || 'Error eliminando usuario');
+  }
 };
