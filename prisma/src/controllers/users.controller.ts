@@ -92,3 +92,28 @@ export const deleteUser = async (request: FastifyRequest, reply: FastifyReply) =
         reply.code(500).send({ error: 'Error al eliminar el usuario' });
     }
 };
+
+interface DeleteUserParams {
+    username: string;
+}
+
+export const deleteUserPermanent = async (
+    request: FastifyRequest<{ Params: DeleteUserParams }>,
+    reply: FastifyReply
+) => {
+    const { username } = request.params;
+
+    try {
+        const deletedUser = await userService.deleteUserByUsername(username);
+        return reply.status(200).send({
+            message: `Usuario '${username}' eliminado permanentemente`,
+            user: deletedUser,
+        });
+    } catch (err: any) {
+        console.error(err);
+        return reply.status(500).send({
+            error: `No se pudo eliminar el usuario '${username}'`,
+            details: err.message,
+        });
+    }
+};
