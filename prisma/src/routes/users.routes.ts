@@ -1,11 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import * as userController from '../controllers/users.controller';
-import {
-    createUserSchema,
-    userLoginSchema,
-    updateUserSchema,
-    listUsersSchema,
-} from '../schemas/users.schema';
+import { createUserSchema, userLoginSchema, updateUserSchema, listUsersSchema, } from '../schemas/users.schema';
 import { adminAuthMiddleware } from '../middlewares/adminAuth.middleware';
 
 async function userRoutes(fastify: FastifyInstance) {

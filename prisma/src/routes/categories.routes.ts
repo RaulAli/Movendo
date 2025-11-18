@@ -1,11 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import * as categoriesController from '../controllers/categories.controller';
-import {
-    createCategorySchema,
-    updateCategorySchema,
-    listCategoriesSchema,
-    bulkActionCategoriesSchema,
-} from '../schemas/categories.schema';
+import { createCategorySchema, updateCategorySchema, listCategoriesSchema, bulkActionCategoriesSchema, } from '../schemas/categories.schema';
 import { adminAuthMiddleware } from '../middlewares/adminAuth.middleware';
 
 async function categoriesRoutes(fastify: FastifyInstance) {
