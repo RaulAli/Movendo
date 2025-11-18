@@ -3,7 +3,7 @@ import { IsString, IsOptional, IsNumber, IsInt, IsBoolean, IsIn } from 'class-va
 
 export class CreateProductDto {
     @IsString()
-    brand?: string;
+    brand!: string;
 
 
     @IsString()
@@ -16,11 +16,11 @@ export class CreateProductDto {
 
 
     @IsNumber()
-    price?: number;
+    price!: number;
 
 
     @IsInt()
-    stock?: number;
+    stock!: number;
 
 
     @IsOptional()
