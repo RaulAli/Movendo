@@ -16,7 +16,7 @@ export const adminAuthMiddleware = (request: FastifyRequest, reply: FastifyReply
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'SUPER_SECRET') as any;
-    if (!decoded.isAdmin) {
+    if (decoded.role != "admin") {
       return reply.code(403).send({ error: 'No autorizado' });
     }
     (request as any).user = decoded;

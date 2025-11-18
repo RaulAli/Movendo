@@ -29,7 +29,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
     const secret = process.env.JWT_SECRET || 'SUPER_SECRET';
     const expiresIn = (process.env.JWT_EXPIRES_IN || '15m') as any;
     const options: jwt.SignOptions = { expiresIn };
-    const token = jwt.sign({ id: admin.id, email: admin.email, isAdmin: true }, secret, options);
+    const token = jwt.sign({ id: admin.id, email: admin.email, role: "admin" }, secret, options);
 
     reply.send({ token });
 

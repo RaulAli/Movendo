@@ -9,11 +9,11 @@ datasource db {
 
 model MerchantUser {
   id           String   @id @map("_id") @default(uuid())
-  username     String   @unique
-  email        String   @unique
+  username     String
+  email        String
   password     String
   refreshToken String?
-  image        String?  @unique
+  image        String?
   isActive     Boolean  @default(true)
   status       String   @default("PENDING")
   createdAt    DateTime @default(now())

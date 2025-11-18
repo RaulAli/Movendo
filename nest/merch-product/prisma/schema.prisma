@@ -8,18 +8,20 @@ datasource db {
 }
 
 model Product {
-  id         String  @id @map("_id") @default(auto()) @db.ObjectId
-  brand      String
-  name       String
-  slug       String  @unique
-  description String?
-  price      Float
-  stock      Int
-  image      String?
-  categoryId String? @db.ObjectId
-  isActive   Boolean @default(true)
-  authorId   String? @db.ObjectId
-  status     String  @default("draft")
+  id          String   @id @map("_id") @default(uuid())
+  brand       String
+  name        String
+  slug        String   @unique
+  description String
+  price       Float
+  stock       Int
+  images      String[]         // Array de strings (URLs o paths)
+  categoryId  String
+  authorId    String
+  isActive    Boolean  @default(true)
+  status      String   @default("PUBLISHED")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("merch_products")
 }

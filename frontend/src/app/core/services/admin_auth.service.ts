@@ -26,9 +26,10 @@ export class AdminService {
     const token = this.jwtService.getToken();
     if (token) {
       const decodedToken = this.jwtService.getDecodedToken();
-      if (decodedToken && decodedToken.isAdmin) {
+      if (decodedToken && decodedToken.role == "admin") {
         this.roleService.checkRole();
-      } else if (decodedToken && !decodedToken.isAdmin) {
+      } else if (decodedToken && decodedToken.role != "admin") {
+
       } else {
         this.logout();
       }
