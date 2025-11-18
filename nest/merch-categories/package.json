@@ -1,0 +1,35 @@
+{
+    "name": "categories-service",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "nest start",
+        "start:dev": "nest start --watch",
+        "prisma:generate": "prisma generate",
+        "db:push": "prisma db push"
+    },
+    "dependencies": {
+        "@nestjs/axios": "^4.0.1",
+        "@nestjs/common": "^11.1.8",
+        "@nestjs/config": "^4.0.2",
+        "@nestjs/core": "^11.1.8",
+        "@nestjs/mapped-types": "^2.1.0",
+        "@nestjs/platform-express": "^11.1.8",
+        "@prisma/client": "^5.22.0",
+        "axios": "^1.13.2",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.2",
+        "slugify": "^1.6.6"
+    },
+    "description": "",
+    "main": "index.js",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@nestjs/cli": "^11.0.10",
+        "prisma": "^5.22.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
+    }
+}
