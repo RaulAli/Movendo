@@ -13,33 +13,6 @@ export const createUser = async (request: FastifyRequest, reply: FastifyReply) =
     }
 };
 
-export const login = async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-        const { email, password } = request.body as any;
-        const user = await userService.findUserByEmail(email);
-
-        if (!user) {
-            return reply.code(401).send({ error: 'Credenciales incorrectas' });
-        }
-
-        const passwordMatch = await bcrypt.compare(password, (user as any).password);
-        if (!passwordMatch) {
-            return reply.code(401).send({ error: 'Credenciales incorrectas' });
-        }
-
-        const secret = process.env.JWT_SECRET || 'SUPER_SECRET';
-        const expiresIn = (process.env.JWT_EXPIRES_IN || '15m') as any;
-        const options: jwt.SignOptions = { expiresIn };
-        const token = jwt.sign({ username: user.username, email: user.email, role: "client" }, secret, options);
-
-        const { password: _p, refreshTokens, ...publicUser } = user as any;
-        reply.send({ token, user: publicUser });
-    } catch (error) {
-        console.error('login error:', error);
-        reply.code(500).send({ error: 'Error al iniciar sesión' });
-    }
-};
-
 export const listUsers = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const qs = request.query as any;

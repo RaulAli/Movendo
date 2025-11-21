@@ -67,7 +67,8 @@ userSchema.methods.generateAccessToken = function () {
     const payload = {
         id: this._id,
         email: this.email,
-        username: this.username
+        username: this.username,
+        role: 'client'
     };
 
     const expiresIn = process.env.ACCESS_TOKEN_EXPIRES_IN || '15m';
