@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import * as userController from '../controllers/users.controller';
-import { createUserSchema, userLoginSchema, updateUserSchema, listUsersSchema, } from '../schemas/users.schema';
+import { createUserSchema, listUsersSchema, } from '../schemas/users.schema';
 import { adminAuthMiddleware } from '../middlewares/adminAuth.middleware';
 
 async function userRoutes(fastify: FastifyInstance) {
@@ -18,18 +18,6 @@ async function userRoutes(fastify: FastifyInstance) {
         userController.createUser
     );
 
-    // Login usuario
-    fastify.post(
-        '/users/login',
-        {
-            schema: {
-                ...userLoginSchema,
-                summary: 'Login de usuario',
-                tags: ['users'],
-            },
-        },
-        userController.login
-    );
 
     // Listar todos los usuarios (solo admin)
     fastify.get(
