@@ -6,24 +6,24 @@ import { Request } from 'express';
 export class GatewayController {
     constructor(private gatewayService: GatewayService) { }
 
-    @Post('auth/login')
+    @Post('merchant/login')
     async login(@Body() body: any, @Req() req: Request) {
-        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/login`, body, req);
+        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/auth/login`, body, req);
     }
 
-    @Post('auth/register')
+    @Post('merchant/register')
     async register(@Body() body: any, @Req() req: Request) {
-        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/register`, body, req);
+        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/auth/register`, body, req);
     }
 
-    @Post('auth/refresh')
+    @Post('merchant/refresh')
     async refresh(@Body() body: any, @Req() req: Request) {
-        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/refresh`, body, req);
+        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/auth/refresh`, body, req);
     }
 
-    @Post('auth/logout')
+    @Post('merchant/logout')
     async logout(@Body() body: any, @Req() req: Request) {
-        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/logout`, body, req);
+        return this.gatewayService.proxyPost(`${process.env.AUTH_URL}/auth/logout`, body, req);
     }
 
     @Get('categories')
