@@ -21,11 +21,11 @@ export class AppModule implements NestModule {
         consumer
             .apply(JwtMiddleware)
             .exclude(
-                { path: 'auth/login', method: RequestMethod.POST },
-                { path: 'auth/register', method: RequestMethod.POST },
-                { path: 'auth/refresh', method: RequestMethod.POST }
+                { path: 'merchant/login', method: RequestMethod.POST },
+                { path: 'merchant/register', method: RequestMethod.POST },
+                { path: 'merchant/refresh', method: RequestMethod.POST }
             )
-            .forRoutes('*');
+            .forRoutes(GatewayController);
     }
 }
 
