@@ -6,7 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class JwtService {
   getToken(): string | null {
-    return window.localStorage.getItem('accessToken');
+    const token = window.localStorage.getItem('accessToken');
+    return token;
   }
 
   saveToken(accessToken: string) {
