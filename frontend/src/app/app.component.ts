@@ -6,6 +6,7 @@ import { HeaderComponent } from './shared/layout/header/header.component';
 import { FooterComponent } from './shared/layout/footer/footer.component';
 import { UserService } from './core/services/auth.service';
 import { AdminService } from './core/services/admin_auth.service';
+import { AuthMerchantService } from './core/services/merchant_auth.service';
 
 @Component({
   selector: 'app-root',
@@ -37,12 +38,14 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private userService: UserService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private authMerchantService: AuthMerchantService
   ) { }
 
   ngOnInit() {
     this.userService.populate();
     this.adminService.populate();
+    this.authMerchantService.populate();
 
     // Detecta la ruta actual
     this.router.events
