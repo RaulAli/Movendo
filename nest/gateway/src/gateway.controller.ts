@@ -37,6 +37,11 @@ export class GatewayController {
         return this.gatewayService.proxyGet(`${process.env.CATEGORIES_URL}/categories/${id}`, req);
     }
 
+    @Get('categories/user/:user')
+    async getCategoryUser(@Param('user') user: string, @Req() req: Request) {
+        return this.gatewayService.proxyGet(`${process.env.CATEGORIES_URL}/categories/user/${user}`, req);
+    }
+
     @Post('categories')
     async createCategory(@Body() body: any, @Req() req: Request) {
         return this.gatewayService.proxyPost(`${process.env.CATEGORIES_URL}/categories`, body, req);
@@ -56,6 +61,11 @@ export class GatewayController {
     @Get('products')
     async getAllProduct(@Req() req: Request) {
         return this.gatewayService.proxyGet(`${process.env.PRODUCTS_URL}/products`, req);
+    }
+
+    @Get('products/user/:user')
+    async getProduct_User(@Param('user') user: string, @Req() req: Request) {
+        return this.gatewayService.proxyGet(`${process.env.PRODUCTS_URL}/products/user/${user}`, req);
     }
 
     @Get('products/:id')

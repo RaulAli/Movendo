@@ -21,6 +21,11 @@ export class ProductsController {
         return this.productsService.findAll(Number(skip) || 0, Number(take) || 20);
     }
 
+    @Get('/user/:user')
+    findAll_user(@Param('user') user: string, @Query('skip') skip?: number, @Query('take') take?: number) {
+        return this.productsService.findAll_user(user, Number(skip) || 0, Number(take) || 20);
+    }
+
 
     @Get(':id')
     findOne(@Param('id') id: string) {

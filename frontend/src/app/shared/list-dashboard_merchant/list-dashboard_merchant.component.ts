@@ -6,6 +6,7 @@ import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MerchDashboardService } from '../../core/services/merch_dashboard.service';
 import { Product } from '../../core/models/merch-prods.model';
 import { merch_Category } from '../../core/models/merch-categories.model';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
     selector: 'list-dashboard_merchant',
@@ -21,6 +22,7 @@ export class ListDashboardComponentMerch implements OnInit {
         private fb: FormBuilder
     ) { }
 
+    userid: string = "";
     // Menú
     menuItems = ['Main', 'Products', 'Categories'];
     selectedMenuItem = 'Main';
@@ -37,7 +39,7 @@ export class ListDashboardComponentMerch implements OnInit {
         brand: '',
         name: '',
         slug: '',
-        description: '',
+        desc: '',
         price: 0,
         stock: 0,
         image: '',
@@ -46,12 +48,10 @@ export class ListDashboardComponentMerch implements OnInit {
         status: 'draft'
     };
 
-    // Categorías
     editingCategories: merch_Category | null = null;
     creatingCategories: boolean = false;
     newCategories: Partial<merch_Category> = {};
 
-    // Contenido local (ejemplo)
     contenidoDB: any = {};
 
     ngOnInit(): void {
@@ -60,6 +60,16 @@ export class ListDashboardComponentMerch implements OnInit {
         // Cargar datos iniciales
         this.loadCategoriesFromBackend();
         this.loadProductsFromBackend();
+
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+            throw new Error("No token found");
+        }
+
+        const payload: any = jwtDecode(token);
+        this.userid = payload.sub;
+
     }
 
     private loadContentFromDB() {
@@ -119,7 +129,7 @@ export class ListDashboardComponentMerch implements OnInit {
     private loadCategoriesFromBackend() {
         // Uso de merchDashboardService.list_cat() que ya tenías.
         this.categories = [];
-        this.merchDashboardService.list_cat().subscribe({
+        this.merchDashboardService.list_cat(this.userid).subscribe({
             next: (data) => {
                 this.categories = data ?? [];
                 console.log('Categorías cargadas: ', this.categories);
@@ -134,7 +144,7 @@ export class ListDashboardComponentMerch implements OnInit {
     private loadProductsFromBackend() {
         this.products = [];
 
-        this.merchDashboardService.list().subscribe({
+        this.merchDashboardService.list(this.userid).subscribe({
             next: (data: Product[]) => {
                 this.products = data ?? [];
                 console.log('Productos cargados:', this.products);
@@ -150,11 +160,11 @@ export class ListDashboardComponentMerch implements OnInit {
     // Helpers
     // ---------------------------
 
-    // getCategoryName(categoryId?: string | null): string | undefined {
-    //     if (!categoryId) return undefined;
-    //     // const c = this.categories.find(x => x.id === categoryId || x._id === categoryId || x.slug === categoryId);
-    //     // return c ? (c.nombre || c.name || '') : undefined;
-    // }
+    getCategoryName(categoryId?: string | null): string | undefined {
+        if (!categoryId) return undefined;
+        const c = this.categories.find(x => x.id === categoryId || x._id === categoryId || x.slug === categoryId);
+        return c ? (c.name || '') : undefined;
+    }
 
     // ---------------------------
     // Categorías: editar / crear
@@ -170,32 +180,42 @@ export class ListDashboardComponentMerch implements OnInit {
     }
 
     onSaveNewCategories() {
-        if (!this.newCategories || !this.newCategories.nombre) return;
-        // const slug = (this.newCategory.nombre || '').trim().toLowerCase().replace(/\s+/g, '-');
-        // const payload = { ...this.newCategory, slug } as Category;
+        if (!this.newCategories || !this.newCategories.name) return;
 
-        // this.merchDashboardService.create_cat(payload).subscribe({
-        //     next: (created: Category) => {
-        //         this.categories.push(created);
-        //         this.creatingCategory = false;
-        //         this.newCategory = {};
-        //     },
-        //     error: (err) => {
-        //         console.error('Error creating categoria', err);
-        //     }
-        // });
+        const slug = (this.newCategories.name || '')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-');
+
+        const payload = {
+            ...this.newCategories,
+            slug,
+            authorId: this.userid
+        } as merch_Category;
+
+        this.merchDashboardService.create_cat(payload).subscribe({
+            next: (created: merch_Category) => {
+                this.categories.push(created);
+                this.creatingCategories = false;
+                this.newCategories = {};
+            },
+            error: (err) => {
+                console.error('Error creating categoria', err);
+            }
+        });
     }
 
-    onDeleteCategories(category: merch_Category) {
-        if (!category || !category.slug) return;
-        // if (!confirm(`¿Seguro que deseas eliminar la categoría "${category.nombre}"?`)) return;
 
-        // this.merchDashboardService.delete_cat(category.slug).subscribe({
-        //     next: () => {
-        //         this.categories = this.categories.filter(c => c.slug !== category.slug);
-        //     },
-        //     error: (err) => console.error('Error eliminando categoría:', err)
-        // });
+    onDeleteCategories(category: merch_Category) {
+        if (!category || !category.id) return;
+        if (!confirm(`¿Seguro que deseas eliminar la categoría "${category.name}"?`)) return;
+
+        this.merchDashboardService.delete_cat(category.id).subscribe({
+            next: () => {
+                this.categories = this.categories.filter(c => c.id !== category.id);
+            },
+            error: (err) => console.error('Error eliminando categoría:', err)
+        });
     }
 
     onEditCategories(category: merch_Category) {
@@ -205,23 +225,22 @@ export class ListDashboardComponentMerch implements OnInit {
     onSaveCategories(category: merch_Category) {
         if (!category || !category.slug) return;
 
-        // const updatedData = {
-        //     nombre: category.nombre,
-        //     descripcion: category.descripcion,
-        //     image: category.image,
-        //     isActive: category.isActive
-        // };
+        const updatedData = {
+            name: category.name,
+            desc: category.desc,
+            isActive: category.isActive
+        };
 
-        // this.merchDashboardService.update_cat(category.slug, updatedData).subscribe({
-        //     next: (data) => {
-        //         const index = this.categories.findIndex(e => e.slug === category.slug);
-        //         if (index !== -1) {
-        //             this.categories[index] = Array.isArray(data) ? (data[0] ?? data) : (data as any);
-        //         }
-        //         this.editingCategory = null;
-        //     },
-        //     error: (err) => console.error('Error actualizando categoría', err)
-        // });
+        this.merchDashboardService.update_cat(category.id, updatedData).subscribe({
+            next: (data) => {
+                const index = this.categories.findIndex(e => e.id === category.id);
+                if (index !== -1) {
+                    this.categories[index] = Array.isArray(data) ? (data[0] ?? data) : (data as any);
+                }
+                this.editingCategories = null;
+            },
+            error: (err) => console.error('Error actualizando categoría', err)
+        });
     }
 
     onCancelCategories() {
@@ -238,7 +257,7 @@ export class ListDashboardComponentMerch implements OnInit {
             brand: '',
             name: '',
             slug: '',
-            description: '',
+            desc: '',
             price: 0,
             stock: 0,
             image: '',
@@ -255,19 +274,34 @@ export class ListDashboardComponentMerch implements OnInit {
     }
 
     onSaveNewProduct() {
-        // Validaciones mínimas
+
         if (!this.newProduct || !this.newProduct.name || !this.newProduct.brand) {
             alert('Marca y nombre son obligatorios.');
             return;
         }
 
-        // Generar slug
-        const slug = (this.newProduct.slug && String(this.newProduct.slug).trim()) || String(this.newProduct.name).trim().toLowerCase().replace(/\s+/g, '-');
-        const payload: Partial<Product> = {
-            ...this.newProduct,
-            slug
-        };
+        if (!this.newProduct.categoryId) {
+            alert('Selecciona una categoría.');
+            return;
+        }
 
+        const slug = (this.newProduct.slug && String(this.newProduct.slug).trim())
+            || String(this.newProduct.name).trim().toLowerCase().replace(/\s+/g, '-');
+
+        const payload: Partial<Product> = {
+            brand: this.newProduct.brand,
+            name: this.newProduct.name,
+            slug,
+            desc: this.newProduct.desc,
+            price: this.newProduct.price,
+            stock: this.newProduct.stock,
+            images: this.newProduct.image ? [this.newProduct.image] : [],
+            categoryId: this.newProduct.categoryId,
+            isActive: this.newProduct.isActive ?? true,
+            status: this.newProduct.status ?? 'draft',
+            authorId: this.userid
+        };
+        // console.log("test:", payload);
         this.merchDashboardService.create(payload as Product).subscribe({
             next: (created: Product) => {
                 this.products.unshift(created);
@@ -275,44 +309,47 @@ export class ListDashboardComponentMerch implements OnInit {
                 this.newProduct = {};
             },
             error: (err) => {
-                console.error('Error creating product', err);
+                console.error('Error creando producto', err);
                 alert('Error creando producto. Revisa la consola.');
             }
         });
     }
 
+
+
     onEdit(product: Product) {
-        this.editingProduct = { ...product };
+        this.editingProduct = { ...product } as any;
+        (this.editingProduct as any).image = product.images && product.images.length ? product.images[0] : '';
     }
 
     onSave(product: Product) {
         if (!product) return;
-        // Uso slug si existe; si prefieres id, cambia a product.id
         const identifier = (product.id);
         if (!identifier) {
             console.warn('Producto sin identificador (slug/id). No se puede actualizar.');
             return;
         }
 
-        // Preparamos payload (actualizar solo campos permitidos)
+        const tempImage = (product as any).image;
+        const imagesFromProduct = (product as any).images;
+        const imagesPayload = tempImage ? [tempImage] : imagesFromProduct ? imagesFromProduct : undefined;
+
         const payload: Partial<Product> = {
             brand: product.brand,
             name: product.name,
             slug: product.slug,
-            description: product.description,
+            desc: product.desc,
             price: product.price,
             stock: product.stock,
-            image: product.image,
+            images: imagesPayload,
             categoryId: product.categoryId,
             isActive: product.isActive,
-            status: product.status
+            status: product.status,
         };
 
-        // Intentamos usar merchDashboardService.update(slug, payload)
         if (typeof this.merchDashboardService.update === 'function') {
             this.merchDashboardService.update(String(identifier), payload).subscribe({
                 next: (updated: Product) => {
-                    // sustituir en el array local (buscar por slug o id)
                     const idx = this.products.findIndex(p => p.id === product.id);
                     if (idx !== -1) {
                         this.products[idx] = Array.isArray(updated) ? (updated[0] ?? updated) : updated;
@@ -328,6 +365,7 @@ export class ListDashboardComponentMerch implements OnInit {
             console.warn('El servicio no expone update(). Ajusta onSave() para usar el método correcto.');
         }
     }
+
 
     onCancel() {
         this.editingProduct = null;

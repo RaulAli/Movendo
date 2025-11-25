@@ -20,6 +20,10 @@ export class CategoriesController {
         return this.categoriesService.findAll(Number(skip) || 0, Number(take) || 50);
     }
 
+    @Get('/user/:user')
+    findAll_user(@Param('user') user: string, @Query('skip') skip?: number, @Query('take') take?: number) {
+        return this.categoriesService.findAll_User(user, Number(skip) || 0, Number(take) || 20);
+    }
 
     @Get(':id')
     findOne(@Param('id') id: string) {

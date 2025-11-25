@@ -37,6 +37,16 @@ export class ProductsService {
         return this.prisma.product.findMany({ skip, take });
     }
 
+    async findAll_user(user: string, skip = 0, take = 20) {
+        return this.prisma.product.findMany({
+            where: {
+                authorId: user
+            },
+            skip,
+            take
+        });
+    }
+
 
     async findOne(id: string) {
         const p = await this.prisma.product.findUnique({ where: { id } });

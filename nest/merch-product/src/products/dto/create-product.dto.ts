@@ -12,7 +12,7 @@ export class CreateProductDto {
 
     @IsOptional()
     @IsString()
-    description?: string;
+    desc?: string;
 
 
     @IsNumber()
@@ -24,8 +24,9 @@ export class CreateProductDto {
 
 
     @IsOptional()
-    @IsString()
-    image?: string;
+    @IsString({ each: true })
+    images?: string[];
+
 
 
     @IsOptional()
@@ -33,9 +34,8 @@ export class CreateProductDto {
     categoryId?: string;
 
 
-    @IsOptional()
     @IsString()
-    authorId?: string;
+    authorId!: string;
 
 
     @IsOptional()

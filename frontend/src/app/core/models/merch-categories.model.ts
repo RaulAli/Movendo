@@ -1,28 +1,28 @@
 // src/app/models/category.model.ts
 export interface merch_Category {
   id: string;
-  nombre: string;
+  name: string;
   slug: string;
-  descripcion?: string;
+  desc?: string;
   isActive: boolean;
-  authorId?: string;
+  authorId: string;
   status: string;
   _id?: string;
 }
 
 export interface Createmerch_Category {
-  nombre: string;
+  name: string;
   slug: string;
-  descripcion?: string;
+  desc?: string;
   isActive?: boolean;
-  authorId?: string;
+  authorId: string;
   status?: string;
 }
 
 export interface Updatemerch_Category {
-  nombre?: string;
+  name?: string;
   slug?: string;
-  descripcion?: string;
+  desc?: string;
   isActive?: boolean;
   authorId?: string;
   status?: string;
