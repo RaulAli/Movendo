@@ -115,8 +115,7 @@
 
                 <div class="form-group">
                     <label for="description">Descripción</label>
-                    <textarea id="description" name="description" rows="3"
-                        [(ngModel)]="editingProduct.description"></textarea>
+                    <textarea id="description" name="description" rows="3" [(ngModel)]="editingProduct.desc"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -180,9 +179,20 @@
 
                 <div class="form-group">
                     <label for="new-description">Descripción</label>
-                    <textarea id="new-description" name="description" rows="3"
-                        [(ngModel)]="newProduct.description"></textarea>
+                    <textarea id="new-description" name="description" rows="3" [(ngModel)]="newProduct.desc"></textarea>
                 </div>
+
+                <!-- ===== Aquí va el select de Categoría ===== -->
+                <div class="form-group">
+                    <label for="new-category">Categoría</label>
+                    <select id="new-category" name="categoryId" [(ngModel)]="newProduct.categoryId">
+                        <option [ngValue]="undefined">-- Selecciona categoría --</option>
+                        <option *ngFor="let cat of categories" [ngValue]="cat.id">
+                            {{ cat.name }}
+                        </option>
+                    </select>
+                </div>
+                <!-- =========================================== -->
 
                 <div class="form-group">
                     <label for="new-image">Imagen (URL)</label>
@@ -228,11 +238,12 @@
             </form>
         </div>
 
+
         <!-- LISTADO DE CATEGORIAS -->
         <div *ngIf="selectedMenuItem === 'Categories' && !editingCategories && !creatingCategories">
             <div class="action-bar">
                 <div class="title-and-actions">
-                    <h2>Productos</h2>
+                    <h2>Categories</h2>
                 </div>
 
                 <div class="right-actions">
@@ -253,7 +264,7 @@
                     <span>Acciones</span>
                 </div>
 
-                <div *ngFor="let e of products" class="event-grid-row">
+                <div *ngFor="let c of categories" class="event-grid-row">
                     <!-- Imagen -->
                     <!-- <span class="thumb-cell">
                                         <img *ngIf="e.image" [src]="e.image" [alt]="e.name" class="thumb" />
@@ -264,7 +275,7 @@
                     <!-- <span>{{ e.brand }}</span> -->
 
                     <!-- Nombre -->
-                    <span>{{ e.name }}</span>
+                    <span>{{ c.name }}</span>
 
                     <!-- Precio -->
                     <!-- <span class="event-price">{{ e.price | currency:'USD' }}</span> -->
@@ -273,20 +284,21 @@
                     <!-- <span>{{ e.stock }}</span> -->
 
                     <!-- Status -->
-                    <span>{{ e.status }}</span>
+                    <span>{{ c.status }}</span>
 
                     <!-- Activo -->
                     <span>
                         <label class="toggle-switch" title="Activo / Inactivo">
-                            <input type="checkbox" [checked]="e.isActive" disabled />
+                            <input type="checkbox" [checked]="c.isActive" disabled />
                             <span class="slider"></span>
                         </label>
                     </span>
 
                     <!-- Acciones -->
                     <span class="action-buttons">
-                        <button class="btn-icon btn-edit" (click)="onEdit(e)" title="Editar">✏️ EDIT</button>
-                        <button class="btn-icon btn-delete" (click)="onDelete(e)" title="Eliminar">🗑️ DELETE</button>
+                        <button class="btn-icon btn-edit" (click)="onEditCategories(c)" title="Editar">✏️ EDIT</button>
+                        <button class="btn-icon btn-delete" (click)="onDeleteCategories(c)" title="Eliminar">🗑️
+                            DELETE</button>
                     </span>
                 </div>
             </div>
@@ -301,14 +313,13 @@
             <form (ngSubmit)="onSaveCategories(editingCategories!)" #editForm="ngForm">
 
                 <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input id="nombre" name="nombre" type="text" [(ngModel)]="editingCategories.nombre" required />
+                    <label for="name">Nombre</label>
+                    <input id="name" name="name" type="text" [(ngModel)]="editingCategories.name" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" rows="3"
-                        [(ngModel)]="editingCategories.descripcion"></textarea>
+                    <label for="desc">Descripción</label>
+                    <textarea id="desc" name="desc" rows="3" [(ngModel)]="editingCategories.desc"></textarea>
                 </div>
 
                 <div class="form-row">
@@ -334,5 +345,42 @@
             </form>
         </div>
 
+        <!-- FORMULARIO DE CREACIÓN -->
+        <div *ngIf="creatingCategories" class="edit-form">
+            <h2>Creando Producto</h2>
+
+            <form (ngSubmit)="onSaveNewCategories()" #createForm="ngForm">
+                <div class="form-group">
+                    <label for="new-name">Nombre</label>
+                    <input id="new-name" name="name" type="text" [(ngModel)]="newCategories.name" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="new-desc">Descripción</label>
+                    <textarea id="new-desc" name="desc" rows="3" [(ngModel)]="newCategories.desc"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new-status">Status</label>
+                        <select id="new-status" name="status" [(ngModel)]="newCategories.status">
+                            <option value="draft">Draft</option>
+                            <option value="published">Published</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label for="new-isActive">Activo</label>
+                        <input id="new-isActive" name="isActive" type="checkbox" [(ngModel)]="newCategories.isActive" />
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save" [disabled]="createForm.invalid">Guardar</button>
+                    <button type="button" class="btn-cancel" (click)="onCancelNewCategories()">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </main>
 </div>

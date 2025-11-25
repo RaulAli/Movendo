@@ -15,8 +15,8 @@ export class MerchDashboardService {
 
     constructor(private apiService: ApiService) { }
 
-    list(): Observable<Product[]> {
-        return this.apiService.get(`/products/`, new HttpParams(), 3003).pipe(
+    list(user: string): Observable<Product[]> {
+        return this.apiService.get(`/products/user/${user}`, new HttpParams(), 3003).pipe(
             map(res => res.data ?? res)
         );
     }
@@ -40,25 +40,25 @@ export class MerchDashboardService {
     }
 
     // Categories
-    // create_cat(category: Category): Observable<Category> {
-    //     return this.apiService.post(`/category`, category, 3003).pipe(
-    //         map(res => res.data ?? res)
-    //     );
-    // }
+    create_cat(category: merch_Category): Observable<merch_Category> {
+        return this.apiService.post(`/categories`, category, 3003).pipe(
+            map(res => res.data ?? res)
+        );
+    }
 
-    // update_cat(slug: string, category: Partial<Category>): Observable<Category> {
-    //     return this.apiService.put(`/category/${slug}`, category, 3003).pipe(
-    //         map((res: any) => res?.data ?? res)
-    //     );
-    // }
+    update_cat(id: string, category: Partial<merch_Category>): Observable<merch_Category> {
+        return this.apiService.put(`/categories/${id}`, category, 3003).pipe(
+            map((res: any) => res?.data ?? res)
+        );
+    }
 
 
-    // delete_cat(slug: string): Observable<any> {
-    //     return this.apiService.delete(`/category/${slug}`);
-    // }
+    delete_cat(id: string): Observable<any> {
+        return this.apiService.delete(`/categories/${id}`, 3003);
+    }
 
-    list_cat(): Observable<merch_Category[]> {
-        return this.apiService.get(`/categories`, new HttpParams(), 3003).pipe(
+    list_cat(user: string): Observable<merch_Category[]> {
+        return this.apiService.get(`/categories/user/${user}`, new HttpParams(), 3003).pipe(
             map(res => res.data ?? res)
         );
     }

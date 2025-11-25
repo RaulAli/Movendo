@@ -11,7 +11,7 @@ export class CategoriesService {
 
 
     async create(dto: CreateCategoryDto) {
-        const slug = slugify(dto.nombre, { lower: true });
+        const slug = slugify(dto.name, { lower: true });
         try {
             return await this.prisma.category.create({ data: { ...dto, slug } as any });
         } catch (e) {
@@ -24,6 +24,15 @@ export class CategoriesService {
         return this.prisma.category.findMany({ skip, take });
     }
 
+    async findAll_User(user: string, skip = 0, take = 50) {
+        return this.prisma.category.findMany({
+            where: {
+                authorId: user
+            },
+            skip,
+            take
+        });
+    }
 
     async findOne(id: string) {
         const c = await this.prisma.category.findUnique({ where: { id } });
@@ -35,15 +44,23 @@ export class CategoriesService {
     async update(id: string, dto: UpdateCategoryDto) {
         const updateData: any = { ...dto };
 
-        if (dto.nombre) {
-            updateData.slug = slugify(dto.nombre, { lower: true });
+        if (dto.name) {
+            updateData.slug = slugify(dto.name, { lower: true });
         }
 
-        return this.prisma.category.update({
-            where: { id },
-            data: updateData,
-        });
+        updateData.updatedAt = new Date();
+
+        try {
+            return await this.prisma.category.update({
+                where: { id },
+                data: updateData,
+            });
+        } catch (e: any) {
+            console.error('Error updating category:', e);
+            throw e;
+        }
     }
+
 
 
 

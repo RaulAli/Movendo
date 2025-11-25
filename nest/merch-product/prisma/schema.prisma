@@ -12,7 +12,7 @@ model Product {
   brand       String
   name        String
   slug        String   @unique
-  description String
+  desc        String
   price       Float
   stock       Int
   images      String[]         // Array de strings (URLs o paths)

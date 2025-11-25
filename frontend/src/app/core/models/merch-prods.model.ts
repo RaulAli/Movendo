@@ -5,14 +5,17 @@ export interface Product {
   brand: string;
   name: string;
   slug: string;
-  description?: string;
+  desc?: string;
   price: number;
   stock: number;
-  image?: string;
+  images?: string[];       // <-- campo principal ahora es un array
   categoryId?: string;
   isActive: boolean;
   authorId?: string;
   status: string;
+
+  // campo temporal para UI (puede mapearse a images[0])
+  image?: string;
 }
 
 // Interface para crear un producto (sin ID)
@@ -20,14 +23,17 @@ export interface CreateProduct {
   brand: string;
   name: string;
   slug: string;
-  description?: string;
+  desc?: string;
   price: number;
   stock: number;
-  image?: string;
+  images?: string[];       // <-- ahora array
   categoryId?: string;
   isActive?: boolean;
   authorId?: string;
   status?: string;
+
+  // campo temporal UI
+  image?: string;
 }
 
 // Interface para actualizar un producto (todos los campos opcionales)
@@ -35,14 +41,17 @@ export interface UpdateProduct {
   brand?: string;
   name?: string;
   slug?: string;
-  description?: string;
+  desc?: string;
   price?: number;
   stock?: number;
-  image?: string;
+  images?: string[];       // <-- ahora array
   categoryId?: string;
   isActive?: boolean;
   authorId?: string;
   status?: string;
+
+  // campo temporal UI
+  image?: string;
 }
 
 // Interface para la respuesta del API (puede incluir campos adicionales)
@@ -66,10 +75,11 @@ export class ProductModel implements Product {
     public stock: number,
     public isActive: boolean,
     public status: string,
-    public description?: string,
-    public image?: string,
+    public desc?: string,
+    public images?: string[],   // <-- actualizado
     public categoryId?: string,
-    public authorId?: string
+    public authorId?: string,
+    public image?: string       // <-- UI temporal
   ) { }
 
   // Método para verificar si el producto está disponible
@@ -93,10 +103,11 @@ export class ProductModel implements Product {
       obj.stock,
       obj.isActive,
       obj.status,
-      obj.description,
-      obj.image,
+      obj.desc,
+      obj.images,
       obj.categoryId,
-      obj.authorId
+      obj.authorId,
+      obj.image
     );
   }
 }

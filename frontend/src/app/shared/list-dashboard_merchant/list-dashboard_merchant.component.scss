@@ -15,7 +15,7 @@
 
 /* Host del componente a pantalla completa */
 :host,
-list-dashboard {
+list-dashboard_merchant {
     display: block;
     min-height: 100vh;
     /* 👈 evita huecos arriba/abajo */
@@ -313,7 +313,8 @@ list-dashboard {
 .form-group input[type="number"],
 .form-group select,
 .form-group textarea,
-.form-group input[type="email"] { /* Added select here */
+.form-group input[type="email"] {
+    /* Added select here */
     width: 100%;
     padding: 12px;
     background-color: var(--background-color);
@@ -323,14 +324,19 @@ list-dashboard {
     font-size: 1em;
 }
 
-.form-group select { /* Specific styles for select */
-    appearance: none; /* Remove default arrow */
+.form-group select {
+    /* Specific styles for select */
+    appearance: none;
+    /* Remove default arrow */
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23bdc3c7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); /* Custom SVG arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23bdc3c7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    /* Custom SVG arrow */
     background-repeat: no-repeat;
-    background-position: right 12px center; /* Position arrow */
-    background-size: 12px 12px; /* Size arrow */
+    background-position: right 12px center;
+    /* Position arrow */
+    background-size: 12px 12px;
+    /* Size arrow */
     cursor: pointer;
 }
 
