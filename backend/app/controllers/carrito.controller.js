@@ -1,0 +1,168 @@
+const Carrito = require('../models/carrito.model');
+const mongoose = require('mongoose');
+
+// Helper function to validate ObjectId
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+
+// @route   GET /api/carrito
+// @desc    Get user's cart
+// @access  Private
+exports.getCart = async (req, res) => {
+    try {
+        const userId = req.userId; // From verifyJWT middleware
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated.' });
+        }
+
+        let cart = await Carrito.findOne({ id_user: userId }).populate('items.id_evento').populate('items.merchants.id_merchant');
+
+        if (!cart) {
+            // If no cart exists, create an empty one
+            cart = new Carrito({ id_user: userId, items: [] });
+            await cart.save();
+        }
+
+        res.status(200).json(cart);
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        res.status(500).json({ message: 'Error fetching cart', error: error.message });
+    }
+};
+
+// @route   POST /api/carrito
+// @desc    Add item to cart or update quantity if item exists
+// @access  Private
+exports.addItemToCart = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { id_evento, cantidad, merchants } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated.' });
+        }
+        if (!id_evento || !isValidObjectId(id_evento) || !cantidad || cantidad < 1 || !merchants || !Array.isArray(merchants)) {
+            return res.status(400).json({ message: 'Invalid item data provided.' });
+        }
+        for (const merchant of merchants) {
+            if (!merchant.id_merchant || !isValidObjectId(merchant.id_merchant) || !merchant.cantidad || merchant.cantidad < 1) {
+                return res.status(400).json({ message: 'Invalid merchant data provided for an item.' });
+            }
+        }
+
+        let cart = await Carrito.findOne({ id_user: userId });
+
+        if (!cart) {
+            cart = new Carrito({ id_user: userId, items: [] });
+        }
+
+        const itemIndex = cart.items.findIndex(item => item.id_evento.toString() === id_evento);
+
+        if (itemIndex > -1) {
+            // Item exists, update quantity and merge merchants
+            cart.items[itemIndex].cantidad += cantidad;
+
+            // Merge merchants: for each new merchant, if it exists, update quantity, else add new
+            merchants.forEach(newMerchant => {
+                const existingMerchantIndex = cart.items[itemIndex].merchants.findIndex(
+                    m => m.id_merchant.toString() === newMerchant.id_merchant
+                );
+                if (existingMerchantIndex > -1) {
+                    cart.items[itemIndex].merchants[existingMerchantIndex].cantidad += newMerchant.cantidad;
+                } else {
+                    cart.items[itemIndex].merchants.push(newMerchant);
+                }
+            });
+
+        } else {
+            // Item does not exist, add new item
+            cart.items.push({ id_evento, cantidad, merchants });
+        }
+
+        await cart.save();
+        res.status(200).json(cart);
+
+    } catch (error) {
+        console.error('Error adding item to cart:', error);
+        res.status(500).json({ message: 'Error adding item to cart', error: error.message });
+    }
+};
+
+// @route   PUT /api/carrito/:eventoId
+// @desc    Update item quantity in cart
+// @access  Private
+exports.updateCartItem = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { eventoId } = req.params;
+        const { cantidad } = req.body; // New total quantity for the item
+
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated.' });
+        }
+        if (!eventoId || !isValidObjectId(eventoId) || !cantidad || cantidad < 0) { // cantidad can be 0 to remove
+            return res.status(400).json({ message: 'Invalid item ID or quantity provided.' });
+        }
+
+        let cart = await Carrito.findOne({ id_user: userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found for this user.' });
+        }
+
+        const itemIndex = cart.items.findIndex(item => item.id_evento.toString() === eventoId);
+
+        if (itemIndex > -1) {
+            if (cantidad === 0) {
+                // Remove item if quantity is 0
+                cart.items.splice(itemIndex, 1);
+            } else {
+                cart.items[itemIndex].cantidad = cantidad;
+            }
+            await cart.save();
+            res.status(200).json(cart);
+        } else {
+            res.status(404).json({ message: 'Item not found in cart.' });
+        }
+
+    } catch (error) {
+        console.error('Error updating cart item:', error);
+        res.status(500).json({ message: 'Error updating cart item', error: error.message });
+    }
+};
+
+// @route   DELETE /api/carrito/:eventoId
+// @desc    Remove item from cart
+// @access  Private
+exports.removeItemFromCart = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { eventoId } = req.params;
+
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated.' });
+        }
+        if (!eventoId || !isValidObjectId(eventoId)) {
+            return res.status(400).json({ message: 'Invalid item ID provided.' });
+        }
+
+        let cart = await Carrito.findOne({ id_user: userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found for this user.' });
+        }
+
+        const initialLength = cart.items.length;
+        cart.items = cart.items.filter(item => item.id_evento.toString() !== eventoId);
+
+        if (cart.items.length < initialLength) {
+            await cart.save();
+            res.status(200).json(cart);
+        } else {
+            res.status(404).json({ message: 'Item not found in cart.' });
+        }
+
+    } catch (error) {
+        console.error('Error removing item from cart:', error);
+        res.status(500).json({ message: 'Error removing item from cart', error: error.message });
+    }
+};

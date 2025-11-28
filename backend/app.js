@@ -10,6 +10,7 @@ const carouselRoutes = require('./app/routes/carousel.routes');
 const userRoutes = require('./app/routes/user.routes');
 const commentRoutes = require('./app/routes/comment.routes');
 const profileRoutes = require('./app/routes/profile.routes');
+const carritoRoutes = require('./app/routes/carrito.routes');
 
 const errorHandler = require('./app/middlewares/errorHandler');
 // const slug = require('slug'); // para CommonJS
@@ -47,6 +48,7 @@ app.use('/', eventoRoutes);
 app.use('/', categoryRoutes);
 app.use('/', carouselRoutes);
 app.use('/', userRoutes);
+app.use('/', carritoRoutes);
 app.use('/evento', commentRoutes);
 app.use('/profile', profileRoutes);
 
