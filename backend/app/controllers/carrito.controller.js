@@ -78,8 +78,10 @@ exports.addItemToCart = async (req, res) => {
             cart.items.push({ id_evento, cantidad, merchants });
         }
 
-        await cart.save();
-        res.status(200).json(cart);
+        const updatedCart = await cart.save();
+        await updatedCart.populate('items.id_evento');
+        await updatedCart.populate('items.merchants.id_merchant');
+        res.status(200).json(updatedCart);
 
     } catch (error) {
         console.error('Error adding item to cart:', error);
@@ -118,8 +120,10 @@ exports.updateCartItem = async (req, res) => {
             } else {
                 cart.items[itemIndex].cantidad = cantidad;
             }
-            await cart.save();
-            res.status(200).json(cart);
+            const updatedCart = await cart.save();
+            await updatedCart.populate('items.id_evento');
+            await updatedCart.populate('items.merchants.id_merchant');
+            res.status(200).json(updatedCart);
         } else {
             res.status(404).json({ message: 'Item not found in cart.' });
         }
@@ -155,8 +159,10 @@ exports.removeItemFromCart = async (req, res) => {
         cart.items = cart.items.filter(item => item.id_evento.toString() !== eventoId);
 
         if (cart.items.length < initialLength) {
-            await cart.save();
-            res.status(200).json(cart);
+            const updatedCart = await cart.save();
+            await updatedCart.populate('items.id_evento');
+            await updatedCart.populate('items.merchants.id_merchant');
+            res.status(200).json(updatedCart);
         } else {
             res.status(404).json({ message: 'Item not found in cart.' });
         }
