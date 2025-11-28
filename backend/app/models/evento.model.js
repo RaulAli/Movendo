@@ -114,6 +114,7 @@ EventoSchema.methods.updateFavoriteCount = async function () {
 
 EventoSchema.methods.toEventoResponse = function (user) {
   return {
+    _id: this._id, // Add this line
     slug: this.slug,
     nombre: this.nombre,
     description: this.description,

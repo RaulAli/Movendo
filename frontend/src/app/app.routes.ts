@@ -10,5 +10,6 @@ export const routes: Routes = [
     { path: 'admin', loadChildren: () => import('./pages/admin_auth/admin_auth.routing').then(m => m.AdminAuthRoutes) },
     { path: 'merchant', loadChildren: () => import('./pages/merchant_auth/merchant_auth.routing').then(m => m.AuthMerchantRoutes) }, // New merchant routes
     { path: 'profile', loadChildren: () => import('./pages/profile/profile-routing').then(m => m.PROFILE_ROUTES) },
+    { path: 'carrito', loadComponent: () => import('./pages/carrito/carrito.page').then(c => c.CarritoPage) },
     { path: '**', redirectTo: 'home' }
 ];
