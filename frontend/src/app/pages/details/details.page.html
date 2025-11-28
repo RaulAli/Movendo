@@ -20,6 +20,12 @@
             Favorite <span class="counter">({{ evento.favouritesCount }})</span>
         </button>
         }
+        
+        <!-- Add to Cart Button -->
+        <button class="btn btn-sm btn-outline-success" (click)="addToCart()" *ngIf="logged">
+            <i class="ion-plus-round"></i>
+            Add to Cart
+        </button>
 
         <app-carousel class="main-carousel" page="evento" [slug_evento]="evento.slug ?? null">
         </app-carousel>
