@@ -30,6 +30,10 @@
 
         <nav class="nav">
             <a class="nav-link" routerLink="shop">Shop</a>
+            <a class="nav-link" routerLink="/carrito">
+                <i class="ion-ios-cart"></i> Cart
+                <span class="badge badge-pill badge-success">{{ cartItemCount$ | async }}</span>
+            </a>
         </nav>
 
         <nav class="nav">
