@@ -13,6 +13,8 @@ import { UserService } from '../../core/services/auth.service';
 import { CommentsComponent } from '../../shared/comments/comments.component';
 import { Comment } from '../../core/models/comment.model';
 import { CommentsService } from '../../core/services/comment.service';
+import { CarritoService } from '../../core/services/carrito.service';
+import Swal from 'sweetalert2';
 
 import { FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -51,6 +53,7 @@ export class DetailsPage implements OnInit {
     private CommentService: CommentsService,
     private UserService: UserService,
     private router: Router,
+    private carritoService: CarritoService
   ) {
     this.evento$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
@@ -273,6 +276,44 @@ export class DetailsPage implements OnInit {
         }
       });
     }
+  }
+
+  addToCart() {
+    const eventoValue = this.evento();
+    if (!eventoValue || !eventoValue._id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Cannot add to cart. Event data is missing. Please try again later.',
+      });
+      return;
+    }
+
+    const item = {
+      id_evento: eventoValue._id,
+      cantidad: 1, // Default quantity
+      merchants: [] // No merchant selection for now
+    };
+
+    this.carritoService.addItemToCart(item).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Cart!',
+          text: `"${eventoValue.nombre}" has been added to your cart.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error adding item to cart:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was a problem adding the item to your cart. Please try again.',
+        });
+      }
+    });
   }
 
 }
