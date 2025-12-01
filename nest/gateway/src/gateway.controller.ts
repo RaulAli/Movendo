@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Req, HttpException, HttpStatus } from '@nestjs/common';
 import { GatewayService } from './gateway.service';
 import { Request } from 'express';
 
@@ -87,6 +87,13 @@ export class GatewayController {
     async deleteProduct(@Param('id') id: string, @Req() req: Request) {
         return this.gatewayService.proxyDelete(`${process.env.PRODUCTS_URL}/products/${id}`, req);
     }
+
+    @Get('hola')
+    async gethola(@Req() req: Request) {
+        return this.gatewayService.proxyGet(`${process.env.PRODUCTS_URL}/products/hola`, req);
+    }
+
+
 }
 
 //Rutas de Entrada

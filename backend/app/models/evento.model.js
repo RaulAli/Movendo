@@ -65,6 +65,10 @@ const EventoSchema = new mongoose.Schema({
     type: String,
     enum: ["PUBLISHED", "UNPUBLISHED"],
     default: "PUBLISHED"
+  },
+  id_merchant: {
+    type: [String],
+    required: true
   }
 
 }, { timestamps: true });
@@ -126,6 +130,7 @@ EventoSchema.methods.toEventoResponse = function (user) {
     category: this.category,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
+    id_merchant: this.id_merchant,
     favorited: user ? user.isFavorite(this._id) : false,
     favouritesCount: this.favouritesCount,
     comments: this.comments

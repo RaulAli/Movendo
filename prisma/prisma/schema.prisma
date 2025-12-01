@@ -87,6 +87,7 @@ model eventos {
   startDate       DateTime  @db.Date
   status          String
   updatedAt       DateTime  @db.Date
+  id_merchant     String[]
 }
 
 model users {

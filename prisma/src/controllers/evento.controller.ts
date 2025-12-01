@@ -19,16 +19,6 @@ export const getAllEventos = async (request: FastifyRequest, reply: FastifyReply
   }
 };
 
-export const createEvento = async (request: FastifyRequest, reply: FastifyReply) => {
-  try {
-    const user = (request as any).user;
-    const newEvento = await eventoService.createEvento(request.body, user);
-    reply.code(201).send(newEvento);
-  } catch (error) {
-    reply.code(500).send({ error: 'Error al crear el evento' });
-  }
-};
-
 
 export const updateEvento = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
@@ -48,5 +38,31 @@ export const deleteEvento = async (request: FastifyRequest, reply: FastifyReply)
     reply.code(204).send();
   } catch (error) {
     reply.code(500).send({ error: 'Error al eliminar el evento' });
+  }
+};
+
+export const hola = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    // Llamada directa al service
+    const response = await eventoService.hola();
+
+    // Enviar respuesta al cliente
+    return reply.code(200).send(response);
+
+  } catch (error) {
+    return reply.code(500).send({
+      error: 'Error al realizar la solicitud en eventoService.hola',
+      details: (error as any).message || String(error),
+    });
+  }
+};
+
+export const createEvento = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const body = request.body as any; // asumimos que viene el JSON del cliente
+    const evento = await eventoService.createEvento(body);
+    reply.code(201).send(evento);
+  } catch (err: any) {
+    reply.code(500).send({ error: 'Error al crear el evento', details: err.message });
   }
 };
