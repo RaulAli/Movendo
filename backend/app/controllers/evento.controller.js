@@ -348,30 +348,29 @@ exports.unfavoriteEvento = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
 
-  exports.GetAllEventos = async (req, res, next) => {
-    try {
-      const offset = parseInt(req.query.offset) || 0;
-      const limit = parseInt(req.query.limit) || 10;
+exports.GetAllEventos = async (req, res, next) => {
+  try {
+    const offset = parseInt(req.query.offset) || 0;
+    const limit = parseInt(req.query.limit) || 10;
 
-      const [eventos, total] = await Promise.all([
-        Evento.find({})
-          .skip(offset)
-          .limit(limit)
-          .exec(),
-        Evento.countDocuments({})
-      ]);
+    const [eventos, total] = await Promise.all([
+      Evento.find({})
+        .skip(offset)
+        .limit(limit)
+        .exec(),
+      Evento.countDocuments({})
+    ]);
 
-      return res.status(200).json({
-        success: true,
-        eventos,
-        evento_count: total
-      });
+    return res.status(200).json({
+      success: true,
+      eventos,
+      evento_count: total
+    });
 
-    } catch (err) {
-      console.error(err);
-      next(err);
-    }
-  };
-
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 };

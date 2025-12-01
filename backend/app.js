@@ -44,13 +44,13 @@ app.use(
 );
 
 // Ruta de la API
+app.use('/', userRoutes);
+app.use('/', carritoRoutes);
+app.use('/profile', profileRoutes);
 app.use('/', eventoRoutes);
 app.use('/', categoryRoutes);
 app.use('/', carouselRoutes);
-app.use('/', userRoutes);
-app.use('/', carritoRoutes);
 app.use('/evento', commentRoutes);
-app.use('/profile', profileRoutes);
 
 // Middleware centralizado de errores
 app.use(errorHandler);
