@@ -30,7 +30,7 @@ export class AuthMerchantService {
   attemptAuth(type: string, credentials: any): Observable<{ accessToken: string, refreshToken: string }> {
     const route = type === 'login' ? '/merchant/login' : '/merchant/register';
 
-            return this.apiService.post(route, credentials).pipe(
+            return this.apiService.post(route, credentials, 3003).pipe(
                 map((data: any) => {
                     console.log('AuthMerchantService: Response data from backend:', data); // Added for debugging
                     if (data.accessToken) {
