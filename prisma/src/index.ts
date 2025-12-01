@@ -8,6 +8,13 @@ import swaggerUi from '@fastify/swagger-ui';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import helmet from '@fastify/helmet';
+// --- Habilitar fetch en Node (si tu entorno no lo trae) ---
+import { fetch, Headers, Request, Response } from 'undici';
+(global as any).fetch = fetch;
+(global as any).Headers = Headers;
+(global as any).Request = Request;
+(global as any).Response = Response;
+// -----------------------------------------------------------
 
 const fastify = Fastify({
   logger: true
@@ -92,6 +99,7 @@ fastify.setErrorHandler((error, request, reply) => {
 });
 
 const start = async () => {
+  console.log(fastify.printRoutes());
   try {
     await fastify.listen({ port: 3002 });
     const address = fastify.server.address();

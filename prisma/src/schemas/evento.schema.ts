@@ -11,6 +11,9 @@ export const eventoSchema = S.object()
   .prop('startDate', S.string().format('date-time'))
   .prop('endDate', S.string().format('date-time'))
   .prop('authorId', S.string().format('uuid'))
+  //
+  .prop('id_merchant', S.array().items(S.string().format('uri')))
+  //
   .prop('isActive', S.boolean())
   .prop('createdAt', S.string().format('date-time'))
   .prop('updatedAt', S.string().format('date-time'));
@@ -21,6 +24,9 @@ export const createEventoSchema = {
     .prop('ciudad', S.string())
     .prop('slug', S.string().required())
     .prop('image', S.array().items(S.string().format('uri')).required())
+    //
+    .prop('id_merchant', S.array().items(S.string().format('uri')))
+    //
     .prop('category', S.string())
     .prop('price', S.number())
     .prop('startDate', S.string().format('date-time'))

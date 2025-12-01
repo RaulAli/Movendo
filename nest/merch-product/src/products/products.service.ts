@@ -72,4 +72,23 @@ export class ProductsService {
         await this.findOne(id);
         return this.prisma.product.delete({ where: { id } });
     }
+
+    async assignToEvent(): Promise<{ id_merchant: string[] }> {
+        const whereClause: any = { isActive: true };
+
+        const allProducts = await this.prisma.product.findMany({ where: whereClause });
+        if (allProducts.length === 0) return { id_merchant: [] };
+
+        const shuffled = [...allProducts];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        const selected = shuffled.slice(0, 2);
+        const merchantIds = selected.map(p => p.id);
+
+        return { id_merchant: merchantIds };
+    }
+
 }

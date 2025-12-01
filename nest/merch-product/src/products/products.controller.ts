@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UnauthorizedException } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-
+import { Request } from 'express';
 
 @Controller('products')
 export class ProductsController {
@@ -15,7 +15,6 @@ export class ProductsController {
         return this.productsService.create(dto);
     }
 
-
     @Get()
     findAll(@Query('skip') skip?: number, @Query('take') take?: number) {
         return this.productsService.findAll(Number(skip) || 0, Number(take) || 20);
@@ -26,6 +25,10 @@ export class ProductsController {
         return this.productsService.findAll_user(user, Number(skip) || 0, Number(take) || 20);
     }
 
+    @Get('hola')
+    async hola() {
+        return this.productsService.assignToEvent();;
+    }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
@@ -43,4 +46,5 @@ export class ProductsController {
     remove(@Param('id') id: string) {
         return this.productsService.remove(id);
     }
+
 }
