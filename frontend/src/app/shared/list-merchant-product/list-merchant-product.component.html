@@ -1,0 +1,21 @@
+<div class="product-list-container">
+  <h2>Merchant Products</h2>
+  <div *ngIf="products; else loading">
+    <div *ngIf="products.length > 0; else noProducts">
+      <div *ngFor="let product of products" class="product-card" (click)="onProductClick(product)">
+        <h3>{{ product.name }}</h3>
+        <p>Brand: {{ product.brand }}</p>
+        <p>Price: ${{ product.price }}</p>
+        <p>Stock: {{ product.stock }}</p>
+        <img *ngIf="product.images && product.images.length > 0" [src]="product.images[0]" alt="{{ product.name }}" class="product-image">
+        <p>{{ product.desc }}</p>
+      </div>
+    </div>
+    <ng-template #noProducts>
+      <p>No products available.</p>
+    </ng-template>
+  </div>
+  <ng-template #loading>
+    <p>Loading products...</p>
+  </ng-template>
+</div>

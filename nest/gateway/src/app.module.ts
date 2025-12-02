@@ -23,7 +23,8 @@ export class AppModule implements NestModule {
             .exclude(
                 { path: 'merchant/login', method: RequestMethod.POST },
                 { path: 'merchant/register', method: RequestMethod.POST },
-                { path: 'merchant/refresh', method: RequestMethod.POST }
+                { path: 'merchant/refresh', method: RequestMethod.POST },
+                { path: 'products', method: RequestMethod.GET }
             )
             .forRoutes(GatewayController);
     }

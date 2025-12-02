@@ -13,6 +13,8 @@ export interface Product {
   isActive: boolean;
   authorId?: string;
   status: string;
+  createdAt?: string;
+  updatedAt?: string;
 
   // campo temporal para UI (puede mapearse a images[0])
   image?: string;

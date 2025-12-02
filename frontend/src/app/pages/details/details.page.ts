@@ -10,6 +10,10 @@ import { CarouselComponent } from '../../shared/carousel/carousel.component';
 import { User } from '../../core/models/auth.model';
 import { UserService } from '../../core/services/auth.service';
 
+import { Product } from '../../core/models/merch-prods.model';
+import { MerchantsService } from '../../core/services/merchant_products.service';
+import { MerchantsComponent } from '../../shared/list-merchant-product/list-merchant-product.component';
+
 import { CommentsComponent } from '../../shared/comments/comments.component';
 import { Comment } from '../../core/models/comment.model';
 import { CommentsService } from '../../core/services/comment.service';
@@ -22,7 +26,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'details-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, CarouselComponent, CommentsComponent, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, CarouselComponent, CommentsComponent, MerchantsComponent, ReactiveFormsModule],
   templateUrl: './details.page.html',
   styleUrls: ['./details.page.scss']
 })
@@ -35,11 +39,13 @@ export class DetailsPage implements OnInit {
   slug!: string | null;
   currentUser!: User;
   comments = signal<Comment[]>([]);
+  merchant = signal<Product[]>([]);
   canModify!: boolean;
   commentFormErrors!: {};
   commentControl = new FormControl();
   logged!: boolean;
   NoComments!: boolean;
+  NoMerchants!: boolean;
   isDeleting!: boolean;
   user_image!: string | null;
   isSubmitting!: boolean;
@@ -50,6 +56,7 @@ export class DetailsPage implements OnInit {
   evento = signal<Evento | undefined>(undefined);
 
   constructor(
+    private MerchantService: MerchantsService,
     private CommentService: CommentsService,
     private UserService: UserService,
     private router: Router,
@@ -71,6 +78,7 @@ export class DetailsPage implements OnInit {
       (data: any) => {
         this.author = data.evento.author;
         this.get_comments(this.slug);
+        this.get_merchant(this.slug);
         this.get_user_author();
         if (this.currentUser.username === this.author.username) {
           this.canModify = true;
@@ -141,6 +149,22 @@ export class DetailsPage implements OnInit {
           this.NoComments = true;
         } else {
           this.NoComments = false;
+        }
+      });
+    }
+  }
+
+  get_merchant(product_slug: any) {
+    if (product_slug) {
+      console.log(product_slug);
+      this.MerchantService.getAllByEventSlug(product_slug).subscribe((merchants) => {
+        this.merchant.set(merchants);
+
+        if (this.merchant().length === 0) {
+          console.log("No merchant");
+          this.NoMerchants = true;
+        } else {
+          this.NoMerchants = false;
         }
       });
     }
