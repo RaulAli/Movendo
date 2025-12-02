@@ -16,8 +16,8 @@ export class ProductsController {
     }
 
     @Get()
-    findAll(@Query('skip') skip?: number, @Query('take') take?: number) {
-        return this.productsService.findAll(Number(skip) || 0, Number(take) || 20);
+    findAll(@Query('eventSlug') eventSlug: string, @Query('skip') skip?: number, @Query('take') take?: number) {
+        return this.productsService.findAll(eventSlug, Number(skip) || 0, Number(take) || 20);
     }
 
     @Get('/user/:user')
@@ -46,5 +46,4 @@ export class ProductsController {
     remove(@Param('id') id: string) {
         return this.productsService.remove(id);
     }
-
 }

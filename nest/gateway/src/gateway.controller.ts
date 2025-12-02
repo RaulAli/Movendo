@@ -59,7 +59,7 @@ export class GatewayController {
 
     //Products
     @Get('products')
-    async getAllProduct(@Req() req: Request) {
+    async findAll_by_event(@Req() req: Request) {
         return this.gatewayService.proxyGet(`${process.env.PRODUCTS_URL}/products`, req);
     }
 

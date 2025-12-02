@@ -33,8 +33,50 @@ export class ProductsService {
     }
 
 
-    async findAll(skip = 0, take = 20) {
-        return this.prisma.product.findMany({ skip, take });
+    async findAll(eventSlug: string, skip = 0, take = 20) {
+        if (!eventSlug) {
+            throw new BadRequestException('eventSlug is required');
+        }
+
+        console.log(`[ProductsService] Finding products for eventSlug: ${eventSlug}`);
+
+        const whereClause: any = {};
+        try {
+            const eventsUrl = process.env.EVENTS_URL || 'http://localhost:3000';
+            const requestUrl = `${eventsUrl}/evento/${eventSlug}`;
+            console.log(`[ProductsService] Fetching event from URL: ${requestUrl}`);
+
+            const eventResponse = await firstValueFrom(
+                this.httpService.get(requestUrl)
+            );
+
+            const responseBody = eventResponse.data;
+            console.log('[ProductsService] Received response body:', JSON.stringify(responseBody, null, 2));
+            
+            const event = responseBody.data;
+
+            if (!event || !event.id_merchant || event.id_merchant.length === 0) {
+                console.log('[ProductsService] Event data not found, or event has no associated merchants.');
+                return [];
+            }
+            
+            const merchantIds = event.id_merchant.map(String);
+            console.log('[ProductsService] Extracted merchant IDs:', merchantIds);
+
+            whereClause.id = { in: merchantIds };
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error(`[ProductsService] Error fetching event by slug '${eventSlug}':`, error.message);
+            } else {
+                console.error(`[ProductsService] An unknown error occurred while fetching event by slug '${eventSlug}':`, error);
+            }
+            return [];
+        }
+
+        console.log('[ProductsService] Querying products with where clause:', JSON.stringify(whereClause, null, 2));
+        const products = await this.prisma.product.findMany({ where: whereClause, skip, take });
+        console.log(`[ProductsService] Found ${products.length} products.`);
+        return products;
     }
 
     async findAll_user(user: string, skip = 0, take = 20) {
@@ -90,5 +132,4 @@ export class ProductsService {
 
         return { id_merchant: merchantIds };
     }
-
 }

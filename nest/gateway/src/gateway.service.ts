@@ -28,7 +28,8 @@ export class GatewayService {
 
     async proxyGet(url: string, req?: Request) {
         const headers = this.getHeadersFromReq(req);
-        const response = await firstValueFrom(this.httpService.get(url, { headers, timeout: 5000 }));
+        const params = req?.query;
+        const response = await firstValueFrom(this.httpService.get(url, { headers, params, timeout: 5000 }));
         return response.data;
     }
 
