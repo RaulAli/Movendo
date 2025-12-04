@@ -286,9 +286,9 @@ export class DetailsPage implements OnInit {
     }
 
     const merchants = this.selectedMerchantProducts
-      .filter(p => p.product.authorId)
+      .filter(p => p.product.id) // Filter out products without id
       .map(p => ({
-        id_merchant: p.product.authorId!,
+        id_product: p.product.id, // Use product's own id
         cantidad: p.quantity
       }));
 

@@ -1,9 +1,8 @@
 import { Evento } from './evento.model';
-import { User } from './auth.model';
 import { Product } from './merch-prods.model';
 
 export interface MerchantItem {
-    id_merchant: User; // Changed to User
+    id_product: string;
     cantidad: number;
 }
 
@@ -12,7 +11,7 @@ export interface CartProduct extends Product {
 }
 
 export interface CartItem {
-    id_evento: Evento; // Changed to Evento
+    id_evento: Evento;
     cantidad: number;
     merchants: MerchantItem[];
     products?: CartProduct[];

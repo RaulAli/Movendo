@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, of } from 'rxjs'; // Import 'of'
+import { Observable, map, of } from 'rxjs';
 
 import { Product } from '../models/merch-prods.model';
 
@@ -20,11 +20,11 @@ export class MerchantsService {
         );
     }
 
-    getProductsByMerchantIds(merchantIds: string[]): Observable<Product[]> {
-        if (!merchantIds || merchantIds.length === 0) {
-            return of([]); // Return an Observable of an empty array
+    getProductsByIds(productIds: string[]): Observable<Product[]> {
+        if (!productIds || productIds.length === 0) {
+            return of([]);
         }
-        const params = new HttpParams().set('authorIds', merchantIds.join(','));
+        const params = new HttpParams().set('productIds', productIds.join(','));
         return this.apiService.get('/products', params, 3003).pipe(
             map(res => res.data ?? res)
         );

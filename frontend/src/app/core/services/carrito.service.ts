@@ -37,12 +37,12 @@ export class CarritoService {
         if (cart && cart.items && cart.items.length > 0) {
           return forkJoin({
             cart: of(cart),
-            allMerchantProducts: this.merchantsService.getProductsByMerchantIds(
+            allMerchantProducts: this.merchantsService.getProductsByIds(
               cart.items
                 .flatMap(item => item.merchants || []) // Ensure merchants is an array and handle null/undefined
-                .filter(merchant => merchant && merchant.id_merchant && merchant.id_merchant.username) // Filter out null/undefined merchants or those without username
-                .map(merchant => merchant.id_merchant.username!) // Extract username
-                .filter((value, index, self) => self.indexOf(value) === index) // Get unique merchant IDs
+                .filter(merchant => merchant && merchant.id_product) // Filter out null/undefined merchants or those without id_product
+                .map(merchant => merchant.id_product) // Extract id_product
+                .filter((value, index, self) => self.indexOf(value) === index) // Get unique product IDs
             )
           }).pipe(
             map(({ cart, allMerchantProducts }) => {
@@ -50,7 +50,7 @@ export class CarritoService {
                 item.products = []; // Initialize products array for each item
                 (item.merchants || []).forEach(merchantInCart => {
                   const matchedProduct = allMerchantProducts.find(
-                    p => p.authorId === merchantInCart.id_merchant.username
+                    p => p.id === merchantInCart.id_product // Compare with p.id
                   );
                   if (matchedProduct) {
                     // Clone the product and add quantity
@@ -69,7 +69,7 @@ export class CarritoService {
     );
   }
 
-  addItemToCart(item: { id_evento: string, cantidad: number, merchants: {id_merchant: string, cantidad: number}[] }): Observable<Carrito> {
+  addItemToCart(item: { id_evento: string, cantidad: number, merchants: {id_product: string, cantidad: number}[] }): Observable<Carrito> {
     return this.apiService.post('/carrito', item, 3000).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
@@ -83,6 +83,18 @@ export class CarritoService {
 
   removeItemFromCart(eventoId: string): Observable<Carrito> {
     return this.apiService.delete(`/carrito/${eventoId}`, 3000).pipe(
+      tap(cart => this.cartSubject.next(cart))
+    );
+  }
+
+  updateCartMerchantItem(eventoId: string, productId: string, cantidad: number): Observable<Carrito> {
+    return this.apiService.put(`/carrito/${eventoId}/product/${productId}`, { cantidad }, 3000).pipe(
+      tap(cart => this.cartSubject.next(cart))
+    );
+  }
+
+  removeMerchantProductFromCart(eventoId: string, productId: string): Observable<Carrito> {
+    return this.apiService.delete(`/carrito/${eventoId}/product/${productId}`, 3000).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }

@@ -15,4 +15,10 @@ router.put('/carrito/:eventoId', verifyJWT, carritoController.updateCartItem);
 // Remove item from cart
 router.delete('/carrito/:eventoId', verifyJWT, carritoController.removeItemFromCart);
 
+// Update quantity of a specific merchant product within a cart item
+router.put('/carrito/:eventoId/product/:productId', verifyJWT, carritoController.updateCartMerchantItem);
+
+// Remove a specific merchant product from a cart item
+router.delete('/carrito/:eventoId/product/:productId', verifyJWT, carritoController.removeMerchantProductFromCart);
+
 module.exports = router;

@@ -16,8 +16,14 @@ export class ProductsController {
     }
 
     @Get()
-    findAll(@Query('eventSlug') eventSlug: string, @Query('skip') skip?: number, @Query('take') take?: number) {
-        return this.productsService.findAll(eventSlug, Number(skip) || 0, Number(take) || 20);
+    findAll(
+        @Query('eventSlug') eventSlug?: string, // Make eventSlug optional
+        @Query('productIds') productIds?: string,
+        @Query('skip') skip?: number,
+        @Query('take') take?: number
+    ) {
+        const parsedProductIds = productIds ? productIds.split(',') : undefined;
+        return this.productsService.findAll(eventSlug, parsedProductIds, Number(skip) || 0, Number(take) || 20);
     }
 
     @Get('/user/:user')
