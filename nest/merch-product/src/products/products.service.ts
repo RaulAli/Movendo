@@ -33,45 +33,59 @@ export class ProductsService {
     }
 
 
-    async findAll(eventSlug: string, skip = 0, take = 20) {
-        if (!eventSlug) {
-            throw new BadRequestException('eventSlug is required');
-        }
-
-        console.log(`[ProductsService] Finding products for eventSlug: ${eventSlug}`);
-
+    async findAll(eventSlug?: string, productIds?: string[], skip = 0, take = 20) {
         const whereClause: any = {};
-        try {
-            const eventsUrl = process.env.EVENTS_URL || 'http://localhost:3000';
-            const requestUrl = `${eventsUrl}/evento/${eventSlug}`;
-            console.log(`[ProductsService] Fetching event from URL: ${requestUrl}`);
 
-            const eventResponse = await firstValueFrom(
-                this.httpService.get(requestUrl)
-            );
+        const filters: any[] = [];
 
-            const responseBody = eventResponse.data;
-            console.log('[ProductsService] Received response body:', JSON.stringify(responseBody, null, 2));
-            
-            const event = responseBody.data;
+        if (eventSlug) {
+            console.log(`[ProductsService] Finding products for eventSlug: ${eventSlug}`);
+            try {
+                const eventsUrl = process.env.EVENTS_URL || 'http://localhost:3000';
+                const requestUrl = `${eventsUrl}/evento/${eventSlug}`;
+                console.log(`[ProductsService] Fetching event from URL: ${requestUrl}`);
 
-            if (!event || !event.id_merchant || event.id_merchant.length === 0) {
-                console.log('[ProductsService] Event data not found, or event has no associated merchants.');
+                const eventResponse = await firstValueFrom(
+                    this.httpService.get(requestUrl)
+                );
+
+                const responseBody = eventResponse.data;
+                console.log('[ProductsService] Received response body:', JSON.stringify(responseBody, null, 2));
+
+                const event = responseBody.data;
+
+                if (!event || !event.id_merchant || event.id_merchant.length === 0) {
+                    console.log('[ProductsService] Event data not found, or event has no associated products.');
+                    return [];
+                }
+
+                const eventProductIds = event.id_merchant.map(String); // These are product IDs
+                console.log('[ProductsService] Extracted event product IDs:', eventProductIds);
+                filters.push({ id: { in: eventProductIds } });
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.error(`[ProductsService] Error fetching event by slug '${eventSlug}':`, error.message);
+                } else {
+                    console.error(`[ProductsService] An unknown error occurred while fetching event by slug '${eventSlug}':`, error);
+                }
                 return [];
             }
-            
-            const merchantIds = event.id_merchant.map(String);
-            console.log('[ProductsService] Extracted merchant IDs:', merchantIds);
-
-            whereClause.id = { in: merchantIds };
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error(`[ProductsService] Error fetching event by slug '${eventSlug}':`, error.message);
-            } else {
-                console.error(`[ProductsService] An unknown error occurred while fetching event by slug '${eventSlug}':`, error);
-            }
-            return [];
         }
+
+        if (productIds && productIds.length > 0) {
+            console.log('[ProductsService] Filtering by specific product IDs:', productIds);
+            filters.push({ id: { in: productIds } });
+        }
+        
+        // Default to active products if no specific filters are applied
+        if (filters.length === 0) {
+            whereClause.isActive = true;
+        } else if (filters.length === 1) {
+            Object.assign(whereClause, filters[0]);
+        } else {
+            whereClause.AND = filters;
+        }
+
 
         console.log('[ProductsService] Querying products with where clause:', JSON.stringify(whereClause, null, 2));
         const products = await this.prisma.product.findMany({ where: whereClause, skip, take });

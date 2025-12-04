@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const merchantItemSchema = new mongoose.Schema({
-    id_merchant: {
+    id_product: {
         type: String,
-        required: true,
-        ref: 'User' // Assuming merchants are also users in the 'User' collection
+        required: true
     },
     cantidad: {
         type: Number,
