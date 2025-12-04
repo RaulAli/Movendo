@@ -45,6 +45,21 @@
                       </button>
                     </div>
                   </div>
+                  <!-- Merchant Products -->
+                  <div class="merchant-products-section" *ngIf="item.products && item.products.length > 0">
+                    <h6 class="mt-3">Merchant Products</h6>
+                    <div class="merchant-product" *ngFor="let product of item.products">
+                      <div class="d-flex align-items-center">
+                        <img [src]="product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/50x50'" 
+                             alt="{{ product.name }}" 
+                             class="img-fluid rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                        <div class="ms-3">
+                          <p class="mb-0">{{ product.name }}</p>
+                          <small class="text-muted">{{ product.price | currency:'EUR' }}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -92,4 +107,3 @@
       <a routerLink="/shop" class="btn btn-primary mt-3">Go to Shop</a>
   </div>
 </ng-template>
-

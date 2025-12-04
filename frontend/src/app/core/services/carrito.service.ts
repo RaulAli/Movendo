@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { map, tap, switchMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, forkJoin } from 'rxjs';
+import { map, tap, switchMap, mergeMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { Carrito } from '../models/carrito.model';
-import { UserService } from './auth.service'; // Import UserService
+import { Carrito, CartProduct } from '../models/carrito.model';
+import { UserService } from './auth.service';
+import { MerchantsService } from './merchant_products.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +16,15 @@ export class CarritoService {
 
   constructor(
     private apiService: ApiService,
-    private userService: UserService // Inject UserService
+    private userService: UserService,
+    private merchantsService: MerchantsService
   ) {
-    // React to authentication changes
     this.userService.isAuthenticated.pipe(
       switchMap(isAuthenticated => {
         if (isAuthenticated) {
-          return this.getCart(); // Fetch cart if authenticated
+          return this.getCart();
         } else {
-          this.clearCart(); // Clear cart if not authenticated
+          this.clearCart();
           return of(null);
         }
       })
@@ -31,7 +33,39 @@ export class CarritoService {
 
   getCart(): Observable<Carrito | null> {
     return this.apiService.get('/carrito', undefined, 3000).pipe(
-      tap(cart => this.cartSubject.next(cart))
+      mergeMap((cart: Carrito) => {
+        if (cart && cart.items && cart.items.length > 0) {
+          return forkJoin({
+            cart: of(cart),
+            allMerchantProducts: this.merchantsService.getProductsByMerchantIds(
+              cart.items
+                .flatMap(item => item.merchants || []) // Ensure merchants is an array and handle null/undefined
+                .filter(merchant => merchant && merchant.id_merchant && merchant.id_merchant.username) // Filter out null/undefined merchants or those without username
+                .map(merchant => merchant.id_merchant.username!) // Extract username
+                .filter((value, index, self) => self.indexOf(value) === index) // Get unique merchant IDs
+            )
+          }).pipe(
+            map(({ cart, allMerchantProducts }) => {
+              cart.items.forEach(item => {
+                item.products = []; // Initialize products array for each item
+                (item.merchants || []).forEach(merchantInCart => {
+                  const matchedProduct = allMerchantProducts.find(
+                    p => p.authorId === merchantInCart.id_merchant.username
+                  );
+                  if (matchedProduct) {
+                    // Clone the product and add quantity
+                    item.products?.push({ ...matchedProduct, quantity: merchantInCart.cantidad });
+                  }
+                });
+              });
+              this.cartSubject.next(cart);
+              return cart;
+            })
+          );
+        }
+        this.cartSubject.next(cart);
+        return of(cart);
+      })
     );
   }
 

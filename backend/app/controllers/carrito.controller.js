@@ -44,7 +44,7 @@ exports.addItemToCart = async (req, res) => {
             return res.status(400).json({ message: 'Invalid item data provided.' });
         }
         for (const merchant of merchants) {
-            if (!merchant.id_merchant || !isValidObjectId(merchant.id_merchant) || !merchant.cantidad || merchant.cantidad < 1) {
+            if (!merchant.id_merchant || !merchant.cantidad || merchant.cantidad < 1) {
                 return res.status(400).json({ message: 'Invalid merchant data provided for an item.' });
             }
         }
