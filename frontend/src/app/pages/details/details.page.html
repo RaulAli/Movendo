@@ -33,7 +33,7 @@
     </article>
 
     <hr>
-    <app-list-merchant-product [products]="merchant()"></app-list-merchant-product>
+    <app-list-merchant-product [products]="merchant()" (selectionChanged)="onProductSelectionChanged($event)"></app-list-merchant-product>
     <hr>
     <h3 class="product-info title">Comment Section</h3>
     <br>

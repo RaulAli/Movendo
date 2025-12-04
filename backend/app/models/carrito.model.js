@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const merchantItemSchema = new mongoose.Schema({
     id_merchant: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true,
         ref: 'User' // Assuming merchants are also users in the 'User' collection
     },

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { CarritoService } from '../../core/services/carrito.service';
 import { Carrito, CartItem } from '../../core/models/carrito.model';
 import { RouterLink } from '@angular/router';
+import { MerchantsService } from '../../core/services/merchant_products.service';
 
 @Component({
   selector: 'app-carrito',
@@ -15,7 +16,10 @@ import { RouterLink } from '@angular/router';
 export class CarritoPage implements OnInit {
   cart$: Observable<Carrito | null>;
 
-  constructor(private carritoService: CarritoService) {
+  constructor(
+    private carritoService: CarritoService,
+    private merchantsService: MerchantsService
+  ) {
     this.cart$ = this.carritoService.cart$;
   }
 
@@ -41,6 +45,10 @@ export class CarritoPage implements OnInit {
     if (!cart) {
       return 0;
     }
-    return cart.items.reduce((acc, item) => acc + (item.id_evento.price || 0) * item.cantidad, 0);
+    return cart.items.reduce((acc, item) => {
+      const eventPrice = (item.id_evento.price || 0) * item.cantidad;
+      const productsPrice = item.products?.reduce((productAcc, product) => productAcc + product.price, 0) || 0;
+      return acc + eventPrice + productsPrice;
+    }, 0);
   }
 }
