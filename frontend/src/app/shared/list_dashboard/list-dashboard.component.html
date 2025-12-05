@@ -290,41 +290,240 @@
             <p *ngIf="users.length === 0" class="empty-state">No hay usuarios disponibles.</p>
         </div>
 
-        <!-- Edit User Form -->
-        <div *ngIf="editingUser" class="edit-form">
-            <h3>Editar Usuario: {{ editingUser?.username }}</h3>
-            <form (ngSubmit)="onSaveUser(editingUser!)">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" [(ngModel)]="editingUser.email" name="email" required />
+                <!-- Edit User Form -->
+
+                <div *ngIf="editingUser" class="edit-form">
+
+                    <h3>Editar Usuario: {{ editingUser?.username }}</h3>
+
+                    <form (ngSubmit)="onSaveUser(editingUser!)">
+
+                        <div class="form-group">
+
+                            <label>Email</label>
+
+                            <input type="email" [(ngModel)]="editingUser.email" name="email" required />
+
+                        </div>
+
+        
+
+                        <div class="form-group">
+
+                            <label>Imagen (URL)</label>
+
+                            <input type="text" [(ngModel)]="editingUser.image" name="image" />
+
+                        </div>
+
+        
+
+                        <div class="form-group">
+
+                            <label>Estado</label>
+
+                            <select [(ngModel)]="editingUser.status" name="status">
+
+                                <option value="PUBLISHED">PUBLISHED</option>
+
+                                <option value="DRAFT">DRAFT</option>
+
+                                <option value="ARCHIVED">ARCHIVED</option>
+
+                            </select>
+
+                        </div>
+
+        
+
+                        <div class="form-group">
+
+                            <label>
+
+                                <input type="checkbox" [(ngModel)]="editingUser.isActive" name="isActive" />
+
+                                Activo
+
+                            </label>
+
+                        </div>
+
+        
+
+                        <div class="form-actions">
+
+                            <button type="submit" class="btn-save">Guardar</button>
+
+                            <button type="button" class="btn-cancel" (click)="onCancelUser()">Cancelar</button>
+
+                        </div>
+
+                    </form>
+
                 </div>
 
-                <div class="form-group">
-                    <label>Imagen (URL)</label>
-                    <input type="text" [(ngModel)]="editingUser.image" name="image" />
+        
+
+                <!-- Merchant Users List -->
+
+                <div *ngIf="selectedMenuItem === 'Merchant Users'" class="event-grid">
+
+                    <h3>Merchant Users</h3>
+
+                    <div class="event-grid-header">
+
+                        <span>ID</span>
+
+                        <span>Username</span>
+
+                        <span>Email</span>
+
+                        <span>Active</span>
+
+                        <span>Status</span>
+
+                        <span>Created At</span>
+
+                    </div>
+
+                    <div *ngFor="let user of merchantUsers" class="event-grid-row">
+
+                        <span>{{ user.id }}</span>
+
+                        <span>{{ user.username }}</span>
+
+                        <span>{{ user.email }}</span>
+
+                        <span>
+
+                            <label class="toggle-switch">
+
+                                <input type="checkbox" [checked]="user.isActive" disabled>
+
+                                <span class="slider"></span>
+
+                            </label>
+
+                        </span>
+
+                        <span>{{ user.status }}</span>
+
+                        <span>{{ user.createdAt | date:'short' }}</span>
+
+                    </div>
+
+                    <p *ngIf="merchantUsers.length === 0" class="empty-state">No hay Merchant Users disponibles.</p>
+
                 </div>
 
-                <div class="form-group">
-                    <label>Estado</label>
-                    <select [(ngModel)]="editingUser.status" name="status">
-                        <option value="PUBLISHED">PUBLISHED</option>
-                        <option value="DRAFT">DRAFT</option>
-                        <option value="ARCHIVED">ARCHIVED</option>
-                    </select>
+        
+
+                <!-- Merchant Products List -->
+
+                <div *ngIf="selectedMenuItem === 'Merchant Products'" class="event-grid">
+
+                    <h3>Merchant Products</h3>
+
+                    <div class="event-grid-header">
+
+                        <span>ID</span>
+
+                        <span>Name</span>
+
+                        <span>Brand</span>
+
+                        <span>Price</span>
+
+                        <span>Stock</span>
+
+                        <span>Active</span>
+
+                        <span>Status</span>
+
+                    </div>
+
+                    <div *ngFor="let product of merchProducts" class="event-grid-row">
+
+                        <span>{{ product.id }}</span>
+
+                        <span>{{ product.name }}</span>
+
+                        <span>{{ product.brand }}</span>
+
+                        <span>{{ product.price | currency:'USD' }}</span>
+
+                        <span>{{ product.stock }}</span>
+
+                        <span>
+
+                                <label class="toggle-switch">
+
+                                    <input type="checkbox" [checked]="product.isActive" disabled>
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </span>
+
+                        <span>{{ product.status }}</span>
+
+                    </div>
+
+                    <p *ngIf="merchProducts.length === 0" class="empty-state">No hay Merchant Products disponibles.</p>
+
                 </div>
 
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" [(ngModel)]="editingUser.isActive" name="isActive" />
-                        Activo
-                    </label>
+        
+
+                <!-- Merchant Categories List -->
+
+                <div *ngIf="selectedMenuItem === 'Merchant Categories'" class="event-grid">
+
+                    <h3>Merchant Categories</h3>
+
+                    <div class="event-grid-header">
+
+                        <span>ID</span>
+
+                        <span>Name</span>
+
+                        <span>Description</span>
+
+                        <span>Active</span>
+
+                        <span>Status</span>
+
+                    </div>
+
+                    <div *ngFor="let category of merchCategories" class="event-grid-row">
+
+                        <span>{{ category.id }}</span>
+
+                        <span>{{ category.name }}</span>
+
+                        <span>{{ category.desc }}</span>
+
+                        <span>
+
+                                <label class="toggle-switch">
+
+                                    <input type="checkbox" [checked]="category.isActive" disabled>
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </span>
+
+                        <span>{{ category.status }}</span>
+
+                    </div>
+
+                    <p *ngIf="merchCategories.length === 0" class="empty-state">No hay Merchant Categories disponibles.</p>
+
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">Guardar</button>
-                    <button type="button" class="btn-cancel" (click)="onCancelUser()">Cancelar</button>
-                </div>
-            </form>
+            </main>
+
         </div>
-    </main>
-</div>
