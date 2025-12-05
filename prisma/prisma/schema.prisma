@@ -121,3 +121,44 @@ model ciudades {
   @@map("ciudades")
 }
 
+model merch_products {
+  id          String    @id @map("_id") @default(uuid())
+  brand       String
+  name        String
+  slug        String    @unique
+  desc        String
+  price       Float
+  stock       Int
+  images      String[]
+  categoryId  String
+  authorId    String
+  isActive    Boolean
+  status      String
+  createdAt   DateTime  @db.Date
+  updatedAt   DateTime  @db.Date
+}
+
+model merch_categories {
+  id          String   @id @map("_id") @default(uuid())
+  name        String
+  slug        String   @unique
+  desc        String
+  isActive    Boolean
+  authorId    String
+  status      String
+  createdAt   DateTime @db.Date
+  updatedAt   DateTime @db.Date
+}
+
+model merchant_user {
+  id           String    @id @map("_id") @default(uuid())
+  username     String    @unique
+  email        String    @unique
+  password     String
+  isActive     Boolean
+  status       String
+  createdAt    DateTime  @db.Date
+  updatedAt    DateTime  @db.Date
+  refreshToken String?
+}
+
