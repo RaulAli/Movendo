@@ -9,6 +9,9 @@ import { User } from '../../core/models/auth.model';
 import { UserService } from '../../core/services/auth.service';
 import { Category } from '../../core/models/category.model';
 import { CategoryService } from '../../core/services/category.service';
+import { MerchantUser } from '../../core/models/merchant-user.model';
+import { Product } from '../../core/models/merch-prods.model';
+import { merch_Category } from '../../core/models/merch-categories.model';
 
 @Component({
     selector: 'list-dashboard',
@@ -26,7 +29,7 @@ export class ListDashboardComponent implements OnInit {
         private fb: FormBuilder
     ) { }
 
-    menuItems = ['Main', 'Events', 'Categories', 'Clients', 'Merchan'];
+    menuItems = ['Main', 'Events', 'Categories', 'Clients', 'Merchant Users', 'Merchant Products', 'Merchant Categories'];
     selectedMenuItem = 'Main';
 
     // Datos dinámicos
@@ -35,6 +38,10 @@ export class ListDashboardComponent implements OnInit {
     filteredEventos: Evento[] = [];
     users: User[] = [];
     categories: Category[] = [];
+
+    merchantUsers: MerchantUser[] = [];
+    merchProducts: Product[] = [];
+    merchCategories: merch_Category[] = [];
 
     contenidoDB: any = {};
     editingEvento: Evento | null = null;
@@ -263,7 +270,28 @@ export class ListDashboardComponent implements OnInit {
                 this.loadCategoriesFromBackend();
                 break;
 
-            case 'Merchan':
+            case 'Merchant Users':
+                this.merchantUsers = [];
+                this.adminDashboardService.list_merch_users().subscribe({
+                    next: (data) => (this.merchantUsers = data ?? [], console.log('Merchant Users:', this.merchantUsers)),
+                    error: (err) => console.error('Error cargando Merchant Users', err)
+                });
+                break;
+
+            case 'Merchant Products':
+                this.merchProducts = [];
+                this.adminDashboardService.list_merch_products().subscribe({
+                    next: (data) => (this.merchProducts = data ?? [], console.log('Merchant Products:', this.merchProducts)),
+                    error: (err) => console.error('Error cargando Merchant Products', err)
+                });
+                break;
+
+            case 'Merchant Categories':
+                this.merchCategories = [];
+                this.adminDashboardService.list_merch_categories().subscribe({
+                    next: (data) => (this.merchCategories = data ?? [], console.log('Merchant Categories:', this.merchCategories)),
+                    error: (err) => console.error('Error cargando Merchant Categories', err)
+                });
                 break;
         }
     }

@@ -5,6 +5,9 @@ import { Category } from '../models/category.model';
 import { User } from '../models/auth.model';
 import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
+import { MerchantUser } from '../models/merchant-user.model';
+import { Product } from '../models/merch-prods.model';
+import { merch_Category } from '../models/merch-categories.model';
 
 @Injectable({
     providedIn: 'root'
@@ -65,12 +68,6 @@ export class AdminDashboardService {
         return this.apiService.get(`/category`, new HttpParams(), 3002).pipe(
             map(res => res.data ?? res)
         );
-        return this.apiService.get_admin('/categories').pipe(
-            map((res: any) => {
-                if (Array.isArray(res)) return res as Category[];
-                return (res?.items ?? res?.category ?? res?.data ?? []) as Category[];
-            })
-        );
     }
 
     //Usuarios
@@ -78,7 +75,7 @@ export class AdminDashboardService {
         return this.apiService.get_admin('/users').pipe(
             map((res: any) => {
                 if (Array.isArray(res)) return res as User[];
-                return (res?.items ?? res?.category ?? res?.data ?? []) as User[];
+                return (res?.items ?? res?.user ?? res?.data ?? []) as User[];
             })
         );
     }
@@ -95,6 +92,27 @@ export class AdminDashboardService {
                 if (res?.data) return res.data as User;
                 return res as User;
             })
+        );
+    }
+
+    // Merchant Users
+    list_merch_users(): Observable<MerchantUser[]> {
+        return this.apiService.get(`/merchant_users`, new HttpParams(), 3002).pipe(
+            map(res => res.data ?? res)
+        );
+    }
+
+    // Merchant Products
+    list_merch_products(): Observable<Product[]> {
+        return this.apiService.get(`/merch_products`, new HttpParams(), 3002).pipe(
+            map(res => res.data ?? res)
+        );
+    }
+
+    // Merchant Categories
+    list_merch_categories(): Observable<merch_Category[]> {
+        return this.apiService.get(`/merch_categories`, new HttpParams(), 3002).pipe(
+            map(res => res.data ?? res)
         );
     }
 }
