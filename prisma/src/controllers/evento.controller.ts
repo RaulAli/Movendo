@@ -66,3 +66,24 @@ export const createEvento = async (request: FastifyRequest, reply: FastifyReply)
     reply.code(500).send({ error: 'Error al crear el evento', details: err.message });
   }
 };
+
+export const reserveInventory = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const body = request.body as any;
+    const evento = await eventoService.reserveInventory(body);
+    reply.code(201).send(evento);
+  } catch (err: any) {
+    reply.code(500).send({ error: 'inventory', details: err.message });
+  }
+
+};
+
+export const releaseInventory = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const body = request.body as any;
+    const evento = await eventoService.releaseInventory(body);
+    reply.code(201).send(evento);
+  } catch (err: any) {
+    reply.code(500).send({ error: 'reinventory', details: err.message });
+  }
+};

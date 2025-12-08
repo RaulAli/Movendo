@@ -30,8 +30,6 @@ export const updateEvento = async (slug: string, data: any) => {
 };
 
 export const hola = async () => {
-  // Generamos un JWT válido
-
 
   const token = jwt.sign({ service: 'eventoService', role: 'admin' }, JWT_SECRET, { expiresIn: '1h' });
 
@@ -72,6 +70,7 @@ export const createEvento = async (data: any) => {
       nombre: data.nombre || `Evento Random ${Math.floor(Math.random() * 1000)}`,
       price: data.price || 10,
       slug,
+      stock: data.stock || 1,
       slug_category: Array.isArray(data.slug_category) ? data.slug_category : ['musica'],
       status: data.status || 'PUBLISHED',
       updatedAt: now,
@@ -129,10 +128,106 @@ export const createEvento = async (data: any) => {
   }
 };
 
-
-
 export const deleteEvento = async (slug: string) => {
   return prisma.eventos.delete({
     where: { slug },
   });
 };
+
+type ReserveBody = {
+  orderId: string | number;
+  items: { id_evento: string; cantidad: number }[];
+};
+
+export const reserveInventory = async (body: ReserveBody) => {
+  const items = Array.isArray(body.items) ? body.items : [];
+  if (items.length === 0) throw new Error('No items provided for reservation');
+
+  const reserved: { id_evento: string; cantidad: number }[] = [];
+
+  try {
+    for (const it of items) {
+      const id = String(it.id_evento); // convertimos a string
+      const qty = Math.max(0, Math.floor(it.cantidad ?? 0));
+      if (!id || qty <= 0) {
+        throw new Error(`Invalid item format: ${JSON.stringify(it)}`);
+      }
+
+      const updateResult = await prisma.eventos.updateMany({
+        where: { id, stock: { gte: qty } },
+        data: { stock: { decrement: qty } },
+      });
+
+      if (updateResult.count === 0) {
+        throw new Error(`Insufficient stock for evento id ${id}`);
+      }
+
+      reserved.push({ id_evento: id, cantidad: qty });
+    }
+
+    return { success: true, reserved };
+  } catch (err) {
+    for (const prev of reserved) {
+      try {
+        await prisma.eventos.update({
+          where: { id: prev.id_evento },
+          data: { stock: { increment: prev.cantidad } },
+        });
+      } catch (restoreErr) {
+        console.error('Error restoring stock during rollback for id', prev.id_evento, restoreErr);
+      }
+    }
+    throw err;
+  }
+};
+
+
+type ReleaseBody = {
+  orderId?: string | number;
+  items: { id_evento: string; cantidad: number }[];
+};
+
+export const releaseInventory = async (body: ReleaseBody) => {
+  const items = Array.isArray(body.items) ? body.items : [];
+  if (items.length === 0) throw new Error('No items provided for release');
+
+  const processed: { id_evento: string; cantidad: number }[] = [];
+
+  try {
+    for (const it of items) {
+      const id = String(it.id_evento);
+      const qty = Math.max(0, Math.floor(it.cantidad ?? 0));
+      if (!id || qty <= 0) {
+        throw new Error(`Invalid item format: ${JSON.stringify(it)}`);
+      }
+
+      // Incrementamos stock; usamos updateMany para manejar "no encontrado" sin excepción
+      const updateResult = await prisma.eventos.updateMany({
+        where: { id },
+        data: { stock: { increment: qty } },
+      });
+
+      if (updateResult.count === 0) {
+        throw new Error(`Evento no encontrado para id ${id}`);
+      }
+
+      processed.push({ id_evento: id, cantidad: qty });
+    }
+
+    return { success: true, released: processed };
+  } catch (err) {
+    // Rollback: restar lo que ya se sumó
+    for (const prev of processed) {
+      try {
+        await prisma.eventos.update({
+          where: { id: prev.id_evento },
+          data: { stock: { decrement: prev.cantidad } },
+        });
+      } catch (restoreErr) {
+        console.error('Error al deshacer release para id', prev.id_evento, restoreErr);
+      }
+    }
+    throw err;
+  }
+};
+

@@ -81,8 +81,9 @@ model eventos {
   image           String[]
   isActive        Boolean
   nombre          String
-  price           Int
+  price           Float
   slug            String    @unique
+  stock           Float
   slug_category   String[]
   startDate       DateTime  @db.Date
   status          String
@@ -162,3 +163,27 @@ model merchant_user {
   refreshToken String?
 }
 
+
+enum PaymentStatus {
+  PUBLISHED
+  PENDING
+  SHAVED
+}
+
+model Payment {
+  id              String        @id @map("_id") @default(auto()) @db.ObjectId
+  orderId         String?
+  amount          Int
+  currency        String        @default("eur")
+  method          String?
+  status          PaymentStatus @default(PENDING)
+  paymentIntentId String?
+  clientSecret    String?
+  createdAt       DateTime      @default(now())
+  paidAt          DateTime?
+
+  @@index([paymentIntentId])
+  @@index([orderId])
+
+  @@map("payments")
+}

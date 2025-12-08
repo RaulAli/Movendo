@@ -12,6 +12,10 @@ async function eventoRoutes(fastify: FastifyInstance) {
   fastify.post('/eventos', { schema: { summary: 'Create a new evento (admin)', tags: ['events'] }, preHandler: [adminAuthMiddleware] }, eventoController.createEvento);
   fastify.put('/eventos/:slug', { schema: { summary: 'Update a evento (admin)', tags: ['events'] }, preHandler: [adminAuthMiddleware] }, eventoController.updateEvento);
   fastify.delete('/eventos/:slug', { schema: { summary: 'Delete a evento (admin)', tags: ['events'] }, preHandler: [adminAuthMiddleware] }, eventoController.deleteEvento);
+  fastify.post('/eventos/reserve-inventory/', eventoController.reserveInventory);
+  fastify.post('/eventos/release-inventory/', eventoController.releaseInventory);
+
+
 }
 
 export default eventoRoutes;

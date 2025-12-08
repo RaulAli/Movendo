@@ -95,6 +95,7 @@ const asId = (v) => {
                 authorId: e.author ?? null,
                 status: "PUBLISHED",
                 isActive: true,
+                stock: e.stock ?? null,
                 id_merchant: e.id_merchant ?? [],
             },
             create: {
@@ -111,6 +112,7 @@ const asId = (v) => {
                 status: "PUBLISHED",
                 isActive: true,
                 createdAt: new Date(asISO(e.createdAt) ?? Date.now()),
+                stock: e.stock ?? null,
                 id_merchant: e.id_merchant ?? [],
 
             },

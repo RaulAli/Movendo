@@ -15,6 +15,7 @@ import { MerchantsService } from '../../core/services/merchant_products.service'
 })
 export class CarritoPage implements OnInit {
   cart$: Observable<Carrito | null>;
+  pago: 'carrito' | 'pago' = 'carrito';
 
   constructor(
     private carritoService: CarritoService,
@@ -25,6 +26,14 @@ export class CarritoPage implements OnInit {
 
   ngOnInit(): void {
     // Cart is loaded from service constructor
+  }
+
+  goToPago(): void {
+    this.pago = 'pago';
+  }
+
+  volverAlCarrito(): void {
+    this.pago = 'carrito';
   }
 
   updateQuantity(item: CartItem, newQuantity: number) {
@@ -71,4 +80,5 @@ export class CarritoPage implements OnInit {
       return acc + eventPrice + productsPrice;
     }, 0);
   }
+
 }
