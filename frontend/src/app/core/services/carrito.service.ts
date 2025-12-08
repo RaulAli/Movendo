@@ -7,6 +7,30 @@ import { UserService } from './auth.service';
 import { MerchantsService } from './merchant_products.service';
 
 
+// Tipos (fuera de la clase)
+interface SagaMerchant {
+  id_merchant: string;
+  cantidad?: number;
+}
+
+interface SagaItem {
+  id_evento: string;
+  cantidad: number;
+  merchant?: SagaMerchant | SagaMerchant[]; // puede venir como objeto o array en el request inicial
+}
+
+interface SagaRequest {
+  orderId?: number;
+  items: SagaItem[];
+  amount: number | string;
+  currency?: string;
+  description?: string;
+  userId?: string;
+  // opcional: token si quieres pasarlo en el body como fallback
+  token?: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -69,7 +93,7 @@ export class CarritoService {
     );
   }
 
-  addItemToCart(item: { id_evento: string, cantidad: number, merchants: {id_product: string, cantidad: number}[] }): Observable<Carrito> {
+  addItemToCart(item: { id_evento: string, cantidad: number, merchants: { id_product: string, cantidad: number }[] }): Observable<Carrito> {
     return this.apiService.post('/carrito', item, 3000).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
@@ -113,4 +137,35 @@ export class CarritoService {
       })
     );
   }
+
+  createSaga(body: SagaRequest, token?: string): Observable<any> {
+    const normalizedItems = (body.items || []).map(item => {
+      let merchant: any = item.merchant;
+
+      // Si viene como array (tu caso), usamos el primer merchant
+      if (Array.isArray(merchant)) {
+        merchant = merchant.length > 0 ? merchant[0] : undefined;
+      }
+
+      return {
+        id_evento: item.id_evento,
+        cantidad: item.cantidad,
+        merchant
+      };
+    });
+
+    const payload: SagaRequest = {
+      ...body,
+      items: normalizedItems,
+      token: token || undefined // lo enviamos DENTRO del body porque no podemos poner headers
+    };
+
+    // Llamada válida: apiService.post(url, body, timeout)
+    return this.apiService.post(`/saga/`, payload, 3000).pipe(
+      tap(response => {
+        console.log("Saga response:", response);
+      })
+    );
+  }
+
 }
