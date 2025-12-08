@@ -21,6 +21,21 @@
     padding: 1rem; // Add some padding around the image
   }
 
+  .card-title a {
+    color: #212529;
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      color: #0056b3;
+    }
+  }
+
+  .item-price {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
   .img-fluid {
     width: 120px;
     height: 120px;
@@ -38,7 +53,7 @@
     border-bottom: 1px solid #eee; // Separator for event details
     padding-bottom: 1rem;
     margin-bottom: 1rem; // Space below event details
-    
+
     .card-body {
       padding: 1.5rem;
       padding-top: 1rem; // Adjust padding
@@ -50,6 +65,7 @@
       text-decoration: none;
       font-weight: bold;
       font-size: 1.25rem;
+
       &:hover {
         color: #0056b3;
       }
@@ -68,15 +84,18 @@
 
     .quantity-selector {
       margin-top: 1rem;
+
       .btn {
         min-width: 32px; // Make buttons slightly larger
         min-height: 32px;
         border-radius: 0.25rem; // Square buttons
       }
+
       .quantity-value {
         margin: 0 0.8rem;
         font-size: 1.1rem;
       }
+
       .btn-link {
         font-size: 0.9rem;
         padding-left: 1rem;
@@ -111,7 +130,7 @@
       background-color: #ffffff;
       border: 1px solid #f0f0f0;
       border-radius: 0.3rem;
-      
+
       .img-fluid {
         width: 60px; // Smaller image for merchant products
         height: 60px;
@@ -122,11 +141,13 @@
       .product-info {
         flex-grow: 1;
         margin-left: 0.8rem;
+
         .product-name {
           font-size: 1rem;
           font-weight: 500;
           color: #343a40;
         }
+
         .product-price {
           font-size: 0.85rem;
           color: #6c757d;
@@ -136,15 +157,18 @@
       .quantity-selector {
         flex-shrink: 0;
         margin-left: auto;
+
         .btn {
           min-width: 28px;
           min-height: 28px;
           font-size: 0.85rem;
         }
+
         .quantity-value {
           margin: 0 0.6rem;
           font-size: 1rem;
         }
+
         .btn-link {
           font-size: 0.85rem;
           padding-left: 0.8rem;
@@ -157,7 +181,7 @@
 .quantity-selector {
   display: flex;
   align-items: center;
-  
+
   .btn {
     width: 30px;
     height: 30px;
@@ -185,14 +209,15 @@
   top: 2rem; // Adjust as needed based on your header height
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 
-  h4, h5 {
+  h4,
+  h5 {
     font-weight: bold;
   }
 
   hr {
     margin: 1.5rem 0;
   }
-  
+
   .btn-block {
     width: 100%;
     padding: 0.75rem;
@@ -213,16 +238,12 @@
     margin-top: 2rem;
     position: static; // Un-stick the summary card on smaller screens
   }
-  .cart-item-card {
-    flex-direction: column; // Stack image and content vertically
-    .img-col {
-      padding: 0;
-      .img-fluid {
-        border-radius: 0.5rem 0.5rem 0 0; // Top corners rounded
-      }
-    }
-    .content-col {
-      width: 100%;
-    }
+
+  .cart-item-card .img-fluid {
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0.5rem;
   }
 }
+
+
+// PAGO

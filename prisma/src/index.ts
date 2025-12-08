@@ -6,6 +6,7 @@ import eventoRoutes from './routes/evento.routes';
 import merchantProductRoutes from './routes/merchant_products.routes';
 import merchantCategoriesRoutes from './routes/merchant_categories.routes';
 import merchantUsersRoutes from './routes/merchant_users.routes';
+import paymentRoutes from './routes/payment.routes'
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import cors from '@fastify/cors';
@@ -87,6 +88,7 @@ fastify.register(eventoRoutes);
 fastify.register(merchantProductRoutes);
 fastify.register(merchantCategoriesRoutes);
 fastify.register(merchantUsersRoutes);
+fastify.register(paymentRoutes);
 
 // Centralized Error Handler
 fastify.setErrorHandler((error, request, reply) => {

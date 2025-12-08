@@ -66,6 +66,10 @@ const EventoSchema = new mongoose.Schema({
     enum: ["PUBLISHED", "UNPUBLISHED"],
     default: "PUBLISHED"
   },
+  stock: {
+    type: Number,
+    default: 0
+  },
   id_merchant: {
     type: [String],
     required: true
@@ -133,7 +137,9 @@ EventoSchema.methods.toEventoResponse = function (user) {
     id_merchant: this.id_merchant,
     favorited: user ? user.isFavorite(this._id) : false,
     favouritesCount: this.favouritesCount,
-    comments: this.comments
+    comments: this.comments,
+    stock: this.stock,
+    id_merchant: this.id_merchant
   }
 }
 
