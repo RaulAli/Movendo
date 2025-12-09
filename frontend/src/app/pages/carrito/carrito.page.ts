@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription, firstValueFrom } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { CarritoService } from '../../core/services/carrito.service';
 import { Carrito, CartItem } from '../../core/models/carrito.model';
 import { RouterLink } from '@angular/router';
@@ -9,6 +8,7 @@ import { MerchantsService } from '../../core/services/merchant_products.service'
 import { loadStripe, Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../core/services/auth.service';
+
 @Component({
   selector: 'app-carrito',
   standalone: true,
@@ -16,7 +16,7 @@ import { UserService } from '../../core/services/auth.service';
   templateUrl: './carrito.page.html',
   styleUrls: ['./carrito.page.scss']
 })
-export class CarritoPage implements OnInit, OnDestroy {
+export class CarritoPage implements OnInit, AfterViewInit, OnDestroy {
   cart$: Observable<Carrito | null>;
   pago: 'carrito' | 'pago' = 'carrito';
 
@@ -30,7 +30,7 @@ export class CarritoPage implements OnInit, OnDestroy {
   paymentError: string | null = null;
   paymentSuccess: string | null = null;
 
-  // Tu clave pública (la proporcionada)
+  // Tu clave pública (entorno de pruebas)
   private readonly STRIPE_PUBLIC_KEY = 'pk_test_51SZw1ZAdUt058QrcivFOOeMxSeODEdSdo8JMumfR3KEF7RKYsmMbIb0FomJ1QkGN71TL5X6SqygV935W83opbhI000jPcvGG0j';
 
   private subs: Subscription[] = [];
@@ -48,20 +48,22 @@ export class CarritoPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    const user = this.userService.getCurrentUser();
-    console.log(user);
+    // precargar Stripe (opcional): se asegura que loadStripe se ejecute pronto
     this.stripe = await loadStripe(this.STRIPE_PUBLIC_KEY);
+  }
+
+  ngAfterViewInit(): void {
+    // no montamos card por defecto; lo haremos cuando el usuario vaya a la vista de pago
   }
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
-    if (this.card) {
-      try { this.card.unmount(); } catch { }
-    }
+    this.destroyCard();
   }
 
   goToPago(): void {
     this.pago = 'pago';
+    // Esperamos un tick para que el DOM del template renderice #cardElement
     setTimeout(() => this.setupCardElement(), 0);
   }
 
@@ -69,28 +71,59 @@ export class CarritoPage implements OnInit, OnDestroy {
     this.pago = 'carrito';
     this.paymentError = null;
     this.paymentSuccess = null;
+    // desmontar card para liberar recursos
+    this.destroyCard();
   }
 
   private async setupCardElement() {
-    if (!this.stripe) {
-      this.paymentError = 'Stripe no inicializado.';
-      return;
-    }
-    if (this.elements) return; // ya está inicializado
+    this.paymentError = null;
 
-    this.elements = this.stripe.elements();
-    this.card = this.elements.create('card', { hidePostalCode: true });
-    if (this.cardElementRef && this.cardElementRef.nativeElement) {
-      this.card.mount(this.cardElementRef.nativeElement);
+    // Si stripe no está cargado aún, cargarlo
+    if (!this.stripe) {
+      this.stripe = await loadStripe(this.STRIPE_PUBLIC_KEY);
+      if (!this.stripe) {
+        this.paymentError = 'No se pudo inicializar Stripe.';
+        return;
+      }
     }
-    this.card.on('change', (ev: any) => {
-      this.paymentError = ev.error ? ev.error.message : null;
-    });
+
+    // Si ya tenemos elementos montados no hacemos nada
+    if (this.elements && this.card) return;
+
+    try {
+      this.elements = this.stripe.elements();
+      // Puedes pasar estilos si quieres; aquí uso la configuración por defecto
+      this.card = this.elements.create('card', { hidePostalCode: true });
+
+      if (this.cardElementRef && this.cardElementRef.nativeElement) {
+        // desmontar si ya hubiese algo montado por seguridad
+        try { this.card.unmount(); } catch { /* noop */ }
+        this.card.mount(this.cardElementRef.nativeElement);
+      }
+
+      // Escuchar cambios para mostrar errores en tiempo real
+      this.card.on('change', (ev: any) => {
+        this.paymentError = ev.error ? ev.error.message : null;
+      });
+    } catch (err: any) {
+      console.error('Error setupCardElement:', err);
+      this.paymentError = 'Error inicializando el elemento de tarjeta.';
+    }
+  }
+
+  private destroyCard() {
+    if (this.card) {
+      try {
+        this.card.unmount();
+      } catch (e) { /* noop */ }
+      this.card = null;
+    }
+    this.elements = null;
   }
 
   processPayment(): void {
     // delegamos a la función async que maneja Stripe
-    this.pay();
+    void this.pay();
   }
 
   private async pay(): Promise<void> {
@@ -109,7 +142,6 @@ export class CarritoPage implements OnInit, OnDestroy {
 
     // Mapear items y asegurar que id_evento es string
     const itemsPayload = cartSnapshot.items.map(it => {
-      // it.id_evento puede ser string o un objeto Evento
       let idEventoStr: string;
       if (typeof it.id_evento === 'string') {
         idEventoStr = it.id_evento;
@@ -118,12 +150,11 @@ export class CarritoPage implements OnInit, OnDestroy {
       } else if ((it.id_evento as any)?.id) {
         idEventoStr = (it.id_evento as any).id;
       } else {
-        // fallback: stringify (evita undefined)
         idEventoStr = String((it.id_evento as any));
       }
 
       return {
-        id_evento: idEventoStr,            // ahora siempre string
+        id_evento: idEventoStr,
         cantidad: it.cantidad,
         merchant: Array.isArray((it as any).merchants) && (it as any).merchants.length > 0
           ? (it as any).merchants[0]
@@ -147,49 +178,111 @@ export class CarritoPage implements OnInit, OnDestroy {
     };
 
     try {
-      // Llamada al saga -> casteamos payload a any para evitar choque estricto de tipos
+      // Llamada al saga (backend) para crear orden + PaymentIntent y obtener clientSecret
       const response: any = await firstValueFrom(this.carritoService.createSaga(payload as any));
 
-      // Si tu backend devuelve clientSecret (flow Stripe client-side)
-      const clientSecret = response?.clientSecret || response?.paymentIntentClientSecret || response?.paymentIntent?.client_secret;
-      // const orderId = response?.order?._id || response?.orderId || response?.id;
+      // Extraer clientSecret de las posibles rutas que devuelvas
+      const clientSecret = response?.clientSecret
+        || response?.paymentIntentClientSecret
+        || response?.paymentIntent?.client_secret
+        || response?.client_secret;
 
-      if (clientSecret && this.stripe && this.card) {
-        // Confirmamos el pago en el cliente con Stripe Elements
+      // Si tenemos clientSecret -> flujo cliente (confirmCardPayment)
+      if (clientSecret) {
+        // Asegurarse de que stripe y card están inicializados
+        if (!this.stripe) {
+          this.paymentError = 'Stripe no inicializado.';
+          this.isProcessing = false;
+          return;
+        }
+        if (!this.card) {
+          this.paymentError = 'Elemento de tarjeta no inicializado.';
+          this.isProcessing = false;
+          return;
+        }
+
+        // Confirmar con Stripe (cliente)
+        const name = this.paymentForm.get('cardholderName')?.value || undefined;
+
         const result = await this.stripe.confirmCardPayment(clientSecret, {
           payment_method: {
             card: this.card,
             billing_details: {
-              name: this.paymentForm.get('cardholderName')?.value
+              name
             }
           }
         });
 
         if (result.error) {
+          // Error del proceso de confirmación (por ejemplo tarjeta inválida)
           this.paymentError = result.error.message || 'Error al procesar el pago.';
           this.isProcessing = false;
-          // NO llamamos finalizeSaga (tu petición)
           return;
         }
 
+        // Comprobamos el estado del paymentIntent
         if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-          this.paymentSuccess = 'Pago realizado con éxito. ¡Gracias!';
+          // ==== PAGO OK: ahora creamos los tickets usando CarritoService.createTicket ====
+          try {
+            const user = this.userService.getCurrentUser();
+            const username = user?.username || user?.email || 'guest';
+
+            // Preferimos el orderId devuelto por tu backend
+            let orderId = response?.order?._id ?? null;
+
+            // Si no hay orderId, intentamos leer metadata de paymentIntent con cast a any (TS-safe)
+            if (!orderId) {
+              const pi: any = result.paymentIntent; // <-- cast a any para evitar TS error
+              orderId = pi?.metadata?.orderId ?? null;
+            }
+
+            if (!orderId) {
+              console.warn('No se tiene orderId (response.order._id ni paymentIntent.metadata.orderId). Los tickets se crearán con orderId null.');
+            }
+
+            // preparar promesas de creación de ticket: llamamos al servicio para cada event
+            const ticketPromises = itemsPayload.map(it => {
+              const ticketPayload = {
+                orderId,
+                eventId: it.id_evento,
+                username,
+                type: 'general'
+              };
+              // createTicket devuelve Observable -> convertimos a Promise
+              return firstValueFrom(this.carritoService.createTicket(ticketPayload));
+            });
+
+            const createdTickets = await Promise.all(ticketPromises);
+
+            // éxito: limpiar carrito y mostrar mensaje
+            this.paymentSuccess = 'Pago realizado con éxito. Tickets generados.';
+            console.log('Tickets creados:', createdTickets);
+            this.carritoService.clearCart();
+          } catch (ticketErr: any) {
+            console.error('Error creando tickets tras pago exitoso:', ticketErr);
+            this.paymentSuccess = 'Pago realizado con éxito. Error creando tickets (ver consola).';
+          }
+
           this.isProcessing = false;
-          this.carritoService.clearCart();
+          // desmontar los elementos
+          this.destroyCard();
           return;
         }
 
-        this.paymentError = 'Resultado de pago inesperado.';
+        // Si llegamos aquí es un estado distinto (requires_action, etc.)
+        this.paymentError = `Estado de pago: ${result.paymentIntent?.status || 'desconocido'}`;
         this.isProcessing = false;
         return;
       }
 
-      // Si no hay clientSecret -> el backend ya procesó la orden (server-side)
+      // Si no hay clientSecret -> backend ya finalizó el pago server-side
       if (!clientSecret) {
         if (response && (response.order || response.success || response.message)) {
+          // En este caso el backend pudo ya crear la orden y tal vez los tickets
           this.paymentSuccess = 'Orden procesada por el servidor.';
           this.isProcessing = false;
           this.carritoService.clearCart();
+          this.destroyCard();
           return;
         } else {
           this.paymentError = 'No se devolvió clientSecret ni confirmación del servidor.';
@@ -197,35 +290,31 @@ export class CarritoPage implements OnInit, OnDestroy {
           return;
         }
       }
-
     } catch (err: any) {
       console.error('Error creando saga:', err);
       this.paymentError = err?.message || 'Error al iniciar la orden.';
       this.isProcessing = false;
+      return;
     }
   }
+
 
   // -----------------------------
   // Métodos que el template usa
   // -----------------------------
-  // Normaliza el id del product (puede venir _id o id)
   getProductId(product: any): string {
     return product?._id || product?.id || String(product);
   }
 
-  // Llamado desde template para cambiar cantidad de un merchant product
   updateMerchantProductQuantity(item: CartItem, productId: string, newQuantity: number) {
     if (!item || !item.id_evento) return;
 
-    // Si productId viene vacío intenta normalizar
     const pid = productId || '';
 
-    // Aseguramos límites
     if (newQuantity < 0) newQuantity = 0;
     if (newQuantity > item.cantidad) newQuantity = item.cantidad;
 
     if (newQuantity === 0) {
-      // eliminar merchant product
       this.carritoService.removeMerchantProductFromCart((item.id_evento as any)?._id || (item.id_evento as any).id || String(item.id_evento), pid)
         .subscribe(() => { }, err => console.error(err));
     } else {
@@ -234,7 +323,6 @@ export class CarritoPage implements OnInit, OnDestroy {
     }
   }
 
-  // Actualiza cantidad del evento principal
   updateQuantity(item: CartItem, newQuantity: number) {
     if (!item || !(item.id_evento as any)) return;
     const eventoId = (item.id_evento as any)?._id || (item.id_evento as any).id || String(item.id_evento);
@@ -255,7 +343,6 @@ export class CarritoPage implements OnInit, OnDestroy {
     this.carritoService.removeItemFromCart(eventoId).subscribe(() => { }, err => console.error(err));
   }
 
-  // Calcula total de un item (evento + productos)
   getItemTotal(item: any): number {
     if (!item) return 0;
     const eventPrice = ((item.id_evento as any)?.price || 0) * (item.cantidad || 0);
@@ -267,7 +354,6 @@ export class CarritoPage implements OnInit, OnDestroy {
     return eventPrice + productsPrice;
   }
 
-  // Calcula total del carrito (usado por template)
   getTotalPrice(cart: Carrito | null): number {
     if (!cart) return 0;
     return cart.items.reduce((acc: number, item: any) => {

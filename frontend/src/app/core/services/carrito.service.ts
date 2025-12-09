@@ -6,7 +6,6 @@ import { Carrito, CartProduct } from '../models/carrito.model';
 import { UserService } from './auth.service';
 import { MerchantsService } from './merchant_products.service';
 
-
 // Tipos (fuera de la clase)
 interface SagaMerchant {
   id_merchant: string;
@@ -29,7 +28,6 @@ interface SagaRequest {
   // opcional: token si quieres pasarlo en el body como fallback
   token?: string;
 }
-
 
 @Injectable({
   providedIn: 'root'
@@ -164,6 +162,24 @@ export class CarritoService {
     return this.apiService.post(`/saga/`, payload, 3000).pipe(
       tap(response => {
         console.log("Saga response:", response);
+      })
+    );
+  }
+
+  /**
+   * Crea un ticket en el backend.
+   * ticketPayload: { orderId: string | null, eventId: string, username: string, type?: string }
+   * token opcional: si quieres enviar token dentro del body (igual que createSaga)
+   */
+  createTicket(ticketPayload: any, token?: string): Observable<any> {
+    const payload = {
+      ...ticketPayload,
+      token: token || undefined
+    };
+    // Asumimos que ApiService ya gestiona baseUrl y headers (auth) si procede.
+    return this.apiService.post('/ticket/create', payload, 3000).pipe(
+      tap(resp => {
+        console.log('createTicket response:', resp);
       })
     );
   }
