@@ -30,6 +30,19 @@
                       <p class="card-text text-muted">{{ item.id_evento.ciudad }} | {{ item.id_evento.startDate |
                         date:'mediumDate' }}</p>
 
+                      <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="quantity-selector">
+                          <button class="btn btn-outline-secondary btn-sm"
+                            (click)="updateQuantity(item, item.cantidad - 1)">-</button>
+                          <span class="quantity-value">{{ item.cantidad }}</span>
+                          <button class="btn btn-outline-secondary btn-sm"
+                            (click)="updateQuantity(item, item.cantidad + 1)">+</button>
+                        </div>
+                        <button (click)="removeFromCart(item.id_evento)" class="btn btn-link text-danger">
+                          Remove
+                        </button>
+                      </div>
+
                       <!-- Merchant Products -->
                       <div *ngIf="item.products && item.products.length > 0" class="merchant-products mt-3">
                         <h6>Additional Products:</h6>
@@ -45,19 +58,6 @@
                             </div>
                           </div>
                         </div>
-                      </div>
-
-                      <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="quantity-selector">
-                          <button class="btn btn-outline-secondary btn-sm"
-                            (click)="updateQuantity(item, item.cantidad - 1)">-</button>
-                          <span class="quantity-value">{{ item.cantidad }}</span>
-                          <button class="btn btn-outline-secondary btn-sm"
-                            (click)="updateQuantity(item, item.cantidad + 1)">+</button>
-                        </div>
-                        <button (click)="removeFromCart(item.id_evento)" class="btn btn-link text-danger">
-                          Remove
-                        </button>
                       </div>
                     </div>
                   </div>
