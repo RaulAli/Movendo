@@ -49,6 +49,7 @@ export class CarritoPage implements OnInit, AfterViewInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.stripe = await loadStripe(this.STRIPE_PUBLIC_KEY);
+
   }
 
   ngAfterViewInit(): void {
@@ -263,6 +264,19 @@ export class CarritoPage implements OnInit, AfterViewInit, OnDestroy {
             // éxito: limpiar carrito y mostrar mensaje
             this.paymentSuccess = 'Pago realizado con éxito. Tickets generados.';
             console.log('Tickets creados:', createdTickets);
+
+            this.cart$.subscribe(cart => {
+              if (cart) {
+                console.log("ID del carrito:",);
+                this.carritoService.updateStateCarr(cart._id, { status: 'paid' })
+                  .subscribe({
+                    next: res => console.log('Pago actualizado', res),
+                    error: err => console.error('Error', err)
+                  });
+
+              }
+            });
+
             this.carritoService.clearCart();
           } catch (ticketErr: any) {
             console.error('Error creando tickets tras pago exitoso:', ticketErr);

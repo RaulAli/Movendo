@@ -178,6 +178,15 @@ export class CarritoService {
     );
   }
 
+  updateStateCarr(carritotId: string, body: any): Observable<any> {
+    if (!carritotId) {
+      return of({ error: 'paymentId required' });
+    }
+    return this.apiService.put(`/mycarrito/${carritotId}/paid`, body, 3000).pipe(
+      tap(resp => console.log('updateCarrito response:', resp))
+    );
+  }
+
   updatePayment(paymentId: string, body: any): Observable<any> {
     if (!paymentId) {
       return of({ error: 'paymentId required' });
