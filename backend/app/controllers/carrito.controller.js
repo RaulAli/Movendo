@@ -264,3 +264,29 @@ exports.removeItemFromCart = async (req, res) => {
         res.status(500).json({ message: 'Error removing item from cart', error: error.message });
     }
 };
+
+exports.updateCartStatusToPaid = async (req, res) => {
+    try {
+        const cartId = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(cartId)) {
+            return res.status(400).json({ message: 'Invalid cart id.' });
+        }
+
+        const updatedCart = await Carrito.findByIdAndUpdate(
+            cartId,
+            { status: 'paid', paidAt: new Date() },
+            { new: true }
+        ).populate('items.id_evento');
+
+        if (!updatedCart) {
+            return res.status(404).json({ message: 'Cart not found.' });
+        }
+
+        return res.status(200).json(updatedCart);
+
+    } catch (error) {
+        console.error('Error updating cart status:', error);
+        return res.status(500).json({ message: 'Error updating cart status', error: error.message });
+    }
+};

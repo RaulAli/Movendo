@@ -12,6 +12,8 @@ router.post('/carrito', verifyJWT, carritoController.addItemToCart);
 // Update item quantity in cart
 router.put('/carrito/:eventoId', verifyJWT, carritoController.updateCartItem);
 
+router.put('/mycarrito/:id/paid', carritoController.updateCartStatusToPaid);
+
 // Remove item from cart
 router.delete('/carrito/:eventoId', verifyJWT, carritoController.removeItemFromCart);
 
