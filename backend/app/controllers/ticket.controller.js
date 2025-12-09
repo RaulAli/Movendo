@@ -92,3 +92,26 @@ exports.createTicketsForOrder = async (orderDoc, username, opts = {}) => {
 
     return created;
 };
+
+exports.getMyTickets = async (req, res) => {
+    try {
+        const username = req.username;
+        if (!username) {
+            return res.status(401).json({ message: 'User not authenticated.' });
+        }
+
+        const tickets = await Ticket.find({ username: username })
+            .populate('eventId')
+            .populate('orderId')
+            .sort({ createdAt: -1 });
+
+        if (!tickets) {
+            return res.status(200).json([]);
+        }
+        
+        res.status(200).json(tickets);
+    } catch (error) {
+        console.error('Error fetching user tickets:', error);
+        res.status(500).json({ message: 'Error fetching tickets', error: error.message });
+    }
+};

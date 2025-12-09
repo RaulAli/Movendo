@@ -127,3 +127,89 @@
     color: #777;
     padding: 20px 0;
 }
+
+// Styles for Tickets View
+.tickets-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 20px;
+}
+
+.ticket-card {
+    background-color: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    overflow: hidden; // To make sure child border-radius works
+}
+
+.ticket-event-header {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #dbdbdb;
+
+    img {
+        width: 150px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .ticket-event-info {
+        h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+        }
+        p {
+            margin: 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+    }
+}
+
+.ticket-order-details {
+    padding: 1rem;
+
+    h5 {
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.5rem;
+    }
+}
+
+.purchased-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+
+    span:first-child {
+        font-weight: 500;
+    }
+}
+
+.purchased-merchant-item {
+    padding-left: 1rem; // Indent merchant items
+    font-size: 0.9rem;
+    
+    img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-right: 1rem;
+    }
+
+    // Align content in the middle
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+}
