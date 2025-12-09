@@ -192,11 +192,8 @@ export class CarritoPage implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       const response: any = await firstValueFrom(this.carritoService.createSaga(payload as any));
-
+      console.log("REsponse:", response.paymentids);
       const clientSecret = response?.clientSecret
-        || response?.paymentIntentClientSecret
-        || response?.paymentIntent?.client_secret
-        || response?.client_secret;
 
       if (clientSecret) {
         if (!this.stripe) {
@@ -256,6 +253,12 @@ export class CarritoPage implements OnInit, AfterViewInit, OnDestroy {
             });
 
             const createdTickets = await Promise.all(ticketPromises);
+
+            this.carritoService.updatePayment(response.paymentids, { status: 'SHAVED' })
+              .subscribe({
+                next: res => console.log('Pago actualizado', res),
+                error: err => console.error('Error', err)
+              });
 
             // éxito: limpiar carrito y mostrar mensaje
             this.paymentSuccess = 'Pago realizado con éxito. Tickets generados.';
