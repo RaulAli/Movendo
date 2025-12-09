@@ -91,33 +91,33 @@ export class CarritoService {
     );
   }
 
-  addItemToCart(item: { id_evento: string, cantidad: number, merchants: { id_product: string, cantidad: number }[] }): Observable<Carrito> {
+  addItemToCart(item: { id_evento: string, cantidad: number, merchants: { id_product: string, cantidad: number }[] }): Observable<Carrito | null> {
     return this.apiService.post('/carrito', item, 3000).pipe(
-      tap(cart => this.cartSubject.next(cart))
+      switchMap(() => this.getCart())
     );
   }
 
-  updateCartItem(eventoId: string, cantidad: number): Observable<Carrito> {
+  updateCartItem(eventoId: string, cantidad: number): Observable<Carrito | null> {
     return this.apiService.put(`/carrito/${eventoId}`, { cantidad }, 3000).pipe(
-      tap(cart => this.cartSubject.next(cart))
+      switchMap(() => this.getCart())
     );
   }
 
-  removeItemFromCart(eventoId: string): Observable<Carrito> {
+  removeItemFromCart(eventoId: string): Observable<Carrito | null> {
     return this.apiService.delete(`/carrito/${eventoId}`, 3000).pipe(
-      tap(cart => this.cartSubject.next(cart))
+      switchMap(() => this.getCart())
     );
   }
 
-  updateCartMerchantItem(eventoId: string, productId: string, cantidad: number): Observable<Carrito> {
+  updateCartMerchantItem(eventoId: string, productId: string, cantidad: number): Observable<Carrito | null> {
     return this.apiService.put(`/carrito/${eventoId}/product/${productId}`, { cantidad }, 3000).pipe(
-      tap(cart => this.cartSubject.next(cart))
+      switchMap(() => this.getCart())
     );
   }
 
-  removeMerchantProductFromCart(eventoId: string, productId: string): Observable<Carrito> {
+  removeMerchantProductFromCart(eventoId: string, productId: string): Observable<Carrito | null> {
     return this.apiService.delete(`/carrito/${eventoId}/product/${productId}`, 3000).pipe(
-      tap(cart => this.cartSubject.next(cart))
+      switchMap(() => this.getCart())
     );
   }
 
