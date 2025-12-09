@@ -14,7 +14,7 @@ exports.getCart = async (req, res) => {
             return res.status(401).json({ message: 'User not authenticated.' });
         }
 
-        let cart = await Carrito.findOne({ id_user: userId }).populate('items.id_evento');
+        let cart = await Carrito.findOne({ id_user: userId, status: 'active' }).populate('items.id_evento');
 
         if (!cart) {
             // If no cart exists, create an empty one
@@ -49,7 +49,7 @@ exports.addItemToCart = async (req, res) => {
             }
         }
 
-        let cart = await Carrito.findOne({ id_user: userId });
+        let cart = await Carrito.findOne({ id_user: userId, status: 'active' });
 
         if (!cart) {
             cart = new Carrito({ id_user: userId, items: [] });
@@ -104,7 +104,7 @@ exports.updateCartMerchantItem = async (req, res) => {
             return res.status(400).json({ message: 'Invalid data provided.' });
         }
 
-        let cart = await Carrito.findOne({ id_user: userId });
+        let cart = await Carrito.findOne({ id_user: userId, status: 'active' });
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found.' });
         }
@@ -154,7 +154,7 @@ exports.removeMerchantProductFromCart = async (req, res) => {
             return res.status(400).json({ message: 'Invalid data provided.' });
         }
 
-        let cart = await Carrito.findOne({ id_user: userId });
+        let cart = await Carrito.findOne({ id_user: userId, status: 'active' });
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found.' });
         }
@@ -199,7 +199,7 @@ exports.updateCartItem = async (req, res) => {
             return res.status(400).json({ message: 'Invalid item ID or quantity provided.' });
         }
 
-        let cart = await Carrito.findOne({ id_user: userId });
+        let cart = await Carrito.findOne({ id_user: userId, status: 'active' });
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found for this user.' });
@@ -242,7 +242,7 @@ exports.removeItemFromCart = async (req, res) => {
             return res.status(400).json({ message: 'Invalid item ID provided.' });
         }
 
-        let cart = await Carrito.findOne({ id_user: userId });
+        let cart = await Carrito.findOne({ id_user: userId, status: 'active' });
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found for this user.' });

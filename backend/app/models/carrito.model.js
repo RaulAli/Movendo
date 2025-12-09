@@ -29,8 +29,7 @@ const cartItemSchema = new mongoose.Schema({
 const carritoSchema = new mongoose.Schema({
     id_user: {
         type: String, // Storing UUID as a string as Mongoose doesn't have a native UUID type
-        required: true,
-        unique: true
+        required: true
     },
     status: {
         type: String,
@@ -39,6 +38,9 @@ const carritoSchema = new mongoose.Schema({
     },
     items: [cartItemSchema]
 }, { timestamps: true });
+
+// Partial index to ensure only one active cart per user
+carritoSchema.index({ id_user: 1, status: 1 }, { unique: true, partialFilterExpression: { status: 'active' } });
 
 const Carrito = mongoose.model('Carrito', carritoSchema);
 
