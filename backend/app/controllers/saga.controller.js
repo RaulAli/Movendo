@@ -52,8 +52,8 @@ exports.saga_improvment = async (req, res) => {
             }, authHeader), 4, 300);
 
         // extraemos únicamente el client secret (si está)
-        paymentClientSecret = payment?.clientSecret ?? payment?.client_secret ?? null;
-
+        paymentClientSecret = payment?.clientSecret ?? null;
+        paymentids = payment.paymentId;
         order.status = 'SHAVED';
         await order.save();
 
@@ -61,7 +61,8 @@ exports.saga_improvment = async (req, res) => {
         return res.status(201).json({
             message: 'Order completed successfully',
             order,
-            clientSecret: paymentClientSecret
+            clientSecret: paymentClientSecret,
+            paymentids
         });
 
     } catch (error) {

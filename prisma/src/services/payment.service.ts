@@ -88,3 +88,34 @@ export const cancelPayment = async () => {
         throw new Error(err?.message ?? 'Stripe error');
     }
 };
+
+export const shavePayment = async (id: string) => {
+    if (!id) {
+        return { success: false, error: 'Id Required' };
+    }
+
+    // detectar si id es number-like (Int) o string (UUID/cuid)
+    const maybeNumber = Number(id);
+    const where: any = {};
+    if (!Number.isNaN(maybeNumber) && String(maybeNumber) === id) {
+        where.id = maybeNumber;
+    } else {
+        where.id = id;
+    }
+
+    try {
+        const updatedPayment = await prisma.payment.update({
+            where,
+            data: { status: 'SHAVED' },
+        });
+
+        return { success: true, payment: updatedPayment };
+    } catch (err: any) {
+        // Prisma P2025 = record not found for update
+        if (err?.code === 'P2025') {
+            return { success: false, error: 'Payment not found' };
+        }
+        console.error('Error shaving payment:', err);
+        return { success: false, error: err?.message ?? 'Error updating payment' };
+    }
+};
