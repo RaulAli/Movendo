@@ -1,29 +1,34 @@
 const mongoose = require('mongoose');
 
+// En order.model.js
 const itemSchema = new mongoose.Schema({
     id_evento: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Event' // Asumiendo que tienes un modelo Event
+        ref: 'Event'
     },
     cantidad: {
         type: Number,
         required: true,
         min: 1
     },
-    merchant: {
+    merchant: [{
         id_merchant: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Merchant',
-            default: null
+            type: String,
+            required: true,
+        },
+        cantidad: {
+            type: Number,
+            required: true,
+            min: 1
         }
-    }
+    }]
 }, { _id: false });
 
 const orderSchema = new mongoose.Schema({
-    userid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+    username: {
+        type: String,
+        required: false,
         default: null,
         index: true
     },

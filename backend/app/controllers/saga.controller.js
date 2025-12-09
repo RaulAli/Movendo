@@ -2,26 +2,26 @@ const Order = require('../models/order.model'); // Ajusta la ruta según tu estr
 
 exports.saga_improvment = async (req, res) => {
     let order = null;
-    let payment = null;           // Aquí guardaremos la respuesta completa del servicio de pago
-    let paymentClientSecret = null; // Aquí guardamos sólo el client secret (si existe)
+    let payment = null;
+    let paymentClientSecret = null;
 
     try {
         const incomingAmount = req.body?.amount;
         const incomingItems = req.body?.items;
-        const userId = req.body?.userId || null;
+        const username = req.body?.username || null;
 
         if (!incomingAmount || !incomingItems) {
             return res.status(400).json({ message: 'Amount and items are required' });
         }
 
         const orderData = {
-            userid: userId,
+            username: username,
             amount: incomingAmount,
             status: 'PENDING',
             items: incomingItems.map(item => ({
                 id_evento: item.id_evento,
                 cantidad: item.cantidad,
-                merchant: { id_merchant: item.merchant?.id_merchant || null }
+                merchant: item.merchant || [] // Ahora merchant es un array
             }))
         };
 
