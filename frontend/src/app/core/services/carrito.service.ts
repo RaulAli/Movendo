@@ -197,4 +197,8 @@ export class CarritoService {
   }
 
 
+  getMyTickets(): Observable<any[]> {
+    return this.apiService.get('/ticket/my-tickets');
+  }
+
 }

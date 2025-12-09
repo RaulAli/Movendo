@@ -27,6 +27,9 @@
                 favorites</div>
             <div (click)="showComments()" class="clickable-stat" [class.selected]="currentView === 'comments'"><strong>{{ profile.commentsCount }}</strong>
                 comments</div>
+            <div *ngIf="isUser" (click)="showTickets()" class="clickable-stat" [class.selected]="currentView === 'tickets'">
+                <strong>My Tickets</strong>
+            </div>
         </div>
         <div class="profile-content">
             <div *ngIf="currentView === 'favorites'" class="favorites-section">
@@ -48,6 +51,38 @@
                     [itemsPerPage]="itemsPerPage" [currentPage]="currentCommentPage"
                     (pageChange)="onCommentPageChange($event)">
                 </app-pagination>
+            </div>
+
+            <div *ngIf="currentView === 'tickets'" class="tickets-section">
+                <div *ngIf="tickets.length > 0; else noTickets">
+                    <div *ngFor="let ticket of tickets" class="ticket-card">
+                        <div class="ticket-event-header">
+                            <img [src]="ticket.eventId?.image?.[0] || 'https://via.placeholder.com/150x80'" alt="{{ ticket.eventId?.nombre }}">
+                            <div class="ticket-event-info">
+                                <h4>{{ ticket.eventId?.nombre }}</h4>
+                                <p>{{ ticket.eventId?.startDate | date:'fullDate' }}</p>
+                                <p>{{ ticket.eventId?.ciudad }}</p>
+                            </div>
+                        </div>
+                        <div class="ticket-order-details">
+                            <h5>Your Purchase</h5>
+                            <div *ngFor="let item of ticket.orderId?.items">
+                                <div class="purchased-item">
+                                    <span>Event Ticket</span>
+                                    <span>Quantity: {{ item.cantidad }}</span>
+                                </div>
+                                <div *ngFor="let m of item.populatedMerchants" class="purchased-item purchased-merchant-item">
+                                    <img [src]="m.images?.[0] || 'https://via.placeholder.com/40x40'" alt="{{ m.name }}">
+                                    <span>{{ m.name }}</span>
+                                    <span>Quantity: {{ m.quantity }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #noTickets>
+                    <p class="no-items-message">You don't have any tickets yet.</p>
+                </ng-template>
             </div>
         </div>
     </div>

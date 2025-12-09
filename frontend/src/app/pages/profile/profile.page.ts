@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../../core/services/profile.service';
 import { Profile } from '../../core/models/profile.model';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, forkJoin, of } from 'rxjs';
 import { UserService } from '../../core/services/auth.service';
 import { SettingsComponent } from '../../shared/settings/settings.component';
 import { UserListComponent } from '../../shared/list-user/list-user.component';
@@ -12,6 +12,9 @@ import { CommentsComponent } from '../../shared/comments/comments.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { Evento } from '../../core/models/evento.model';
 import { Comment } from '../../core/models/comment.model';
+import { CarritoService } from '../../core/services/carrito.service';
+import { MerchantsService } from '../../core/services/merchant_products.service';
+import { Ticket, OrderItem, OrderMerchantItem } from '../../core/models/ticket.model'; // Added this import
 
 @Component({
     selector: 'app-profile-page',
@@ -23,7 +26,7 @@ import { Comment } from '../../core/models/comment.model';
 export class ProfilePage implements OnInit {
     profile!: Profile;
     isUser: boolean = false;
-    currentView: 'profile' | 'settings' | 'followers' | 'following' | 'favorites' | 'comments' = 'favorites';
+    currentView: 'profile' | 'settings' | 'followers' | 'following' | 'favorites' | 'comments' | 'tickets' = 'favorites';
     listUsers: Profile[] = [];
     showUserListModal: boolean = false;
     userListType: 'followers' | 'following' | null = null;
@@ -36,12 +39,15 @@ export class ProfilePage implements OnInit {
     paginatedComments: Comment[] = [];
     totalComments: number = 0;
     currentCommentPage: number = 1;
+    tickets: Ticket[] = []; // Changed from any[] to Ticket[]
 
     constructor(
         private route: ActivatedRoute,
         private profileService: ProfileService,
         private userService: UserService,
-        private router: Router // Inject Router
+        private router: Router, // Inject Router
+        private carritoService: CarritoService,
+        private merchantsService: MerchantsService
     ) { }
 
     ngOnInit() {
@@ -185,5 +191,44 @@ export class ProfilePage implements OnInit {
     onCommentPageChange(page: number): void {
         this.currentCommentPage = page;
         this.paginateComments();
+    }
+
+    showTickets(): void {
+      this.currentView = 'tickets';
+      this.carritoService.getMyTickets().pipe(
+        switchMap((tickets: Ticket[]) => {
+          const merchantIds = [...new Set(
+            tickets.flatMap(t => t.orderId?.items ?? [])
+                   .flatMap((i: OrderItem) => i.merchant ?? []) // Type 'i'
+                   .map((m: OrderMerchantItem) => m.id_merchant) // Type 'm'
+          )];
+          
+          if (merchantIds.length === 0) {
+            return of({ tickets, products: [] });
+          }
+    
+          return forkJoin({
+            tickets: of(tickets),
+            products: this.merchantsService.getProductsByIds(merchantIds)
+          });
+        })
+      ).subscribe(({ tickets, products }) => {
+        tickets.forEach((ticket: Ticket) => { // Type 'ticket'
+          if (ticket.orderId && ticket.orderId.items) {
+            ticket.orderId.items.forEach((item: OrderItem) => { // Type 'item'
+              item.populatedMerchants = [];
+              if (item.merchant) {
+                item.merchant.forEach((m: OrderMerchantItem) => { // Type 'm'
+                  const productDetails = products.find(p => p.id === m.id_merchant);
+                  if (productDetails) {
+                    item.populatedMerchants!.push({ ...productDetails, quantity: m.cantidad });
+                  }
+                });
+              }
+            });
+          }
+        });
+        this.tickets = tickets;
+      });
     }
 }

@@ -11,7 +11,7 @@ const TicketSchema = new Schema({
     },
     eventId: {
         type: Schema.Types.ObjectId,
-        ref: 'Event',
+        ref: 'Evento',
         required: true,
         index: true
     },
