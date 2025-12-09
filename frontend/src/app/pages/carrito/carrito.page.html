@@ -44,18 +44,18 @@
                       </div>
 
                       <!-- Merchant Products -->
-                      <div *ngIf="item.products && item.products.length > 0" class="merchant-products mt-3">
-                        <h6>Additional Products:</h6>
-                        <div *ngFor="let product of item.products" class="merchant-product-item mb-2">
-                          <div class="d-flex justify-content-between align-items-center">
-                            <span>{{ product.name }} - {{ (product.price * product.quantity) | currency:'EUR' }}</span>
-                            <div class="quantity-selector">
-                              <button class="btn btn-outline-secondary btn-sm"
-                                (click)="updateMerchantProductQuantity(item, getProductId(product), product.quantity - 1)">-</button>
-                              <span class="quantity-value ms-2 me-2">{{ product.quantity }}</span>
-                              <button class="btn btn-outline-secondary btn-sm"
-                                (click)="updateMerchantProductQuantity(item, getProductId(product), product.quantity + 1)">+</button>
-                            </div>
+                      <div *ngIf="item.products && item.products.length > 0" class="merchant-products mt-4 pt-3 border-top">
+                        <h6 class="mb-3">Additional Products:</h6>
+                        <div *ngFor="let product of item.products" class="merchant-product-item mb-2 d-flex align-items-center">
+                          <img [src]="product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/60x60'" alt="{{ product.name }}" class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                          <div class="flex-grow-1">
+                            <div>{{ product.name }}</div>
+                            <small class="text-muted">{{ product.price | currency:'EUR' }} each</small>
+                          </div>
+                          <div class="quantity-selector">
+                            <button class="btn btn-outline-secondary btn-sm" (click)="updateMerchantProductQuantity(item, getProductId(product), product.quantity - 1)">-</button>
+                            <span class="quantity-value ms-2 me-2">{{ product.quantity }}</span>
+                            <button class="btn btn-outline-secondary btn-sm" (click)="updateMerchantProductQuantity(item, getProductId(product), product.quantity + 1)">+</button>
                           </div>
                         </div>
                       </div>
