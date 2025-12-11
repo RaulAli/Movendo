@@ -109,7 +109,7 @@ fastify.setErrorHandler((error, request, reply) => {
 const start = async () => {
   console.log(fastify.printRoutes());
   try {
-    await fastify.listen({ port: 3002 });
+    await fastify.listen({ port: 3002, host: '0.0.0.0' });
     const address = fastify.server.address();
     const port = typeof address === 'object' && address !== null ? address.port : 3002;
     fastify.log.info(`Servidor escuchando en ${port}`);

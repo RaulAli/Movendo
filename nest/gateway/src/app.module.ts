@@ -24,7 +24,10 @@ export class AppModule implements NestModule {
                 { path: 'merchant/login', method: RequestMethod.POST },
                 { path: 'merchant/register', method: RequestMethod.POST },
                 { path: 'merchant/refresh', method: RequestMethod.POST },
-                { path: 'products', method: RequestMethod.GET }
+                { path: 'products', method: RequestMethod.GET },
+                { path: 'products/(.*)', method: RequestMethod.GET },
+                { path: 'categories', method: RequestMethod.GET },
+                { path: 'categories/(.*)', method: RequestMethod.GET }
             )
             .forRoutes(GatewayController);
     }
