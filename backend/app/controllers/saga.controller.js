@@ -41,7 +41,7 @@ exports.saga_improvment = async (req, res) => {
 
         // 1) reservar inventario de eventos
         await retry(() =>
-            postJson('http://localhost:3002/eventos/reserve-inventory/', {
+            postJson('http://prisma:3002/eventos/reserve-inventory/', {
                 orderId: order._id,
                 items: order.items
             }, authHeader), 4, 300);
@@ -79,7 +79,7 @@ exports.saga_improvment = async (req, res) => {
 
         // 3) procesar pago -> esperamos { clientSecret, paymentId }
         payment = await retry(() =>
-            postJson('http://localhost:3002/process-payment', {
+            postJson('http://prisma:3002/process-payment', {
                 orderId: order._id,
                 amount: amountInCents
             }, authHeader), 4, 300);
@@ -121,7 +121,7 @@ exports.saga_improvment = async (req, res) => {
             try {
                 // Liberar inventario de eventos
                 await retry(() =>
-                    postJson('http://localhost:3002/eventos/release-inventory/', {
+                    postJson('http://prisma:3002/eventos/release-inventory/', {
                         orderId: orderToCompensate._id,
                         items: orderToCompensate.items // si tu endpoint acepta solo orderId, también funcionará si lo maneja
                     }, authHeader), 3, 300);

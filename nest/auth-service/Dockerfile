@@ -20,4 +20,6 @@ RUN npm prune --production
 # Copy built artifacts from host
 COPY dist ./dist
 
+EXPOSE 3004
+
 CMD ["node", "dist/main"]

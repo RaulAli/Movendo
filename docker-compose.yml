@@ -1,0 +1,145 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: movendo-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    command: mongod --replSet rs0 --bind_ip_all
+    healthcheck:
+      test: |
+        mongosh --eval "
+          try {
+            rs.status();
+          } catch (err) {
+            rs.initiate({
+              _id: 'rs0',
+              members: [ { _id: 0, host: 'mongo:27017' } ]
+            });
+          }
+        "
+      interval: 10s
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: movendo-backend
+    container_name: conciertos-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/events
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: movendo-frontend
+    container_name: movendo-frontend
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
+  prisma:
+    build:
+      context: ./prisma
+      dockerfile: Dockerfile
+    image: movendo-prisma
+    container_name: movendo-prisma
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./prisma/.env
+    environment:
+      - DATABASE_URL=mongodb://mongo:27017/events?replicaSet=rs0
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+  
+  auth-service:
+    build:
+      context: ./nest/auth-service
+      dockerfile: Dockerfile
+    image: movendo-auth-service
+    container_name: movendo-auth-service
+    ports:
+      - "3004:3004"
+    env_file:
+      - ./nest/auth-service/.env
+    environment:
+      - DATABASE_URL=mongodb://mongo:27017/events
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  merch-categories:
+    build:
+      context: ./nest/merch-categories
+      dockerfile: Dockerfile
+    image: movendo-categories
+    container_name: movendo-categories
+    ports:
+      - "3005:3005"
+    env_file:
+      - ./nest/merch-categories/.env
+    environment:
+      - DATABASE_URL_CATEGORIES=mongodb://mongo:27017/events
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  merch-products:
+    build:
+      context: ./nest/merch-product
+      dockerfile: Dockerfile
+    image: movendo-products
+    container_name: movendo-products
+    ports:
+      - "3006:3006"
+    env_file:
+      - ./nest/merch-product/.env
+    environment:
+      - DATABASE_URL_PRODUCTS=mongodb://mongo:27017/events
+      - EVENTS_URL=http://backend:3000
+      - CATEGORIES_URL=http://merch-categories:3005
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ./nest/gateway
+      dockerfile: Dockerfile
+    image: movendo-gateway
+    container_name: movendo-gateway
+    ports:
+      - "3003:3003"
+    env_file:
+      - ./nest/gateway/.env
+    environment:
+      - AUTH_URL=http://movendo-auth-service:3004
+      - CATEGORIES_URL=http://movendo-categories:3005
+      - PRODUCTS_URL=http://movendo-products:3006
+    depends_on:
+      auth-service:
+        condition: service_started
+      merch-categories:
+        condition: service_started
+      merch-products:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
