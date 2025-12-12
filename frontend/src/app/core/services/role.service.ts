@@ -18,11 +18,11 @@ export class RoleService {
   checkRole() {
     const decodedToken = this.jwtService.getDecodedToken();
     if (decodedToken) {
-      if (decodedToken.role == "admin") {
+      if (decodedToken.role === "admin") {
         this.roleSubject.next('admin');
-      } else if (decodedToken.role == "client") {
+      } else if (decodedToken.role === "client") {
         this.roleSubject.next('client');
-      } else if (decodedToken.role == "merchant") {
+      } else if (decodedToken.role === "merchant") {
         this.roleSubject.next('merchant');
       }
     } else {
