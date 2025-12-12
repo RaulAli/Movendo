@@ -15,6 +15,7 @@ import { CommentsComponent } from '../../shared/comments/comments.component';
 import { Comment } from '../../core/models/comment.model';
 import { CommentsService } from '../../core/services/comment.service';
 import { CarritoService } from '../../core/services/carrito.service';
+import { RoleService } from '../../core/services/role.service';
 import Swal from 'sweetalert2';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
@@ -55,7 +56,8 @@ export class DetailsPage implements OnInit {
     private CommentService: CommentsService,
     private UserService: UserService,
     private router: Router,
-    private carritoService: CarritoService
+    private carritoService: CarritoService,
+    public roleService: RoleService
   ) {
     this.evento$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
@@ -71,14 +73,19 @@ export class DetailsPage implements OnInit {
     this.slug = this.route.snapshot.paramMap.get('slug') ?? '';
     this.route.data.subscribe(
       (data: any) => {
-        this.author = data.evento.author;
-        this.get_comments(this.slug);
-        this.get_merchant(this.slug);
-        this.get_user_author();
-        if (this.currentUser.username === this.author.username) {
-          this.canModify = true;
-        } else {
-          this.canModify = false;
+        if (data.evento) {
+          this.author = data.evento.author;
+          this.evento.set(data.evento);
+
+          this.get_comments(this.slug);
+          this.get_merchant(this.slug);
+          this.get_user_author();
+
+          if (this.currentUser && this.author && this.currentUser.username === this.author.username) {
+            this.canModify = true;
+          } else {
+            this.canModify = false;
+          }
         }
       }
     );

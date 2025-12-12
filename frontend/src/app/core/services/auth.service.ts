@@ -51,6 +51,8 @@ export class UserService {
             this.purgeAuth();
           }
         });
+      } else {
+        this.isAuthenticatedSubject.next(false);
       }
     } else {
       this.purgeAuth();
