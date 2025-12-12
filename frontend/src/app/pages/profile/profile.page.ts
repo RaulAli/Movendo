@@ -40,6 +40,9 @@ export class ProfilePage implements OnInit {
     totalComments: number = 0;
     currentCommentPage: number = 1;
     tickets: Ticket[] = []; // Changed from any[] to Ticket[]
+    paginatedTickets: Ticket[] = [];
+    totalTickets: number = 0;
+    currentTicketPage: number = 1;
 
     constructor(
         private route: ActivatedRoute,
@@ -194,41 +197,54 @@ export class ProfilePage implements OnInit {
     }
 
     showTickets(): void {
-      this.currentView = 'tickets';
-      this.carritoService.getMyTickets().pipe(
-        switchMap((tickets: Ticket[]) => {
-          const merchantIds = [...new Set(
-            tickets.flatMap(t => t.orderId?.items ?? [])
-                   .flatMap((i: OrderItem) => i.merchant ?? []) // Type 'i'
-                   .map((m: OrderMerchantItem) => m.id_merchant) // Type 'm'
-          )];
-          
-          if (merchantIds.length === 0) {
-            return of({ tickets, products: [] });
-          }
-    
-          return forkJoin({
-            tickets: of(tickets),
-            products: this.merchantsService.getProductsByIds(merchantIds)
-          });
-        })
-      ).subscribe(({ tickets, products }) => {
-        tickets.forEach((ticket: Ticket) => { // Type 'ticket'
-          if (ticket.orderId && ticket.orderId.items) {
-            ticket.orderId.items.forEach((item: OrderItem) => { // Type 'item'
-              item.populatedMerchants = [];
-              if (item.merchant) {
-                item.merchant.forEach((m: OrderMerchantItem) => { // Type 'm'
-                  const productDetails = products.find(p => p.id === m.id_merchant);
-                  if (productDetails) {
-                    item.populatedMerchants!.push({ ...productDetails, quantity: m.cantidad });
-                  }
+        this.currentView = 'tickets';
+        this.carritoService.getMyTickets().pipe(
+            switchMap((tickets: Ticket[]) => {
+                const merchantIds = [...new Set(
+                    tickets.flatMap(t => t.orderId?.items ?? [])
+                        .flatMap((i: OrderItem) => i.merchant ?? []) // Type 'i'
+                        .map((m: OrderMerchantItem) => m.id_merchant) // Type 'm'
+                )];
+
+                if (merchantIds.length === 0) {
+                    return of({ tickets, products: [] });
+                }
+
+                return forkJoin({
+                    tickets: of(tickets),
+                    products: this.merchantsService.getProductsByIds(merchantIds)
                 });
-              }
+            })
+        ).subscribe(({ tickets, products }) => {
+            tickets.forEach((ticket: Ticket) => { // Type 'ticket'
+                if (ticket.orderId && ticket.orderId.items) {
+                    ticket.orderId.items.forEach((item: OrderItem) => { // Type 'item'
+                        item.populatedMerchants = [];
+                        if (item.merchant) {
+                            item.merchant.forEach((m: OrderMerchantItem) => { // Type 'm'
+                                const productDetails = products.find(p => p.id === m.id_merchant);
+                                if (productDetails) {
+                                    item.populatedMerchants!.push({ ...productDetails, quantity: m.cantidad });
+                                }
+                            });
+                        }
+                    });
+                }
             });
-          }
+            this.tickets = tickets;
+            this.totalTickets = tickets.length;
+            this.paginateTickets();
         });
-        this.tickets = tickets;
-      });
+    }
+
+    paginateTickets(): void {
+        const startIndex = (this.currentTicketPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.paginatedTickets = this.tickets.slice(startIndex, endIndex);
+    }
+
+    onTicketPageChange(page: number): void {
+        this.currentTicketPage = page;
+        this.paginateTickets();
     }
 }
