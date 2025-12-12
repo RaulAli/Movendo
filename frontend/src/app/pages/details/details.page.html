@@ -9,6 +9,8 @@
             <li *ngIf="evento.category"><strong>Género:</strong> {{ evento.category }}</li>
         </ul>
 
+        @if (roleService.currentRole === 'client' || roleService.currentRole === 'admin' || roleService.currentRole ===
+        'guest') {
         @if (evento.favorited) {
         <button class="btn btn-sm btn-outline-primary" (click)="toggleFavorite()">
             <i class="ion-heart"></i>
@@ -20,7 +22,8 @@
             Favorite <span class="counter">({{ evento.favouritesCount }})</span>
         </button>
         }
-        
+        }
+
         <!-- Add to Cart Button -->
         <button class="btn btn-sm btn-outline-success" (click)="addToCart()" *ngIf="logged">
             <i class="ion-plus-round"></i>
@@ -33,7 +36,10 @@
     </article>
 
     <hr>
-    <app-list-merchant-product [products]="merchant()" (selectionChanged)="onProductSelectionChanged($event)"></app-list-merchant-product>
+    <app-list-merchant-product [products]="merchant()"
+        (selectionChanged)="onProductSelectionChanged($event)"></app-list-merchant-product>
+    @if (roleService.currentRole === 'client' || roleService.currentRole === 'admin' || roleService.currentRole ===
+    'guest') {
     <hr>
     <h3 class="product-info title">Comment Section</h3>
     <br>
@@ -65,6 +71,7 @@
 
 
     </div>
+    }
 </ng-container>
 
 <ng-template #loadingTpl>
