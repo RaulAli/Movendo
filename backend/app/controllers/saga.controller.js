@@ -49,7 +49,7 @@ exports.saga_improvment = async (req, res) => {
         // 2) reservar inventario de merchant (llamada al endpoint que indicaste)
         try {
             await retry(() =>
-                postJson('http://localhost:3002/merch/reserve-inventory', {
+                postJson('http://prisma:3002/merch/reserve-inventory', {
                     orderId: order._id,
                     items: order.items
                 }, authHeader), 4, 300);
@@ -58,7 +58,7 @@ exports.saga_improvment = async (req, res) => {
             console.error('Merchant reserve failed, attempting to release events reservation:', errMerchReserve);
             try {
                 await retry(() =>
-                    postJson('http://localhost:3002/eventos/release-inventory', {
+                    postJson('http://prisma:3002/eventos/release-inventory', {
                         orderId: order._id,
                         items: order.items
                     }, authHeader), 3, 300);
@@ -132,7 +132,7 @@ exports.saga_improvment = async (req, res) => {
             try {
                 // Liberar inventario de merchant
                 await retry(() =>
-                    postJson('http://localhost:3002/merch/release-inventory', {
+                    postJson('http://prisma:3002/merch/release-inventory', {
                         orderId: orderToCompensate._id,
                         items: orderToCompensate.items
                     }, authHeader), 3, 300);
