@@ -26,11 +26,9 @@ export class AdminService {
     const token = this.jwtService.getToken();
     if (token) {
       const decodedToken = this.jwtService.getDecodedToken();
-      if (decodedToken && decodedToken.role == "admin") {
+      if (decodedToken && decodedToken.role === "admin") {
         this.roleService.checkRole();
-      } else if (decodedToken && decodedToken.role != "admin") {
-
-      } else {
+      } else if (!decodedToken) {
         this.logout();
       }
     }

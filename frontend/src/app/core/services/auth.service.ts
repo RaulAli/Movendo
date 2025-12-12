@@ -42,7 +42,7 @@ export class UserService {
     const token = this.jwtService.getToken();
     if (token) {
       const decodedToken = this.jwtService.getDecodedToken();
-      if (decodedToken && decodedToken.role != "admin") {
+      if (decodedToken && decodedToken.role === "client") {
         this.apiService.get('/user', undefined, 3000).subscribe({
           next: (data) => {
             this.setAuth({ ...data.user, token });
