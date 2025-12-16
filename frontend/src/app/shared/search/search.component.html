@@ -1,17 +1,100 @@
 <div class="container subheader">
     <div class="row d-flex justify-content-center align-items-center" style="width: 100%;">
         <div class="col-md-8">
-            <form class="search" (ngSubmit)="emitSearch()">
-                <i class="fa fa-search"></i>
-                <input type="text" list="search-suggestions" class="input" name="txt" [(ngModel)]="search_value"
-                    (input)="onInput()">
+            <!-- Selector de modo de búsqueda -->
+            <div class="search-mode-selector mb-3">
+                <div class="form-check form-switch d-flex align-items-center">
+                    <input class="form-check-input" type="checkbox" role="switch" id="searchModeSwitch"
+                        [checked]="useIntelligentSearch" (change)="toggleSearchMode()">
+                    <label class="form-check-label ms-2" for="searchModeSwitch">
+                        <span *ngIf="useIntelligentSearch">
+                            <i class="fas fa-robot me-1"></i> Búsqueda Inteligente IA
+                        </span>
+                        <span *ngIf="!useIntelligentSearch">
+                            <i class="fas fa-search me-1"></i> Búsqueda Tradicional
+                        </span>
+                    </label>
+                    <span class="badge ms-2" [ngClass]="useIntelligentSearch ? 'bg-info' : 'bg-secondary'">
+                        {{ useIntelligentSearch ? '🤖 IA' : '🔍 Tradicional' }}
+                    </span>
+                </div>
+                <small class="text-muted">
+                    {{ useIntelligentSearch ?
+                    'Pregunta en lenguaje natural, entiende sinónimos y contexto' :
+                    'Búsqueda exacta por nombre, ciudad o categoría' }}
+                </small>
+            </div>
 
-                <datalist id="search-suggestions">
-                    <option *ngFor="let evento of listEventos" [value]="evento.nombre"></option>
-                </datalist>
+            <!-- Formulario de búsqueda -->
+            <form class="search" (ngSubmit)="emitSearch()" (keydown)="onKeyDown($event)">
+                <div class="search-input-wrapper">
+                    <i class="fa" [ngClass]="useIntelligentSearch ? 'fa-robot' : 'fa-search'"></i>
 
-                <button type="submit" class="btn btn-primary">Search</button>
+                    <input type="text" class="form-control search-input" [(ngModel)]="searchValue" name="searchValue"
+                        (input)="onInputChange()" [placeholder]="useIntelligentSearch ? 
+                                          'Ej: ¿Eventos de música en Barcelona este fin de semana?' : 
+                                          'Buscar por nombre, ciudad o categoría...'" [disabled]="loading"
+                        autocomplete="off">
+
+                    <!-- Botón limpiar -->
+                    <button type="button" class="btn-clear" *ngIf="searchValue" (click)="clearSearch()">
+                        <i class="fas fa-times"></i>
+                    </button>
+
+                    <!-- Loading indicator -->
+                    <div class="search-loading" *ngIf="loading">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sugerencias -->
+                <div class="suggestions-container" *ngIf="showSuggestions && suggestions.length > 0">
+                    <div class="suggestions-list">
+                        <div *ngFor="let suggestion of suggestions; let i = index" class="suggestion-item"
+                            [class.suggestion-query]="suggestion.type === 'query'"
+                            (click)="selectSuggestion(suggestion)">
+
+                            <div class="suggestion-icon">
+                                <i *ngIf="suggestion.type === 'event'" class="fas fa-calendar-alt"></i>
+                                <i *ngIf="suggestion.type === 'query'" class="fas fa-robot"></i>
+                            </div>
+
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">{{ suggestion.nombre || suggestion.text }}</div>
+                                <div *ngIf="suggestion.type === 'event'" class="suggestion-meta">
+                                    <span class="badge bg-secondary me-1">{{ suggestion.category }}</span>
+                                    <span class="badge bg-light text-dark">{{ suggestion.ciudad }}</span>
+                                </div>
+                                <div *ngIf="suggestion.type === 'query'" class="suggestion-hint">
+                                    Pregunta sugerida
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary search-btn" [disabled]="loading || !searchValue.trim()">
+                    <span *ngIf="!loading">
+                        {{ useIntelligentSearch ? '🔍 Buscar con IA' : '🔍 Buscar' }}
+                    </span>
+                    <span *ngIf="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Buscando...
+                    </span>
+                </button>
             </form>
+
+            <!-- Ejemplos de búsquedas -->
+            <div class="search-examples mt-3" *ngIf="useIntelligentSearch">
+                <small class="text-muted d-block mb-1">Ejemplos de búsquedas inteligentes:</small>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                        *ngFor="let example of getExampleQueries()" (click)="searchValue = example; emitSearch()">
+                        {{ example }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

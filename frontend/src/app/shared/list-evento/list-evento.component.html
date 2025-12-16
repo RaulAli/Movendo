@@ -1,29 +1,99 @@
 <!-- Spinner de carga -->
-<div *ngIf="loading" class="loading">Cargando eventos...</div>
-
-<!-- Error -->
-<div *ngIf="error" class="error">{{ error }}</div>
-
-
-<app-search (searchEvent)="get_list_filtered($event)"></app-search>
-
-<!-- Filtros -->
-<app-filters [listCategories]="listCategories" [initialFilters]="filters"
-  (eventofiltros)="get_list_filtered($event)">
-</app-filters>
-
-<!-- Lista de eventos -->
-<div *ngIf="!loading && evento?.length; else empty" class="list-evento grid">
-  <card-evento *ngFor="let p of evento; trackBy: trackByEvento" [evento]="p"></card-evento>
+<div *ngIf="loading" class="loading-overlay">
+  <div class="loading-content">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Buscando eventos...</p>
+  </div>
 </div>
 
-<ng-template #empty>
-  <p class="empty">No hay eventos aún.</p>
-</ng-template>
+<!-- Error -->
+<div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{ error }}
+  <button type="button" class="btn-close" (click)="error = null"></button>
+</div>
 
-<app-pagination 
-  [currentPage]="currentPage" 
-  [totalItems]="totalItems" 
-  [itemsPerPage]="filters.limit ?? 3" 
-  (pageChange)="onPageChange($event)">
-</app-pagination>
+<!-- Search Component -->
+<app-search (searchEvent)="get_list_filtered($event)" (intelligentSearchEvent)="handleIntelligentSearch($event)">
+</app-search>
+
+<!-- Resultados de búsqueda inteligente -->
+<div *ngIf="intelligentSearchActive" class="intelligent-results">
+  <!-- Summary de resultados -->
+  <div class="search-summary card mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-3">
+        <div class="ai-badge">
+          <i class="fas fa-robot"></i> IA
+        </div>
+        <h5 class="card-title mb-0 ms-2">Resultados para "{{ currentQuery }}"</h5>
+      </div>
+
+      <p class="card-text">{{ searchSummary?.message }}</p>
+
+      <div *ngIf="searchSummary?.categories || searchSummary?.cities" class="summary-tags mt-3">
+        <span *ngFor="let cat of searchSummary?.categories" class="badge bg-primary me-2">
+          {{ cat }}
+        </span>
+        <span *ngFor="let city of searchSummary?.cities" class="badge bg-secondary me-2">
+          {{ city }}
+        </span>
+      </div>
+
+      <div *ngIf="searchSummary?.priceRange as priceRange" class="price-range mt-2">
+        <small class="text-muted">
+          Rango de precios: ${{ priceRange.min }} - ${{ priceRange.max }}
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de eventos con relevancia -->
+  <div *ngIf="intelligentResults.length > 0" class="intelligent-grid">
+    <div *ngFor="let result of intelligentResults" class="intelligent-card-wrapper">
+      <div class="relevance-badge" [ngClass]="getRelevanceColor(result.relevancePercentage)">
+        {{ result.relevancePercentage }}% relevante
+      </div>
+      <card-evento [evento]="convertToEvento(result)"></card-evento>
+      <div class="relevance-note" *ngIf="result.note">
+        <small class="text-muted">{{ result.note }}</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin resultados -->
+  <div *ngIf="intelligentResults.length === 0 && !loading" class="no-results text-center py-5">
+    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+    <h4>No se encontraron eventos</h4>
+    <p class="text-muted">Intenta con otros términos de búsqueda</p>
+    <button class="btn btn-primary" (click)="resetIntelligentSearch()">
+      Volver a todos los eventos
+    </button>
+  </div>
+</div>
+
+<!-- Búsqueda tradicional (solo si no hay búsqueda IA activa) -->
+<div *ngIf="!intelligentSearchActive">
+  <!-- Filtros -->
+  <app-filters [listCategories]="listCategories" [initialFilters]="filters" (eventofiltros)="get_list_filtered($event)">
+  </app-filters>
+
+  <!-- Lista de eventos tradicional -->
+  <div *ngIf="!loading && evento?.length; else empty" class="list-evento grid">
+    <card-evento *ngFor="let p of evento; trackBy: trackByEvento" [evento]="p"></card-evento>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-results text-center py-5">
+      <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+      <h4>No hay eventos disponibles</h4>
+      <p class="text-muted">Prueba ajustando los filtros de búsqueda</p>
+    </div>
+  </ng-template>
+
+  <!-- Paginación -->
+  <app-pagination [currentPage]="currentPage" [totalItems]="totalItems" [itemsPerPage]="filters.limit ?? DEFAULT_LIMIT"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+</div>
