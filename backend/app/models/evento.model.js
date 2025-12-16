@@ -8,6 +8,11 @@ const EventoSchema = new mongoose.Schema({
     required: [true, 'El nombre es obligatorio'],
     trim: true
   },
+  description: {  // <--- NUEVO: Agregar este campo que falta
+    type: String,
+    trim: true,
+    default: ''
+  },
   startDate: {
     type: Date,
     required: [true, 'La fecha de inicio es obligatoria'],
@@ -73,9 +78,42 @@ const EventoSchema = new mongoose.Schema({
   id_merchant: {
     type: [String],
     required: true
+  },
+
+  // **CAMPOS RAG - AGREGADOS**
+  embedding: {
+    type: [Number],
+    default: null,
+    index: true
+  },
+  embeddingUpdatedAt: {  // <--- IMPORTANTE: Para saber cuando se actualizó
+    type: Date,
+    default: null
   }
 
 }, { timestamps: true });
+
+// Índice de texto CORREGIDO (ahora incluye 'description' que sí existe)
+EventoSchema.index({
+  nombre: 'text',
+  ciudad: 'text',
+  category: 'text',
+  description: 'text'
+}, {
+  name: 'text_search_index',
+  weights: {
+    nombre: 10,
+    category: 5,
+    ciudad: 3,
+    description: 1
+  },
+  default_language: 'spanish'
+});
+
+// Índice adicional para búsquedas comunes
+EventoSchema.index({ isActive: 1, startDate: 1 });
+EventoSchema.index({ ciudad: 1, startDate: 1 });
+EventoSchema.index({ slug_category: 1, startDate: 1 });
 
 EventoSchema.plugin(uniqueValidator, { message: '{PATH} already taken' });
 
@@ -102,7 +140,25 @@ EventoSchema.pre('validate', async function (next) {
   }
 });
 
-EventoSchema.methods.toEventouctCarouselResponse = function () {
+// **MÉTODO NUEVO: Para generar texto para embedding**
+EventoSchema.methods.getTextForEmbedding = function () {
+  return `
+    ${this.nombre || ''}
+    ${this.category || ''}
+    ${this.ciudad || ''}
+    ${this.description || ''}
+    ${this.slug_category?.join(' ') || ''}
+  `.trim().replace(/\s+/g, ' ');
+};
+
+// **MÉTODO NUEVO: Para verificar si necesita actualizar embedding**
+EventoSchema.methods.needsEmbeddingUpdate = function () {
+  return !this.embedding ||
+    !this.embeddingUpdatedAt ||
+    this.embeddingUpdatedAt < this.updatedAt;
+};
+
+EventoSchema.methods.toEventoCarouselResponse = function () {  // <--- CORREGIDO TYPO
   return {
     image: this.image,
     slug: this.slug
@@ -117,15 +173,12 @@ EventoSchema.methods.updateFavoriteCount = async function () {
   return this;
 };
 
-
-
-
 EventoSchema.methods.toEventoResponse = function (user) {
   return {
-    _id: this._id, // Add this line
+    _id: this._id,
     slug: this.slug,
     nombre: this.nombre,
-    description: this.description,
+    description: this.description,  // <--- AHORA SÍ EXISTE
     startDate: this.startDate,
     endDate: this.endDate,
     ciudad: this.ciudad,
@@ -134,12 +187,11 @@ EventoSchema.methods.toEventoResponse = function (user) {
     category: this.category,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    id_merchant: this.id_merchant,
+    id_merchant: this.id_merchant,  // <--- SOLO UNA VEZ (sin duplicado)
     favorited: user ? user.isFavorite(this._id) : false,
     favouritesCount: this.favouritesCount,
     comments: this.comments,
     stock: this.stock,
-    id_merchant: this.id_merchant
   }
 }
 
