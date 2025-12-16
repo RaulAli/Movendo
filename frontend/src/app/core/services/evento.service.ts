@@ -3,6 +3,8 @@ import { Observable, map } from 'rxjs';
 import { Evento, EventosResponse } from '../models/evento.model';
 import { ApiService } from './api.service';
 import { Filters } from '../models/filters.model';
+import { HttpParams } from '@angular/common/http';
+import { RAGSearchResponse, IntelligentAutocomplete } from '../models/rag-search.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +31,6 @@ export class EventoService {
     if (filters.showFavorites) params.append('showFavorites', filters.showFavorites ? 'true' : 'false');
     if (filters.username) params.append('username', String(filters.username));
 
-    // Handle ciudad as string[]
     if (filters.ciudad && filters.ciudad.length > 0) {
       filters.ciudad.forEach(ciu => params.append('ciudad', ciu));
     }
@@ -75,4 +76,55 @@ export class EventoService {
       map(res => res.data)
     );
   }
+
+  // --- Modificaciones: usar ApiService en vez de this.http / this.apiUrl ---
+  intelligentSearch(query: string, limit: number = 10, filters?: any): Observable<RAGSearchResponse> {
+    const body = {
+      query,
+      limit,
+      ...(filters && { filters })
+    };
+
+    // Asumimos que ApiService.post devuelve un objeto con .data
+    return this.apiService.post(`api/search/rag`, body).pipe(
+      map(res => res.data ?? res as RAGSearchResponse)
+    );
+  }
+
+  // Autocomplete inteligente usando ApiService
+  intelligentAutocomplete(query: string, limit: number = 5): Observable<IntelligentAutocomplete> {
+    const params = new URLSearchParams();
+    params.append('q', query);
+    params.append('limit', String(limit));
+
+    return this.apiService.get(`api/search/autocomplete?${params.toString()}`).pipe(
+      map(res => res.data ?? res as IntelligentAutocomplete)
+    );
+  }
+
+  // Búsqueda tradicional -> construimos query string y usamos ApiService.get
+  traditionalSearch(query: string, filters?: Partial<Filters>): Observable<{ data: Evento[]; total: number }> {
+    const params = new URLSearchParams();
+    params.append('query', query);
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (Array.isArray(value)) {
+            (value as any[]).forEach(v => params.append(key, String(v)));
+          } else {
+            params.append(key, String(value));
+          }
+        }
+      });
+    }
+
+    return this.apiService.get(`/search?${params.toString()}`).pipe(
+      map(res => ({
+        data: res.data ?? [],
+        total: res.meta?.total ?? res.total ?? 0
+      }))
+    );
+  }
+
 }

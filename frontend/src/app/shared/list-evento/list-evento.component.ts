@@ -11,6 +11,7 @@ import { SearchComponent } from '../search/search.component';
 import { Filters } from '../../core/models/filters.model';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { forkJoin } from 'rxjs';
+import { RAGSearchResponse, RAGSearchResult } from '../../core/models/rag-search.model';
 
 @Component({
   selector: 'list-evento',
@@ -29,8 +30,15 @@ export class ListComponent implements OnInit {
   totalItems = 0;
   currentPage = 1;
 
-  private readonly DEFAULT_LIMIT = 3;
-  private readonly DEFAULT_OFFSET = 0;
+  // <-- HACERLO ACCESIBLE A LA PLANTILLA (public)
+  readonly DEFAULT_LIMIT = 3;
+  readonly DEFAULT_OFFSET = 0;
+
+  // Campos para búsqueda inteligente (IA)
+  intelligentSearchActive = false;
+  intelligentResults: RAGSearchResult[] = [];
+  currentQuery: string = '';
+  searchSummary: RAGSearchResponse['summary'] | null = null;
 
   constructor(
     private eventoService: EventoService,
@@ -108,6 +116,12 @@ export class ListComponent implements OnInit {
       replaceUrl: true
     });
 
+    // Si hay una búsqueda inteligente activa, desactívala al cargar filtros tradicionales
+    this.intelligentSearchActive = false;
+    this.intelligentResults = [];
+    this.currentQuery = '';
+    this.searchSummary = null;
+
     this.eventoService.list_filters(this.filters).subscribe({
       next: (data) => {
         this.evento = data.data;
@@ -123,6 +137,28 @@ export class ListComponent implements OnInit {
     });
   }
 
+  // Handler para resultados del SearchComponent (búsqueda IA)
+  handleIntelligentSearch(response: RAGSearchResponse): void {
+    this.intelligentSearchActive = true;
+    this.currentQuery = response.query;
+    this.searchSummary = response.summary ?? null;
+    this.intelligentResults = response.results ?? [];
+    this.evento = this.intelligentResults.map(r => this.convertToEvento(r));
+    this.totalItems = response.meta?.totalFound ?? this.evento.length;
+    this.currentPage = 1;
+    this.loading = false;
+  }
+
+  // Reinicia la vista IA y vuelve a la búsqueda tradicional paginada
+  resetIntelligentSearch(): void {
+    this.intelligentSearchActive = false;
+    this.intelligentResults = [];
+    this.currentQuery = '';
+    this.searchSummary = null;
+    // recargar lista según filtros actuales
+    this.get_list_filtered(this.filters ?? this.getDefaultFilters(0, 99999));
+  }
+
   onPageChange(page: number): void {
     const newOffset = (page - 1) * (this.filters.limit ?? this.DEFAULT_LIMIT);
     this.get_list_filtered({ offset: newOffset });
@@ -130,5 +166,38 @@ export class ListComponent implements OnInit {
 
   trackByEvento(index: number, evento: Evento): string {
     return evento.slug ?? index.toString();
+  }
+
+  // ---------- Helpers para mapear RAGSearchResult -> Evento ----------
+  private toDateString(d?: Date | string): string | undefined {
+    if (!d) return undefined;
+    if (typeof d === 'string') return d;
+    return d.toISOString();
+  }
+
+  // Ajusta fields para que coincidan con tu Evento model
+  convertToEvento(result: RAGSearchResult): Evento {
+    return {
+      _id: result._id,
+      nombre: result.nombre,
+      fecha: this.toDateString(result.startDate) ?? '',
+      ciudad: result.ciudad,
+      category: result.category,
+      slug: result.slug,
+      image: Array.isArray(result.image) ? (result.image.length ? result.image[0] : undefined) : (result.image as unknown as string | undefined),
+      price: result.price,
+      favouritesCount: 0,
+      startDate: this.toDateString(result.startDate),
+      endDate: this.toDateString(result.endDate),
+      isActive: true,
+      status: 'PUBLISHED'
+    };
+  }
+
+  // Devuelve clase CSS para el badge de relevancia (puedes adaptar los nombres de clase)
+  getRelevanceColor(relevancePercentage: number): string {
+    if (relevancePercentage >= 80) return 'bg-success';
+    if (relevancePercentage >= 50) return 'bg-warning';
+    return 'bg-secondary';
   }
 }
