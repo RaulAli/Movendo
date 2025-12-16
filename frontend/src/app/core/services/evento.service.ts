@@ -77,19 +77,21 @@ export class EventoService {
     );
   }
 
-  // --- Modificaciones: usar ApiService en vez de this.http / this.apiUrl ---
-  intelligentSearch(query: string, limit: number = 10, filters?: any): Observable<RAGSearchResponse> {
+  intelligentSearch(
+    query: string,
+    limit: number = 10
+  ): Observable<RAGSearchResponse> {
+
     const body = {
-      query,
-      limit,
-      ...(filters && { filters })
+      query: query.trim(),
+      limit
     };
 
-    // Asumimos que ApiService.post devuelve un objeto con .data
-    return this.apiService.post(`api/search/rag`, body).pipe(
-      map(res => res.data ?? res as RAGSearchResponse)
-    );
+    console.log('[IA] Body enviado:', body);
+
+    return this.apiService.post('/api/search/rag', body);
   }
+
 
   // Autocomplete inteligente usando ApiService
   intelligentAutocomplete(query: string, limit: number = 5): Observable<IntelligentAutocomplete> {

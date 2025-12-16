@@ -104,29 +104,41 @@ export class SearchComponent implements OnInit, OnDestroy {
   performIntelligentSearch(query: string): void {
     this.loading = true;
 
-    this.eventoService.intelligentSearch(query).subscribe({
+    console.log('[IA] Enviando búsqueda al servidor:', {
+      query,
+      limit: 10
+    });
+
+    this.eventoService.intelligentSearch(query, 10).subscribe({
       next: (response) => {
+        console.log('[IA] Respuesta del servidor:', response);
+
         this.loading = false;
+
+        // Emitir SOLO resultados IA
         this.intelligentSearchEvent.emit(response);
 
-        // También podemos navegar con un indicador de búsqueda IA
+        // Marcar estado IA sin romper filtros normales
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams: {
+            ai: 'true',
             q: query,
-            ai: 'true'
+            nombre: null // ← MUY IMPORTANTE
           },
           queryParamsHandling: 'merge'
         });
       },
       error: (err) => {
-        console.error('Error en búsqueda inteligente:', err);
+        console.error('[IA] Error real recibido:', err);
         this.loading = false;
-        // Fallback a búsqueda tradicional
+
+        // fallback limpio
         this.performTraditionalSearch(query);
       }
     });
   }
+
 
   getTraditionalSuggestions(query: string): void {
     const filters: Filters = { nombre: query, limit: 5 };
@@ -151,17 +163,24 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   getIntelligentSuggestions(query: string): void {
+    console.log('[IA] Autocomplete:', query);
+
     this.eventoService.intelligentAutocomplete(query).subscribe({
       next: (response) => {
+        console.log('[IA] Autocomplete response:', response);
+
         this.suggestions = [
-          ...response.suggestions,
-          ...(response.suggestedQueries || [])
+          ...(response.suggestions || []).map(s => ({
+            ...s,
+            type: 'query'
+          }))
         ];
+
         this.showSuggestions = true;
       },
       error: (err) => {
-        console.error('Error obteniendo sugerencias inteligentes:', err);
-        this.getTraditionalSuggestions(query);
+        console.error('[IA] Error autocomplete:', err);
+        this.showSuggestions = false;
       }
     });
   }
